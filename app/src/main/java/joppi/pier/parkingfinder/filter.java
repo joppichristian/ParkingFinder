@@ -2,10 +2,12 @@ package joppi.pier.parkingfinder;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -41,23 +43,9 @@ public class filter extends AppCompatActivity {
         super.onCreate(icicle);
         setContentView(R.layout.activity_filter);
 
-        TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
-        timePicker.setIs24HourView(DateFormat.is24HourFormat(this));
-        timePicker.setCurrentHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
 
-        ToggleButton btn=(ToggleButton)findViewById(R.id.toggleButton);
 
-        btn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                new DatePickerDialog(filter.this,
-                        d,
-                        dateAndTime.get(Calendar.YEAR),
-                        dateAndTime.get(Calendar.MONTH),
-                        dateAndTime.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
-
-        btn=(ToggleButton)findViewById(R.id.toggleButton2);
+        Button btn=(Button)findViewById(R.id.setTime);
 
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -71,9 +59,24 @@ public class filter extends AppCompatActivity {
             }
         });
 
-        dateAndTimeLabel=(TextView)findViewById(R.id.dateAndTime);
+        //dateAndTimeLabel=(TextView)findViewById(R.id.dateAndTime);
 
         updateLabel();
+
+
+
+        Button startApp = (Button)findViewById(R.id.startApp);
+        startApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Define Intent to go to map activity ( TO DO )
+
+
+                //Intent go = new Intent(filter.this,mappa.class);
+                //startActivity(go);
+                //finish();
+            }
+        });
     }
 
     private void updateLabel() {
