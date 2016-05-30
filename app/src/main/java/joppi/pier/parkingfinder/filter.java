@@ -72,9 +72,9 @@ public class filter extends AppCompatActivity {
                 //Define Intent to go to map activity ( TO DO )
 
 
-                //Intent go = new Intent(filter.this,mappa.class);
-                //startActivity(go);
-                //finish();
+                Intent go = new Intent(filter.this,prova_db.class);
+                startActivity(go);
+                finish();
             }
         });
     }

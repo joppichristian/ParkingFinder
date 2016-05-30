@@ -9,6 +9,7 @@ public interface ParkingDAO {
     public void open();
     public void close();
 
+    public Parking insertParking(Parking parking);
     public ArrayList<Parking> getAllParking();
 }
 

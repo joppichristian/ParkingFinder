@@ -16,9 +16,16 @@ public class Parking {
     private ArrayList<Parking_Type> flags = new ArrayList<Parking_Type>();
     private double cost;
 
-    public Parking(){}
     public Parking(String name,long latitude,long longitude,ArrayList<Parking_Type> flags,double cost){
         this.id = -1;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.flags.addAll(flags);
+        this.cost = cost;
+    }
+    public Parking(int id,String name,long latitude,long longitude,ArrayList<Parking_Type> flags,double cost){
+        this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -47,6 +54,11 @@ public class Parking {
 
     public double getCost(){
         return this.cost;
+    }
+
+    @Override
+    public String toString(){
+        return name + " - " + latitude + " - " + longitude;
     }
 
 }
