@@ -10,27 +10,33 @@ public class Parking {
 
     private int id;
     private String name;
-    private long latitude;
-    private long longitude;
-    //Tutte le varie tipologie le gestiamo con una lista di flag.
-    private ArrayList<Parking_Type> flags = new ArrayList<Parking_Type>();
-    private double cost;
 
-    public Parking(String name,long latitude,long longitude,ArrayList<Parking_Type> flags,double cost){
+    private double cost;
+    private int disco;
+    private boolean car;
+    private boolean moto;
+    private boolean caravan;
+    private boolean indoor;
+
+    public Parking(String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
         this.id = -1;
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.flags.addAll(flags);
         this.cost = cost;
+        this.disco = disco;
+        this.car = car;
+        this.moto = moto;
+        this.caravan = caravan;
+        this.indoor = indoor;
     }
-    public Parking(int id,String name,long latitude,long longitude,ArrayList<Parking_Type> flags,double cost){
+    public Parking(int id,String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
         this.id = id;
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.flags.addAll(flags);
         this.cost = cost;
+        this.disco = disco;
+        this.car = car;
+        this.moto = moto;
+        this.caravan = caravan;
+        this.indoor = indoor;
     }
     public int getId(){
         return this.id;
@@ -40,25 +46,35 @@ public class Parking {
         return this.name;
     }
 
-    public long getLatitude(){
-        return this.latitude;
-    }
 
-    public long getLongitude(){
-        return this.longitude;
-    }
-
-    public ArrayList<Parking_Type> getAllsFlags(){
-        return this.flags;
-    }
 
     public double getCost(){
         return this.cost;
     }
 
-    @Override
-    public String toString(){
-        return name + " - " + latitude + " - " + longitude;
+
+    public int getDisco() {
+        return disco;
     }
 
+    public boolean isCar() {
+        return car;
+    }
+
+    public boolean isMoto() {
+        return moto;
+    }
+
+    public boolean isCaravan() {
+        return caravan;
+    }
+
+    public boolean isIndoor() {
+        return indoor;
+    }
+
+    @Override
+    public String toString(){
+        return name;
+    }
 }

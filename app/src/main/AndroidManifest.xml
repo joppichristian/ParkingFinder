@@ -3,7 +3,7 @@
     package="joppi.pier.parkingfinder">
 
     <application
-        android:name="ParkingFinderApplication"
+        android:name=".ParkingFinderApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,7 +22,7 @@
         <activity
             android:name=".filter"
             android:theme="@style/AppTheme" />
-        <activity android:name=".prova_db"></activity>
+        <activity android:name=".prova_db" />
     </application>
 
 </manifest>
