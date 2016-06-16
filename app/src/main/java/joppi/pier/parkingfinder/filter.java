@@ -5,13 +5,11 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.ToggleButton;
 
 import java.util.Calendar;
 
@@ -71,10 +69,9 @@ public class filter extends AppCompatActivity {
             public void onClick(View v) {
                 //Define Intent to go to map activity ( TO DO )
 
-
-                //Intent go = new Intent(filter.this,mappa.class);
-                //startActivity(go);
-                //finish();
+                Intent go = new Intent(filter.this,MapsActivity.class);
+                startActivity(go);
+                finish();
             }
         });
     }
