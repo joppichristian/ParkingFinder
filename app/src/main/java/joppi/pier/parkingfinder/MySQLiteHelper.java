@@ -2,8 +2,14 @@ package joppi.pier.parkingfinder;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created by christian on 29/05/16.
@@ -56,5 +62,54 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + "; DROP TABLE IF EXISTS " + TABLE2_NAME);
         onCreate(db);
+    }
+
+
+    private static boolean checkDataBase(){
+
+        SQLiteDatabase checkDB = null;
+
+        try{
+            String myPath = "data/data/joppi.pier.parkingfinder/databases/" + MySQLiteHelper.DATABASE_NAME;
+            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+
+        }catch(SQLiteException e){
+
+            //database does't exist yet.
+
+        }
+
+        if(checkDB != null){
+
+            checkDB.close();
+
+        }
+
+        return checkDB != null ? true : false;
+    }
+
+    public static void copyDataBase(Context myContext) throws IOException {
+
+        if(checkDataBase()) {
+            Log.w("LOG","ESISTE!");
+            return;
+        }
+
+        InputStream myInput = myContext.getAssets().open(MySQLiteHelper.DATABASE_NAME);
+
+        String outFileName = "data/data/joppi.pier.parkingfinder/databases/" + MySQLiteHelper.DATABASE_NAME;
+
+        OutputStream myOutput = new FileOutputStream(outFileName);
+
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = myInput.read(buffer))>0){
+            myOutput.write(buffer, 0, length);
+        }
+
+        myOutput.flush();
+        myOutput.close();
+        myInput.close();
+
     }
 }
