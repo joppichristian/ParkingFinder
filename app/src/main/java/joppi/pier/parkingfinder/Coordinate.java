@@ -7,10 +7,10 @@ package joppi.pier.parkingfinder;
 public class Coordinate {
 
     private int id_parking ;
-    private long latitude;
-    private long longitude;
+    private double latitude;
+    private double longitude;
 
-    public Coordinate(int id_parking, long latitude, long longitude){
+    public Coordinate(int id_parking, double latitude, double longitude){
         this.id_parking = id_parking;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -21,11 +21,11 @@ public class Coordinate {
         return id_parking;
     }
 
-    public long getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 }

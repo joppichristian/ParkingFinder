@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -17,6 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +29,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	static ArrayList<LatLng> drawPolyPts = new ArrayList<>();
 	static Polygon drawPoly = null;
 
+
+	private ParkingDAO parkingDAO;
+	private CoordinateDAO coordinateDAO;
+	private ArrayList<Parking> parking;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
+
+
+		try {
+			MySQLiteHelper.copyDataBase(ParkingFinderApplication.getAppContext());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		parkingDAO = new ParkingDAO_DB_impl();
+		parkingDAO.open();
+		parking = parkingDAO.getAllParking();
+		parkingDAO.close();
+
+
+
 		// Obtain the SupportMapFragment and get notified when the map is ready to be used.
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map);
@@ -70,44 +91,56 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		else{
 			mMap.setMyLocationEnabled(true);
 		}
-		mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener()
-		{
+		mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
 			@Override
-			public boolean onMyLocationButtonClick()
-			{
+			public boolean onMyLocationButtonClick() {
 				return false;
 			}
 		});
 
-		// Add some parking lots
-		final Polygon parkingLot1 = mMap.addPolygon(new PolygonOptions()
-				.add(new LatLng(46.076479, 11.110441), new LatLng(46.076650, 11.109615), new LatLng(46.076637, 11.109221)
-						, new LatLng(46.076151, 11.109243), new LatLng(46.076110, 11.108448), new LatLng(46.075526, 11.108459)
-						, new LatLng(46.075511, 11.108969), new LatLng(46.075094, 11.109033), new LatLng(46.075165, 11.110385)
-						, new LatLng(46.075868, 11.110653), new LatLng(46.076136, 11.110637), new LatLng(46.076170, 11.110452))
-				.strokeColor(0x660000ff)
-				.fillColor(0x220000ff)
-				.clickable(true));
 
-		Polygon parkingLot2 = mMap.addPolygon(new PolygonOptions()
-				.add(new LatLng(46.076665, 11.110522), new LatLng(46.076721, 11.111091), new LatLng(46.076334, 11.111198)
-						, new LatLng(46.076196, 11.110881), new LatLng(46.076203, 11.110602))
-				.strokeColor(0x6600ff00)
-				.fillColor(0x2200ff00)
-				.clickable(true));
+		coordinateDAO = new CoordinateDAO_DB_impl();
+		coordinateDAO.open();
 
-		mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener()
-		{
-			@Override
-			public void onPolygonClick(Polygon polygon)
-			{
-				LatLng pt = PolygonCenter(polygon.getPoints());
-				Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title("This is a parking lot").flat(false));
-				mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
 
-				mrk.showInfoWindow();
+		Polygon parkingLot = null;
+		ArrayList<Coordinate> coordinates;
+		ArrayList<LatLng> polygonCoordinates = new ArrayList<LatLng>();
+
+		for(final Parking p : parking){
+			coordinates = coordinateDAO.getCoordinateOfParking(p.getId());
+			polygonCoordinates.clear();
+			for(Coordinate c: coordinates){
+				Log.w("COORD",c.getLatitude() + ":"+c.getLongitude());
+				polygonCoordinates.add(new LatLng(c.getLatitude(), c.getLongitude()));
 			}
-		});
+			Log.w("NUMERO:", polygonCoordinates.size() + "");
+			if(polygonCoordinates.size() > 2) {
+				parkingLot = mMap.addPolygon(new PolygonOptions()
+						.addAll(polygonCoordinates)
+						.strokeColor(0x660000ff)
+						.fillColor(0x220000ff)
+						.clickable(true));
+
+
+				mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+					@Override
+					public void onPolygonClick(Polygon polygon) {
+						LatLng pt = PolygonCenter(polygon.getPoints());
+						Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title(p.getName()).flat(false));
+						mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
+
+						mrk.showInfoWindow();
+					}
+				});
+			}
+			else if(polygonCoordinates.size() == 1)
+			{
+				mMap.addMarker(new MarkerOptions().position(polygonCoordinates.get(0)).title(p.getName()));
+			}
+		}
+
+
 
 		// TEST FOR ADDING PARKINGS DYNAMICALLY
 		mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()

@@ -77,8 +77,8 @@ public class CoordinateDAO_DB_impl implements CoordinateDAO {
 
     private Coordinate valuesToCoordinate(Cursor cursor){
         int id_parking = cursor.getInt(0);
-        long latitude = cursor.getLong(1);
-        long longitude = cursor.getLong(2);
+        double latitude = cursor.getDouble(1);
+        double longitude = cursor.getDouble(2);
         return  new Coordinate(id_parking,latitude,longitude);
     }
 

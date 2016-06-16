@@ -90,10 +90,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     public static void copyDataBase(Context myContext) throws IOException {
 
-        if(checkDataBase()) {
+        /*if(checkDataBase()) {
             Log.w("LOG","ESISTE!");
             return;
-        }
+        }*/
 
         InputStream myInput = myContext.getAssets().open(MySQLiteHelper.DATABASE_NAME);
 
