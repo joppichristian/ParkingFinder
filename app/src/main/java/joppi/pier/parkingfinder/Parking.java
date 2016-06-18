@@ -18,6 +18,8 @@ public class Parking {
     private boolean caravan;
     private boolean indoor;
 
+    private float distance;
+
     public Parking(String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
         this.id = -1;
         this.name = name;
@@ -27,6 +29,7 @@ public class Parking {
         this.moto = moto;
         this.caravan = caravan;
         this.indoor = indoor;
+        this.distance = 0;
     }
     public Parking(int id,String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
         this.id = id;
@@ -37,6 +40,7 @@ public class Parking {
         this.moto = moto;
         this.caravan = caravan;
         this.indoor = indoor;
+        this.distance = 0;
     }
     public int getId(){
         return this.id;
@@ -76,5 +80,13 @@ public class Parking {
     @Override
     public String toString(){
         return name;
+    }
+
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
     }
 }

@@ -48,7 +48,7 @@ public class MyAdapter extends BaseAdapter {
         TextView text_name = (TextView) vi.findViewById(R.id.park_name);
         text_name.setText(data.get(position).toString());
         TextView text_details = (TextView) vi.findViewById(R.id.park_details);
-        text_details.setText("" + data.get(position).getCost());
+        text_details.setText("" + Math.round(data.get(position).getDistance())+" metri");
 
         return vi;
     }

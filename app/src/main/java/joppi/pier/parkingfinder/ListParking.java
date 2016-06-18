@@ -61,21 +61,19 @@ public class ListParking extends Activity  {
             if(tmp!=null)
             {
                 distanceBetween(tmp.latitude,tmp.longitude,latitude,longitude,res);
-                parking_point.put(p.getId(), res[0]);
+                p.setDistance(res[0]);
                 Log.w("DIST: ", p.getName() + "-"+ res[0] + "");
 
             }
             else{
-                parking_point.put(p.getId(),Float.MAX_VALUE);
+                p.setDistance(Float.MAX_VALUE);
             }
         }
 
         Collections.sort(parking, new Comparator<Parking>() {
             @Override
             public int compare(Parking lhs, Parking rhs) {
-                int id_1 = lhs.getId();
-                int id_2 = rhs.getId();
-                return parking_point.get(id_1).floatValue() >= parking_point.get(id_2).floatValue() ? 1 : -1 ;
+                return lhs.getDistance() >= rhs.getDistance() ? 1 : -1 ;
             }
         });
 
