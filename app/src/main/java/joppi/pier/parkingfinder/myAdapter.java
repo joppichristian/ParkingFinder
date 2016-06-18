@@ -1,17 +1,13 @@
 package joppi.pier.parkingfinder;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by christian on 18/06/16.
@@ -48,11 +44,11 @@ public class MyAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         View vi = convertView;
         if (vi == null)
-            vi = inflater.inflate(R.layout.row, null);
+            vi = position%2==0 ? inflater.inflate(R.layout.row_green, null) : inflater.inflate(R.layout.row_red, null);
         TextView text_name = (TextView) vi.findViewById(R.id.park_name);
         text_name.setText(data.get(position).toString());
         TextView text_details = (TextView) vi.findViewById(R.id.park_details);
-        text_details.setText(""+data.get(position).getCost());
+        text_details.setText("" + data.get(position).getCost());
 
         return vi;
     }
