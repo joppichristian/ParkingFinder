@@ -92,5 +92,18 @@ public class ParkingDAO_DB_impl implements ParkingDAO {
         cursor.close(); // Remember to always close the cursor!
         return parking;
     }
+
+    @Override
+    public Parking getParking(int id) {
+        Parking parking = null;
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME,
+                allColumns, MySQLiteHelper.COLUMN_ID + " = ? ",  new String[]{""+id},null, null, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            parking = valuesToParking(cursor);
+            cursor.moveToNext();
+        }
+        cursor.close(); // Remember to always close the cursor!
+        return parking;    }
 }
 

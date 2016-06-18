@@ -69,7 +69,7 @@ public class filter extends AppCompatActivity {
             public void onClick(View v) {
                 //Define Intent to go to map activity ( TO DO )
 
-                Intent go = new Intent(filter.this,MapsActivity.class);
+                Intent go = new Intent(filter.this,ListParking.class);
                 startActivity(go);
                 finish();
             }

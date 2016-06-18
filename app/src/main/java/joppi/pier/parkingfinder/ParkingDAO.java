@@ -12,5 +12,6 @@ public interface ParkingDAO {
     public Parking insertParking(Parking parking);
     public boolean clear();
     public ArrayList<Parking> getAllParking();
+    public Parking getParking(int id);
 }
 
