@@ -44,7 +44,14 @@ public class MyAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         View vi = convertView;
         if (vi == null)
-            vi = position%2==0 ? inflater.inflate(R.layout.row_green, null) : inflater.inflate(R.layout.row_red, null);
+        {
+            if(data.get(position).getDistance() > 1500 && data.get(position).getDistance() <= 2000)
+                vi = inflater.inflate(R.layout.row_green, null);
+            else if(data.get(position).getDistance() > 2000 )
+                vi = inflater.inflate(R.layout.row_red, null);
+            else
+                vi = inflater.inflate(R.layout.row_blue, null);
+        }
         TextView text_name = (TextView) vi.findViewById(R.id.park_name);
         text_name.setText(data.get(position).toString());
         TextView text_details = (TextView) vi.findViewById(R.id.park_details);

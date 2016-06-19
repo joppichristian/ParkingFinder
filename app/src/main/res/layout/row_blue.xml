@@ -5,9 +5,12 @@
     android:orientation="horizontal"
     android:layout_margin="5dp" >
     <View
-        android:layout_width="3dp"
+        android:layout_width="5dp"
         android:layout_height="fill_parent"
-        android:background="@color/rectangleColor_blue"
+        android:layout_marginBottom="17dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginRight="17dp"
+        android:background="@drawable/rectangle_blue"
         android:id="@+id/rectangle_type"/>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -26,12 +29,6 @@
             android:layout_alignParentLeft="true"
             android:layout_margin="5dp"
             android:id="@+id/park_details"/>
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="7dp"
-            android:layout_alignParentLeft="true"
-            android:background="@color/rectangleColor_blue"
-            />
 
     </LinearLayout>
 

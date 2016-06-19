@@ -31,14 +31,13 @@ import java.util.Map;
 
 import static android.location.Location.*;
 
-public class ListParking extends Activity  {
+public class ListParking extends Activity implements LocationListener {
 
     private ParkingDAO parkingDAO;
     private CoordinateDAO coordinateDAO;
     private ArrayList<Parking> parking;
     double latitude;
     double longitude;
-    Map<Integer,Float> parking_point = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +46,20 @@ public class ListParking extends Activity  {
         latitude = 46.076200;
         longitude = 11.111455;
 
+        LocationManager locationManager = (LocationManager)
+                getSystemService(Context.LOCATION_SERVICE);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+        locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, 1, 1, this);
+
+        /*Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        latitude = loc.getLatitude();
+        longitude = loc.getLongitude();*/
 
         parkingDAO = new ParkingDAO_DB_impl();
         parkingDAO.open();
@@ -121,7 +133,26 @@ public class ListParking extends Activity  {
     }
 
 
+    @Override
+    public void onLocationChanged(Location location) {
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        Log.w("LOCATION", latitude+"");
+    }
 
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
 
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 }
 
