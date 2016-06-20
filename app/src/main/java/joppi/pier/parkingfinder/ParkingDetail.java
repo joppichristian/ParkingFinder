@@ -1,7 +1,11 @@
 package joppi.pier.parkingfinder;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -16,28 +20,38 @@ import joppi.pier.parkingfinder.db.ParkingDAO_DB_impl;
 public class ParkingDetail extends Activity {
 
 
-    private CoordinateDAO coordinateDAO;
-    private ParkingDAO parkingDAO;
-    private ArrayList<Coordinate> coordinates;
-
+    double lat=0,lon=0;
+    String name="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parking_detail);
-        int id = getIntent().getExtras().getInt("Key");
+        name = getIntent().getExtras().getString("name");
+        Double cost = getIntent().getExtras().getDouble("cost");
+        Float dist = getIntent().getExtras().getFloat("dist");
+        lat = getIntent().getExtras().getDouble("lat");
+        lon = getIntent().getExtras().getDouble("long");
+
+        TextView tx_name = (TextView)findViewById(R.id.det_name);
+        tx_name.setText(name);
+
+        TextView tx_cost = (TextView)findViewById(R.id.det_cost);
+        tx_cost.setText(cost +" €");
+
+        TextView tx_distance = (TextView)findViewById(R.id.det_dist);
+        tx_distance.setText(dist + " metri");
 
 
-        coordinateDAO = new CoordinateDAO_DB_impl();
-        parkingDAO = new ParkingDAO_DB_impl();
-
-        parkingDAO.open();
-        Parking p = parkingDAO.getParking(id);
-        coordinateDAO.open();
-
-        coordinateDAO.getCoordinateOfParking(id);
-
-        TextView name = (TextView)findViewById(R.id.det_name);
-        name.setText(p.getName());
+        Button goMap = (Button)findViewById(R.id.go_toMap);
+        goMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri gmmIntentUri = Uri.parse("geo:"+lat+","+lon+"?q="+lat+","+lon+"("+name+")");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW,gmmIntentUri );
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+            }
+        });
 
 
     }

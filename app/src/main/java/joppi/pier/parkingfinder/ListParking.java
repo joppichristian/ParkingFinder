@@ -1,8 +1,15 @@
 package joppi.pier.parkingfinder;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,7 +32,7 @@ import joppi.pier.parkingfinder.db.ParkingDAO_DB_impl;
 
 import static android.location.Location.*;
 
-public class ListParking extends Activity implements LocationListener {
+public class ListParking extends Activity {
 
     private ParkingDAO parkingDAO;
     private CoordinateDAO coordinateDAO;
@@ -40,20 +47,13 @@ public class ListParking extends Activity implements LocationListener {
         latitude = 46.076200;
         longitude = 11.111455;
 
-        LocationManager locationManager = (LocationManager)
-                getSystemService(Context.LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
-        locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER, 1, 1, this);
+        }*/
 
-        /*Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        latitude = loc.getLatitude();
-        longitude = loc.getLongitude();*/
 
         parkingDAO = new ParkingDAO_DB_impl();
         parkingDAO.open();
@@ -92,7 +92,11 @@ public class ListParking extends Activity implements LocationListener {
                 Parking clicked = (Parking) myListAdapter.getItem(position);
 
                 Intent intent = new Intent(ListParking.this,ParkingDetail.class);
-                intent.putExtra("Key",clicked.getId());
+                intent.putExtra("name",clicked.getName());
+                intent.putExtra("cost",clicked.getCost());
+                intent.putExtra("dist",clicked.getDistance());
+                intent.putExtra("lat",searchClosestPoint(clicked).latitude);
+                intent.putExtra("long",searchClosestPoint(clicked).longitude);
                 startActivity(intent);
             }
         });
@@ -124,27 +128,5 @@ public class ListParking extends Activity implements LocationListener {
 
     }
 
-
-    @Override
-    public void onLocationChanged(Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        Log.w("LOCATION", latitude+"");
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 }
 
