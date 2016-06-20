@@ -1,4 +1,4 @@
-package joppi.pier.parkingfinder;
+package joppi.pier.parkingfinder.db;
 
 import java.util.ArrayList;
 
@@ -14,4 +14,3 @@ public interface ParkingDAO {
     public ArrayList<Parking> getAllParking();
     public Parking getParking(int id);
 }
-

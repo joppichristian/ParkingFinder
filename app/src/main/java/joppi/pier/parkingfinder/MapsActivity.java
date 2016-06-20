@@ -18,9 +18,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import joppi.pier.parkingfinder.db.Coordinate;
+import joppi.pier.parkingfinder.db.CoordinateDAO;
+import joppi.pier.parkingfinder.db.CoordinateDAO_DB_impl;
+import joppi.pier.parkingfinder.db.Parking;
+import joppi.pier.parkingfinder.db.ParkingDAO;
+import joppi.pier.parkingfinder.db.ParkingDAO_DB_impl;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 {
@@ -40,18 +46,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
 
-
-		try {
-			MySQLiteHelper.copyDataBase(ParkingFinderApplication.getAppContext());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		parkingDAO = new ParkingDAO_DB_impl();
 		parkingDAO.open();
 		parking = parkingDAO.getAllParking();
 		parkingDAO.close();
-
-
 
 		// Obtain the SupportMapFragment and get notified when the map is ready to be used.
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -238,5 +236,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		double dy2 = p3y - p2y;
 		return dy1 * dx2 < dy2 * dx1;
 	}
-
 }

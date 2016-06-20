@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="joppi.pier.parkingfinder.filter">
+    tools:context=".FilterActivity">
 
     <TableLayout
         android:layout_width="match_parent"
@@ -97,9 +97,9 @@
                 android:layout_height="wrap_content"
                 android:text="Free parking only?"
                 android:id="@+id/switch1"
-                android:layout_column="0"
                 android:layout_weight="2"
                 android:layout_marginTop="50dp" />
+
         </TableRow>
         <TableRow
             android:layout_width="fill_parent"
@@ -109,10 +109,19 @@
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="Start"
-                android:id="@+id/startApp"
+                android:text="Map"
+                android:id="@+id/startMap"
                 android:layout_column="0"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="List"
+                android:id="@+id/startList"
+                android:layout_column="0"
+                android:layout_weight="1"/>
+
         </TableRow>
     </TableLayout>
 

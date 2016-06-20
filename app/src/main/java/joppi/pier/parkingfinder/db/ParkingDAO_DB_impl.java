@@ -1,11 +1,12 @@
-package joppi.pier.parkingfinder;
+package joppi.pier.parkingfinder.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import joppi.pier.parkingfinder.ParkingFinderApplication;
 
 /**
  * Created by christian on 30/05/16.
@@ -106,4 +107,3 @@ public class ParkingDAO_DB_impl implements ParkingDAO {
         cursor.close(); // Remember to always close the cursor!
         return parking;    }
 }
-

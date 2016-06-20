@@ -1,33 +1,27 @@
 package joppi.pier.parkingfinder;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import joppi.pier.parkingfinder.db.Coordinate;
+import joppi.pier.parkingfinder.db.CoordinateDAO;
+import joppi.pier.parkingfinder.db.CoordinateDAO_DB_impl;
+import joppi.pier.parkingfinder.db.Parking;
+import joppi.pier.parkingfinder.db.ParkingDAO;
+import joppi.pier.parkingfinder.db.ParkingDAO_DB_impl;
 
 import static android.location.Location.*;
 
@@ -46,7 +40,6 @@ public class ListParking extends Activity  {
         setContentView(R.layout.activity_list_parking);
         latitude = 46.076200;
         longitude = 11.111455;
-
 
 
         parkingDAO = new ParkingDAO_DB_impl();
@@ -80,20 +73,18 @@ public class ListParking extends Activity  {
         });
 
         ListView list = (ListView)findViewById(R.id.list);
-        final MyAdapter myAdapter = new MyAdapter(this,parking);
-        list.setAdapter(myAdapter);
+        final MyListAdapter myListAdapter = new MyListAdapter(this,parking);
+        list.setAdapter(myListAdapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Parking clicked = (Parking)myAdapter.getItem(position);
+                Parking clicked = (Parking) myListAdapter.getItem(position);
 
                 Intent intent = new Intent(ListParking.this,ParkingDetail.class);
                 intent.putExtra("Key",clicked.getId());
                 startActivity(intent);
             }
         });
-
-
     }
 
     /**

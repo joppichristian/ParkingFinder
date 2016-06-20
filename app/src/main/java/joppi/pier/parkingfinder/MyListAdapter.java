@@ -9,16 +9,18 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import joppi.pier.parkingfinder.db.Parking;
+
 /**
  * Created by christian on 18/06/16.
  */
-public class MyAdapter extends BaseAdapter {
+public class MyListAdapter extends BaseAdapter {
 
     Context context;
     ArrayList<Parking> data;
     private static LayoutInflater inflater = null;
 
-    public MyAdapter(Context context, ArrayList<Parking> data) {
+    public MyListAdapter(Context context, ArrayList<Parking> data) {
         this.context = context;
         this.data = data;
         inflater = (LayoutInflater) context
