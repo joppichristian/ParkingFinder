@@ -13,7 +13,8 @@ import android.widget.TimePicker;
 
 import java.util.Calendar;
 
-public class filter extends AppCompatActivity {
+public class FilterActivity extends AppCompatActivity
+{
     //DateFormat fmtDateAndTime=DateFormat.getDateTimeInstance();
     TextView dateAndTimeLabel;
     Calendar dateAndTime=Calendar.getInstance();
@@ -41,13 +42,11 @@ public class filter extends AppCompatActivity {
         super.onCreate(icicle);
         setContentView(R.layout.activity_filter);
 
-
-
         Button btn=(Button)findViewById(R.id.setTime);
 
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                TimePickerDialog tpd = new TimePickerDialog(filter.this,
+                TimePickerDialog tpd = new TimePickerDialog(FilterActivity.this,
                         t,
                         dateAndTime.get(Calendar.HOUR_OF_DAY),
                         dateAndTime.get(Calendar.MINUTE),
@@ -61,15 +60,27 @@ public class filter extends AppCompatActivity {
 
         updateLabel();
 
+        Button startApp = (Button)findViewById(R.id.startMap);
+        startApp.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                //Define Intent to go to map activity ( TO DO )
 
+                Intent go = new Intent(FilterActivity.this, MapsActivity.class);
+                startActivity(go);
+                finish();
+            }
+        });
 
-        Button startApp = (Button)findViewById(R.id.startApp);
+        startApp = (Button)findViewById(R.id.startList);
         startApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Define Intent to go to map activity ( TO DO )
 
-                Intent go = new Intent(filter.this,ListParking.class);
+                Intent go = new Intent(FilterActivity.this,ListParking.class);
                 startActivity(go);
                 finish();
             }

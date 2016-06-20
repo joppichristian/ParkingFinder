@@ -1,9 +1,6 @@
 package joppi.pier.parkingfinder;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,9 +15,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import joppi.pier.parkingfinder.db.Coordinate;
+import joppi.pier.parkingfinder.db.CoordinateDAO;
+import joppi.pier.parkingfinder.db.CoordinateDAO_DB_impl;
+import joppi.pier.parkingfinder.db.Parking;
+import joppi.pier.parkingfinder.db.ParkingDAO;
+import joppi.pier.parkingfinder.db.ParkingDAO_DB_impl;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 {
@@ -28,7 +31,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 	static ArrayList<LatLng> drawPolyPts = new ArrayList<>();
 	static Polygon drawPoly = null;
-
 
 	private ParkingDAO parkingDAO;
 	private CoordinateDAO coordinateDAO;
@@ -41,17 +43,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		setContentView(R.layout.activity_maps);
 
 
-		try {
-			MySQLiteHelper.copyDataBase(ParkingFinderApplication.getAppContext());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		parkingDAO = new ParkingDAO_DB_impl();
 		parkingDAO.open();
 		parking = parkingDAO.getAllParking();
 		parkingDAO.close();
-
-
 
 		// Obtain the SupportMapFragment and get notified when the map is ready to be used.
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -78,61 +73,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		mMap.addMarker(new MarkerOptions().position(trento).title("This is Trento"));
 		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 16.0f));
 
-		if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-			// TODO: Consider calling
-			//    ActivityCompat#requestPermissions
-			// here to request the missing permissions, and then overriding
-			//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-			//                                          int[] grantResults)
-			// to handle the case where the user grants the permission. See the documentation
-			// for ActivityCompat#requestPermissions for more details.
-//			return;
-		}
-		else{
-			mMap.setMyLocationEnabled(true);
-		}
-		mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-			@Override
-			public boolean onMyLocationButtonClick() {
-				return false;
-			}
-		});
-
-
 		coordinateDAO = new CoordinateDAO_DB_impl();
 		coordinateDAO.open();
 
-
-		Polygon parkingLot = null;
 		ArrayList<Coordinate> coordinates;
 		ArrayList<LatLng> polygonCoordinates = new ArrayList<LatLng>();
 
-		for(final Parking p : parking){
+		for(final Parking p : parking)
+		{
 			coordinates = coordinateDAO.getCoordinateOfParking(p.getId());
 			polygonCoordinates.clear();
-			for(Coordinate c: coordinates){
+			for(Coordinate c: coordinates)
+			{
 				Log.w("COORD",c.getLatitude() + ":"+c.getLongitude());
 				polygonCoordinates.add(new LatLng(c.getLatitude(), c.getLongitude()));
 			}
+
 			Log.w("NUMERO:", polygonCoordinates.size() + "");
-			if(polygonCoordinates.size() > 2) {
-				parkingLot = mMap.addPolygon(new PolygonOptions()
+			if(polygonCoordinates.size() > 2)
+			{
+				mMap.addPolygon(new PolygonOptions()
 						.addAll(polygonCoordinates)
 						.strokeColor(0x660000ff)
 						.fillColor(0x220000ff)
 						.clickable(true));
-
-
-				mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-					@Override
-					public void onPolygonClick(Polygon polygon) {
-						LatLng pt = PolygonCenter(polygon.getPoints());
-						Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title(p.getName()).flat(false));
-						mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
-
-						mrk.showInfoWindow();
-					}
-				});
 			}
 			else if(polygonCoordinates.size() == 1)
 			{
@@ -140,7 +104,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			}
 		}
 
+		mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+			@Override
+			public void onPolygonClick(Polygon polygon){
+				LatLng pt = PolygonCenter(polygon.getPoints());
 
+				// TODO: Get parking name from list by polygon ID
+				Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title("Parking " + polygon.getId()));
+				mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
+
+				mrk.showInfoWindow();
+			}
+		});
 
 		// TEST FOR ADDING PARKINGS DYNAMICALLY
 		mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
@@ -158,7 +133,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 								.clickable(true));
 					} else{
 						drawPoly.setPoints(drawPolyPts);
-						if(isPolyComplex(drawPolyPts)) Toast.makeText(MapsActivity.this, "Invalid selection", Toast.LENGTH_LONG).show();
+						if(isPolyComplex(drawPolyPts))
+							Toast.makeText(MapsActivity.this, "Invalid selection", Toast.LENGTH_LONG).show();
 					}
 				}
 			}
@@ -238,5 +214,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		double dy2 = p3y - p2y;
 		return dy1 * dx2 < dy2 * dx1;
 	}
-
 }

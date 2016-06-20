@@ -1,4 +1,4 @@
-package joppi.pier.parkingfinder;
+package joppi.pier.parkingfinder.db;
 
 /**
  * Created by christian on 29/05/16.
@@ -15,7 +15,6 @@ public class Coordinate {
         this.longitude = longitude;
         this.latitude = latitude;
     }
-
 
     public int getId_parking() {
         return id_parking;

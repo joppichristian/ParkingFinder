@@ -1,10 +1,12 @@
-package joppi.pier.parkingfinder;
+package joppi.pier.parkingfinder.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
+
+import joppi.pier.parkingfinder.ParkingFinderApplication;
 
 /**
  * Created by christian on 30/05/16.
@@ -81,6 +83,4 @@ public class CoordinateDAO_DB_impl implements CoordinateDAO {
         double longitude = cursor.getDouble(2);
         return  new Coordinate(id_parking,latitude,longitude);
     }
-
 }
-
