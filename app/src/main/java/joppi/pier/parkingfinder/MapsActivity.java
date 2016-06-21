@@ -152,6 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 		}
 		mMap.setMyLocationEnabled(true);
+		mMap.getUiSettings().setZoomControlsEnabled(true);
 	}
 
 	public LatLng PolygonCenter(List<LatLng> points)
