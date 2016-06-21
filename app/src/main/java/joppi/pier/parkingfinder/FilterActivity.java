@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
 
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ViewListener;
@@ -55,10 +56,36 @@ public class FilterActivity extends AppCompatActivity
 
         @Override
         public View setViewForPosition(int position) {
-            View customView = getLayoutInflater().inflate(R.layout.activity_parking_detail, null);
+            View customView = null;
+            switch (position){
+                case 0 : customView = getLayoutInflater().inflate(R.layout.carousel_layout_vehicle, null);break;
+                case 1 : customView = getLayoutInflater().inflate(R.layout.carousel_layout_time, null);break;
+                default:customView = getLayoutInflater().inflate(R.layout.carousel_layout_cost, null);break;
+            }
+
             //set view attributes here
 
             return customView;
         }
     };
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_car:
+                if (checked)
+                    break;
+            case R.id.radio_caravan:
+                if (checked)
+                    break;
+
+            case R.id.radio_motor:
+                if (checked)
+                    break;
+        }
+    }
+
 }
