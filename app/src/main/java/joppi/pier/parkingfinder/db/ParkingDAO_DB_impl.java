@@ -71,12 +71,12 @@ public class ParkingDAO_DB_impl implements ParkingDAO {
     private Parking valuesToParking(Cursor cursor){
         int id = cursor.getInt(0);
         String name = cursor.getString(1);
-        double cost = cursor.getDouble(7);
-        int disco = cursor.getInt(2);
-        boolean car = cursor.getInt(3)>0;
+        double cost = cursor.getDouble(2);
+        int disco = cursor.getInt(3);
+        boolean car = cursor.getInt(4)>0;
         boolean moto = cursor.getInt(5)>0;
-        boolean caravan = cursor.getInt(4)>0;
-        boolean indoor = cursor.getInt(6)>0;
+        boolean caravan = cursor.getInt(6)>0;
+        boolean indoor = cursor.getInt(7)>0;
         return  new Parking(id,name,cost,disco,car,moto,caravan,indoor);
     }
     @Override

@@ -52,6 +52,10 @@ public class ListParking extends Activity {
         parking = parkingDAO.getAllParking();
         parkingDAO.close();
 
+        MyLocationProvider myLocProvider = new MyLocationProvider(this, getApplicationContext());
+        LatLng myLoc = myLocProvider.getLatLng();
+        latitude = myLoc.latitude;
+        longitude = myLoc.longitude;
         final float res [] = new float[1];
         LatLng tmp = null;
         for(Parking p : parking){
