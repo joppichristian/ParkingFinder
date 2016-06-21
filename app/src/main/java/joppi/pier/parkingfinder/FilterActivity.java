@@ -6,19 +6,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.ViewListener;
+
 public class FilterActivity extends AppCompatActivity
 {
-    //DateFormat fmtDateAndTime=DateFormat.getDateTimeInstance();
+    CarouselView customCarouselView;
+    int NUMBER_OF_PAGES = 3;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_filter);
 
-        //dateAndTimeLabel=(TextView)findViewById(R.id.dateAndTime);
-
-        //updateLabel();
-
+        customCarouselView = (CarouselView) findViewById(R.id.carouselView);
+        customCarouselView.setPageCount(NUMBER_OF_PAGES);
+        // set ViewListener for custom view 
+        customCarouselView.setViewListener(viewListener);
+		
         Button startApp = (Button)findViewById(R.id.startMap);
         startApp.setOnClickListener(new View.OnClickListener()
         {
@@ -45,8 +50,15 @@ public class FilterActivity extends AppCompatActivity
             }
         });
     }
+	
+	ViewListener viewListener = new ViewListener() {
 
-    private void updateLabel() {
-        //dateAndTimeLabel.setText(fmtDateAndTime.format(dateAndTime.getTime()));
-    }
+        @Override
+        public View setViewForPosition(int position) {
+            View customView = getLayoutInflater().inflate(R.layout.activity_parking_detail, null);
+            //set view attributes here
+
+            return customView;
+        }
+    };
 }

@@ -3,6 +3,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 tools:context=".FilterActivity"
     >
 
@@ -14,50 +15,82 @@
         android:scaleType = "centerCrop"/>
 
     <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentTop="false"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="394dp"
         android:layout_alignParentBottom="true">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView2"
+                android:src="@drawable/logo_complete"
+                android:scaleType = "fitCenter"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                />
+        </TableRow>
 
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1">
 
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:text="Map"
-                android:id="@+id/startMap"
-                android:layout_column="0"
-                android:layout_weight="1"
-                android:background="@color/buttonColor"/>
+            <com.synnapps.carouselview.CarouselView
+				android:id="@+id/carouselView"
+				android:layout_width="match_parent"
+				android:layout_height="fill_parent"
+				app:fillColor="#FFFFFFFF"
+				app:pageColor="#00000000"
+				app:radius="8dp"
+				app:slideInterval="0"
+				app:strokeColor="#FF777777"
+				app:strokeWidth="1dp"/>
+        </TableRow>
 
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:text="List"
-                android:id="@+id/startList"
-                android:layout_column="0"
-                android:layout_weight="1"
-                android:background="@color/buttonColor"/>
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="Map"
+                    android:id="@+id/startMap"
+                    android:layout_column="0"
+                    android:layout_weight="1"
+                    android:background="@color/buttonColor"
+                    />
+
+                <Button
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="List"
+                    android:id="@+id/startList"
+                    android:layout_column="0"
+                    android:layout_weight="1"
+                    android:background="@color/buttonColor"
+                    />
+            </LinearLayout>
 
         </TableRow>
-    </TableLayout>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView2"
-        android:src="@drawable/logo_complete"
-        android:scaleType = "fitCenter"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+    </TableLayout>
 
 </RelativeLayout>

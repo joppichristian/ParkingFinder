@@ -46,7 +46,7 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".ListParking" />
-        <activity android:name=".ParkingDetail"></activity>
+        <activity android:name=".ParkingDetail" android:theme="@style/Theme.AppCompat"></activity>
     </application>
 
 </manifest>
