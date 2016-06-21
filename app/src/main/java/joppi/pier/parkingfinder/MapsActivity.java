@@ -1,6 +1,9 @@
 package joppi.pier.parkingfinder;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -79,34 +82,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		ArrayList<Coordinate> coordinates;
 		ArrayList<LatLng> polygonCoordinates = new ArrayList<LatLng>();
 
-		for(final Parking p : parking)
-		{
+		for(final Parking p : parking){
 			coordinates = coordinateDAO.getCoordinateOfParking(p.getId());
 			polygonCoordinates.clear();
-			for(Coordinate c: coordinates)
-			{
-				Log.w("COORD",c.getLatitude() + ":"+c.getLongitude());
+			for(Coordinate c : coordinates){
+				Log.w("COORD", c.getLatitude() + ":" + c.getLongitude());
 				polygonCoordinates.add(new LatLng(c.getLatitude(), c.getLongitude()));
 			}
 
 			Log.w("NUMERO:", polygonCoordinates.size() + "");
-			if(polygonCoordinates.size() > 2)
-			{
+			if(polygonCoordinates.size() > 2){
 				mMap.addPolygon(new PolygonOptions()
 						.addAll(polygonCoordinates)
 						.strokeColor(0x660000ff)
 						.fillColor(0x220000ff)
 						.clickable(true));
-			}
-			else if(polygonCoordinates.size() == 1)
-			{
+			} else if(polygonCoordinates.size() == 1){
 				mMap.addMarker(new MarkerOptions().position(polygonCoordinates.get(0)).title(p.getName()));
 			}
 		}
 
-		mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+		mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener()
+		{
 			@Override
-			public void onPolygonClick(Polygon polygon){
+			public void onPolygonClick(Polygon polygon)
+			{
 				LatLng pt = PolygonCenter(polygon.getPoints());
 
 				// TODO: Get parking name from list by polygon ID
@@ -139,6 +139,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 				}
 			}
 		});
+
+		MyLocationProvider myLocProvider = new MyLocationProvider(this, getApplicationContext());
+		LatLng myLoc = myLocProvider.getLatLng();
+		if(myLoc != null){
+			mMap.addMarker(new MarkerOptions().position(myLoc).title("My Location"));
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 16.0f));
+		}
+
+		if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+			ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+			ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+		}
+		mMap.setMyLocationEnabled(true);
 	}
 
 	public LatLng PolygonCenter(List<LatLng> points)

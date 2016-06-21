@@ -1,15 +1,8 @@
 package joppi.pier.parkingfinder;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,8 +13,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 import joppi.pier.parkingfinder.db.Coordinate;
 import joppi.pier.parkingfinder.db.CoordinateDAO;
@@ -30,7 +21,7 @@ import joppi.pier.parkingfinder.db.Parking;
 import joppi.pier.parkingfinder.db.ParkingDAO;
 import joppi.pier.parkingfinder.db.ParkingDAO_DB_impl;
 
-import static android.location.Location.*;
+import static android.location.Location.distanceBetween;
 
 public class ListParking extends Activity {
 
@@ -44,6 +35,7 @@ public class ListParking extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_parking);
+
         latitude = 46.076200;
         longitude = 11.111455;
 
