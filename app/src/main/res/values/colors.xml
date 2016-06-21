@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#818181</color>
-    <color name="colorPrimaryDark">#616161</color>
-    <color name="colorAccent">#F79B3F</color>
+    <color name="colorPrimary">#2979ff</color>
+    <color name="colorPrimaryDark">#0d47a1</color>
+    <color name="colorAccent">#2962ff</color>
+    <color name="buttonColor">#0d47a1</color>
     <color name="rectangleColor_red">#FF0000</color>
     <color name="rectangleColor_blue">#0000FF</color>
     <color name="rectangleColor_green">#00FF00</color>
