@@ -1,11 +1,15 @@
 package joppi.pier.parkingfinder;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,6 +23,8 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import joppi.pier.parkingfinder.db.Coordinate;
@@ -27,6 +33,8 @@ import joppi.pier.parkingfinder.db.CoordinateDAO_DB_impl;
 import joppi.pier.parkingfinder.db.Parking;
 import joppi.pier.parkingfinder.db.ParkingDAO;
 import joppi.pier.parkingfinder.db.ParkingDAO_DB_impl;
+
+import static android.location.Location.distanceBetween;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 {
@@ -38,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	private ParkingDAO parkingDAO;
 	private CoordinateDAO coordinateDAO;
 	private ArrayList<Parking> parking;
+	LatLng trento = new LatLng(46.076200, 11.111455);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -72,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		mMap = googleMap;
 
 		// Add a marker and move the camera
-		LatLng trento = new LatLng(46.076200, 11.111455);
+
 		mMap.addMarker(new MarkerOptions().position(trento).title("This is Trento"));
 		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 16.0f));
 
@@ -153,6 +162,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		}
 		mMap.setMyLocationEnabled(true);
 		mMap.getUiSettings().setZoomControlsEnabled(true);
+
+		LatLng tmp = null;
+		final float res [] = new float[1];
+
+		for(Parking p : parking){
+			tmp = searchClosestPoint(p);
+			if(tmp!=null)
+			{
+				distanceBetween(tmp.latitude,tmp.longitude,trento.latitude,trento.longitude,res);
+				p.setDistance(res[0]);
+				Log.w("DIST: ", p.getName() + "-"+ res[0] + "");
+
+			}
+			else{
+				p.setDistance(Float.MAX_VALUE);
+			}
+		}
+
+		Collections.sort(parking, new Comparator<Parking>() {
+			@Override
+			public int compare(Parking lhs, Parking rhs) {
+				return lhs.getDistance() >= rhs.getDistance() ? 1 : -1 ;
+			}
+		});
+
+		ListView list = (ListView)findViewById(R.id.list);
+		final MyListAdapter myListAdapter = new MyListAdapter(this,parking);
+		list.setAdapter(myListAdapter);
+		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Parking clicked = (Parking) myListAdapter.getItem(position);
+
+				Intent intent = new Intent(MapsActivity.this,ParkingDetail.class);
+				intent.putExtra("name",clicked.getName());
+				intent.putExtra("cost",clicked.getCost());
+				intent.putExtra("dist",clicked.getDistance());
+				intent.putExtra("lat",searchClosestPoint(clicked).latitude);
+				intent.putExtra("long",searchClosestPoint(clicked).longitude);
+				startActivity(intent);
+			}
+		});
 	}
 
 	public LatLng PolygonCenter(List<LatLng> points)
@@ -227,5 +278,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		double dx2 = p3x - p2x;
 		double dy2 = p3y - p2y;
 		return dy1 * dx2 < dy2 * dx1;
+	}
+
+	/**
+	 * Ricerca il punto del parcheggio più vicino a te
+	 * @param p
+	 * @return Coordinate del punto
+	 */
+	private LatLng searchClosestPoint (Parking p){
+		coordinateDAO = new CoordinateDAO_DB_impl();
+		coordinateDAO.open();
+		ArrayList<Coordinate> coordinates = coordinateDAO.getCoordinateOfParking(p.getId());
+		coordinateDAO.close();
+		float distance [] = new float[1];
+
+
+		LatLng tmp = null;
+		double tmp_dist= Double.MAX_VALUE;
+		for(Coordinate c: coordinates){
+			distanceBetween(c.getLatitude(), c.getLongitude(),trento.latitude , trento.longitude, distance);
+			if(tmp_dist > distance[0]){
+				tmp_dist = distance[0];
+				tmp = new LatLng(c.getLatitude(),c.getLongitude());
+			}
+		}
+		return tmp;
+
 	}
 }

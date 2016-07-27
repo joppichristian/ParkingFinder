@@ -27,4 +27,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.android.support:support-v13:23.1.1'
     compile 'com.synnapps:carouselview:0.0.9'
+    compile 'com.sothree.slidinguppanel:library:3.3.0'
 }
