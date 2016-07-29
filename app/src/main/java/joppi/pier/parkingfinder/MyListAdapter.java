@@ -49,19 +49,8 @@ public class MyListAdapter extends BaseAdapter {
         Log.w("DB: ",position+" "+data.get(position).getDistance());
         if (vi == null)
         {
-            if(data.get(position).getDistance() > 1500 && data.get(position).getDistance() <= 2000) {
-                vi = inflater.inflate(R.layout.row_green, null);
-                Log.w("TYPE_COLOR_GREEN",data.get(position).getDistance()+" " +data.get(position).getId());
-
-            }
-            else if(data.get(position).getDistance() > 2000 ) {
-                vi = inflater.inflate(R.layout.row_red, null);
-                Log.w("TYPE_COLOR_RED",data.get(position).getDistance()+" " +data.get(position).getId());
-            }
-            else if(data.get(position).getDistance() < 1500) {
-                Log.w("TYPE_COLOR_BLUE",data.get(position).getDistance()+" " +data.get(position).getId());
-                vi = inflater.inflate(R.layout.row_blue, null);
-            }
+            Log.w("TYPE_COLOR_BLUE",data.get(position).getDistance()+" " +data.get(position).getId());
+            vi = inflater.inflate(R.layout.row_blue, null);
         }
 
         Log.w("DB2: ",position+" "+data.get(position).getDistance());
@@ -76,6 +65,4 @@ public class MyListAdapter extends BaseAdapter {
 
         return vi;
     }
-
-
 }
