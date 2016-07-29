@@ -18,5 +18,4 @@
         android:layout_gravity="center_horizontal"
         android:paddingTop="20dp"/>
 
-
 </LinearLayout>
