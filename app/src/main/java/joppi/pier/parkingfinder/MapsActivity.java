@@ -25,7 +25,9 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import joppi.pier.parkingfinder.db.Coordinate;
 import joppi.pier.parkingfinder.db.CoordinateDAO;
@@ -42,7 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 	static ArrayList<LatLng> drawPolyPts = new ArrayList<>();
 	static Polygon drawPoly = null;
-
+    private Map<PolygonOptions,Integer> POLYGON_CACHE = new HashMap<>();
 	private ParkingDAO parkingDAO;
 	private CoordinateDAO coordinateDAO;
 	private ArrayList<Parking> parking;
@@ -58,7 +60,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		parkingDAO = new ParkingDAO_DB_impl();
 		parkingDAO.open();
 		parking = parkingDAO.getAllParking();
-		parkingDAO.close();
 
 		// Obtain the SupportMapFragment and get notified when the map is ready to be used.
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -91,6 +92,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		ArrayList<Coordinate> coordinates;
 		ArrayList<LatLng> polygonCoordinates = new ArrayList<LatLng>();
 
+        Collections.sort(parking, new Comparator<Parking>() {
+            @Override
+            public int compare(Parking lhs, Parking rhs) {
+                return lhs.getDistance() >= rhs.getDistance() ? 1 : -1 ;
+            }
+        });
 		for(final Parking p : parking){
 			coordinates = coordinateDAO.getCoordinateOfParking(p.getId());
 			polygonCoordinates.clear();
@@ -101,30 +108,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 			Log.w("NUMERO:", polygonCoordinates.size() + "");
 			if(polygonCoordinates.size() > 2){
-				mMap.addPolygon(new PolygonOptions()
-						.addAll(polygonCoordinates)
-						.strokeColor(0x660000ff)
-						.fillColor(0x220000ff)
-						.clickable(true));
+                PolygonOptions pol = new PolygonOptions()
+                        .addAll(polygonCoordinates)
+                        .strokeColor(0x660000ff)
+                        .fillColor(0x220000ff)
+                        .clickable(true);
+				mMap.addPolygon(pol);
 			} else if(polygonCoordinates.size() == 1){
 				mMap.addMarker(new MarkerOptions().position(polygonCoordinates.get(0)).title(p.getName()));
 			}
 		}
 
-		mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener()
-		{
-			@Override
-			public void onPolygonClick(Polygon polygon)
-			{
-				LatLng pt = PolygonCenter(polygon.getPoints());
 
-				// TODO: Get parking name from list by polygon ID
-				Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title("Parking " + polygon.getId()));
-				mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
-
-				mrk.showInfoWindow();
-			}
-		});
 
 		// TEST FOR ADDING PARKINGS DYNAMICALLY
 		mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
@@ -180,12 +175,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			}
 		}
 
-		Collections.sort(parking, new Comparator<Parking>() {
-			@Override
-			public int compare(Parking lhs, Parking rhs) {
-				return lhs.getDistance() >= rhs.getDistance() ? 1 : -1 ;
-			}
-		});
+
+
+        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener()
+        {
+            @Override
+            public void onPolygonClick(Polygon polygon)
+            {
+                LatLng pt = PolygonCenter(polygon.getPoints());
+
+                // TODO: Get parking name from list by polygon ID
+                Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title("Parking " + polygon.getId()));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
+
+                mrk.showInfoWindow();
+                String tmp = polygon.getId().substring(2,polygon.getId().length());
+                int index = Integer.parseInt(tmp);
+                Log.w("ID",""+index +"-"+parking.get(index).getName() );
+                ((ListView)findViewById(R.id.list)).setSelection(index);
+
+            }
+        });
 
 		ListView list = (ListView)findViewById(R.id.list);
 		final MyListAdapter myListAdapter = new MyListAdapter(this,parking);

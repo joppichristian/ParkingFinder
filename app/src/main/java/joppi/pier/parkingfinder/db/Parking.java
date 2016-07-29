@@ -89,4 +89,5 @@ public class Parking {
     public void setDistance(float distance) {
         this.distance = distance;
     }
+
 }

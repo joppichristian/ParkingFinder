@@ -46,14 +46,11 @@ public class MyListAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View vi = convertView;
-        Log.w("DB: ",position+" "+data.get(position).getDistance());
         if (vi == null)
         {
-            Log.w("TYPE_COLOR_BLUE",data.get(position).getDistance()+" " +data.get(position).getId());
             vi = inflater.inflate(R.layout.row_blue, null);
         }
 
-        Log.w("DB2: ",position+" "+data.get(position).getDistance());
         TextView text_name = (TextView) vi.findViewById(R.id.park_name);
         text_name.setText(data.get(position).toString());
         TextView text_details = (TextView) vi.findViewById(R.id.park_distance);
