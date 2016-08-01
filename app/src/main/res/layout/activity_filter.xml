@@ -56,7 +56,7 @@
                 app:slideInterval="0"
                 app:strokeColor="#FF777777"
                 app:strokeWidth="1dp"
-                android:layout_marginTop="65dp"/>
+                android:layout_marginTop="40dp"/>
         </TableRow>
 
         <TableRow

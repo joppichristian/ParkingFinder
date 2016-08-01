@@ -34,13 +34,38 @@
             android:textColor="#ffffff"/>
     </LinearLayout>
 
-    <TimePicker
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/timePicker"
-        android:timePickerMode="spinner"
-        android:foregroundGravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:background="#50000000"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal">
+
+        <TimePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/timePicker"
+            android:timePickerMode="spinner"
+            android:layout_marginTop="20dp"
+            android:background="#50000000"
+            android:layout_gravity="center_horizontal"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Conferma"
+            android:id="@+id/timePickerDoneBtn"
+            android:layout_gravity="center_horizontal"
+            android:background="#50000000"
+            android:textSize="18dp"
+            android:textAlignment="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:onClick="onTimePickDoneClick"/>
+    </LinearLayout>
 
 </LinearLayout>

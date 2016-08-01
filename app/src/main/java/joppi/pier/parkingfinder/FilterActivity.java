@@ -3,6 +3,7 @@ package joppi.pier.parkingfinder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,15 @@ public class FilterActivity extends AppCompatActivity
 {
 	CarouselView customCarouselView;
 	int NUMBER_OF_PAGES = 3;
+
+	class ShiftViewHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			int viewNum = (int) msg.obj;
+			customCarouselView.setCurrentItem(viewNum);
+		}
+	}
+	Handler shiftViewHandler = new ShiftViewHandler();
 
 	@Override
 	public void onCreate(Bundle icicle)
@@ -42,6 +52,13 @@ public class FilterActivity extends AppCompatActivity
 		});
 	}
 
+	public void onTimePickDoneClick (View v)
+	{
+		Message viewNum = new Message();
+		viewNum.obj = 2;
+		shiftViewHandler.sendMessageDelayed(viewNum, 200);
+	}
+
 	ViewListener viewListener = new ViewListener()
 	{
 		@Override
@@ -62,14 +79,6 @@ public class FilterActivity extends AppCompatActivity
 
 			//set view attributes here
 			return customView;
-		}
-	};
-
-	Runnable shiftNextPage = new Runnable()
-	{
-		public void run()
-		{	// Get current item not available???
-			customCarouselView.setCurrentItem(1);
 		}
 	};
 
@@ -94,10 +103,10 @@ public class FilterActivity extends AppCompatActivity
 		}
 
 		// If checked shift to next page (delayed)
-		if(checked)
-		{
-			Handler handler = new Handler();
-			handler.postDelayed(shiftNextPage, 200);
+		if(checked){
+			Message viewNum = new Message();
+			viewNum.obj = 1;
+			shiftViewHandler.sendMessageDelayed(viewNum, 200);
 		}
 	}
 }
