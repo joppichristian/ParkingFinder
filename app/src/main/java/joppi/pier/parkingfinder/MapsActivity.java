@@ -1,9 +1,12 @@
 package joppi.pier.parkingfinder;
 
 import android.Manifest;
+import android.app.LauncherActivity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.HandlerThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SlidingPaneLayout;
@@ -11,6 +14,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -23,6 +27,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +36,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 import joppi.pier.parkingfinder.db.Coordinate;
 import joppi.pier.parkingfinder.db.CoordinateDAO;
@@ -46,12 +53,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 	static ArrayList<LatLng> drawPolyPts = new ArrayList<>();
 	static Polygon drawPoly = null;
-    private Map<PolygonOptions,Integer> POLYGON_CACHE = new HashMap<>();
+    private Map<String,Integer> POLYGON_CACHE = new HashMap<>();
 	private ParkingDAO parkingDAO;
 	private CoordinateDAO coordinateDAO;
 	private ArrayList<Parking> parking;
 	LatLng trento = new LatLng(46.076200, 11.111455);
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -67,7 +73,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
+        ((ListView)findViewById(R.id.list)).setEnabled(false);
+        SlidingUpPanelLayout slidingLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
 
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED)
+                    ((ListView)findViewById(R.id.list)).setEnabled(false);
+                if(newState == SlidingUpPanelLayout.PanelState.EXPANDED)
+                    ((ListView)findViewById(R.id.list)).setEnabled(true);
+                if(newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
+					sortList(parking);
+                    ListView list = (ListView)findViewById(R.id.list);
+                    ((MyListAdapter)list.getAdapter()).notifyDataSetChanged();
+				}
+            }
+        });
 	}
 
 
@@ -95,12 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		ArrayList<Coordinate> coordinates;
 		ArrayList<LatLng> polygonCoordinates = new ArrayList<LatLng>();
 
-        Collections.sort(parking, new Comparator<Parking>() {
-            @Override
-            public int compare(Parking lhs, Parking rhs) {
-                return lhs.getDistance() >= rhs.getDistance() ? 1 : -1 ;
-            }
-        });
+        int cont = 0;
 		for(final Parking p : parking){
 			coordinates = coordinateDAO.getCoordinateOfParking(p.getId());
 			polygonCoordinates.clear();
@@ -117,9 +138,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .fillColor(0x220000ff)
                         .clickable(true);
 				mMap.addPolygon(pol);
+                POLYGON_CACHE.put("pg"+cont,p.getId());
 			} else if(polygonCoordinates.size() == 1){
 				mMap.addMarker(new MarkerOptions().position(polygonCoordinates.get(0)).title(p.getName()));
 			}
+            cont++;
 		}
 
 
@@ -162,19 +185,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		mMap.getUiSettings().setZoomControlsEnabled(true);
 
 		LatLng tmp = null;
-		final float res [] = new float[1];
-
+        Integer result = 0;
 		for(Parking p : parking){
 			tmp = searchClosestPoint(p);
 			if(tmp!=null)
 			{
-				distanceBetween(tmp.latitude,tmp.longitude,trento.latitude,trento.longitude,res);
-				p.setDistance(res[0]);
-				Log.w("DIST: ", p.getName() + "-"+ res[0] + "");
+                try {
+                    result = new RetrieveDistance().execute(trento,tmp).get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                p.setDistance(result);
+				Log.w("DIST: ", p.getName() + "-"+ result + "");
 
 			}
 			else{
-				p.setDistance(Float.MAX_VALUE);
+				p.setDistance(Integer.MAX_VALUE);
 			}
 		}
 
@@ -185,21 +211,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onPolygonClick(Polygon polygon)
             {
+
                 LatLng pt = PolygonCenter(polygon.getPoints());
 
-                // TODO: Get parking name from list by polygon ID
-                Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title("Parking " + polygon.getId()));
+				String tmp = polygon.getId();
+				int id = POLYGON_CACHE.get(tmp);
+                ListView list = ((ListView)findViewById(R.id.list));
+                Parking p = parking.get(0);
+                Parking p1 = null;
+                for(Parking p_tmp: parking ){
+                    if(p_tmp.getId() == id)
+                        p1=p_tmp;
+                }
+                int index=0;
+                parking.set(0,p1);
+                int cont=0;
+                for(Parking p_tmp: parking ){
+                    if(p_tmp.getId() == id)
+                        index = cont;
+                    cont++;
+                }
+                parking.set(index,p);
+                Log.w("CHANGE POS:",p.getName()+": 0"+ p1.getName() + ": "+index);
+                ((MyListAdapter)list.getAdapter()).notifyDataSetChanged();
+                list.setSelection(0);
+                //Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title(index + " " +parking.get(0).getName()));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
-
-                mrk.showInfoWindow();
-                String tmp = polygon.getId().substring(2,polygon.getId().length());
-                int index = Integer.parseInt(tmp);
-                Log.w("ID",""+index +"-"+parking.get(index).getName() );
-                ((ListView)findViewById(R.id.list)).setSelection(index);
+                //mrk.showInfoWindow();
 
             }
         });
-
+        sortList(parking);
 		ListView list = (ListView)findViewById(R.id.list);
 		final MyListAdapter myListAdapter = new MyListAdapter(this,parking);
 		list.setAdapter(myListAdapter);
@@ -217,7 +259,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 				startActivity(intent);
 			}
 		});
-        list.setEnabled(false);
+        //list.setEnabled(false);
 	}
 
 	public LatLng PolygonCenter(List<LatLng> points)
@@ -319,4 +361,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		return tmp;
 
 	}
+    private void sortList(ArrayList<Parking> al){
+        Collections.sort(parking, new Comparator<Parking>() {
+            @Override
+            public int compare(Parking lhs, Parking rhs) {
+                return lhs.getDistance() >= rhs.getDistance() ? 1 : -1 ;
+            }
+        });
+    }
+
+
+
+
 }

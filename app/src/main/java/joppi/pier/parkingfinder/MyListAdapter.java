@@ -45,6 +45,7 @@ public class MyListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+
         View vi = convertView;
         if (vi == null)
         {
@@ -57,8 +58,6 @@ public class MyListAdapter extends BaseAdapter {
         text_details.setText("" + Math.round(data.get(position).getDistance()) + " metri");
         TextView text_price = (TextView) vi.findViewById(R.id.park_price);
         text_price.setText("" + data.get(position).getCost() + " €");
-        TextView text_capacity = (TextView) vi.findViewById(R.id.park_capacity);
-        text_capacity.setText("?");
 
         return vi;
     }

@@ -18,7 +18,7 @@ public class Parking {
     private boolean caravan;
     private boolean indoor;
 
-    private float distance;
+    private double distance;
 
     public Parking(String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
         this.id = -1;
@@ -82,11 +82,11 @@ public class Parking {
         return name;
     }
 
-    public float getDistance() {
+    public double getDistance() {
         return distance;
     }
 
-    public void setDistance(float distance) {
+    public void setDistance(double distance) {
         this.distance = distance;
     }
 
