@@ -13,6 +13,7 @@ import android.support.v4.widget.SlidingPaneLayout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -57,7 +58,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	private ParkingDAO parkingDAO;
 	private CoordinateDAO coordinateDAO;
 	private ArrayList<Parking> parking;
+    ListView list;
 	LatLng trento = new LatLng(46.076200, 11.111455);
+    private double cost_weight = 0.5;
+    private double distance_weight = 0.5;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -73,7 +77,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
-        ((ListView)findViewById(R.id.list)).setEnabled(false);
+        list = (ListView)findViewById(R.id.list);
+		//lock_unlock_scroll(true);
+        list.setEnabled(false);
         SlidingUpPanelLayout slidingLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
         slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -83,17 +89,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED)
-                    ((ListView)findViewById(R.id.list)).setEnabled(false);
-                if(newState == SlidingUpPanelLayout.PanelState.EXPANDED)
-                    ((ListView)findViewById(R.id.list)).setEnabled(true);
+                if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    list.setEnabled(false);
+                }
+                if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    list.setEnabled(true);
+                }
                 if(newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
-					sortList(parking);
+					sortList(parking,cost_weight,distance_weight);
                     ListView list = (ListView)findViewById(R.id.list);
                     ((MyListAdapter)list.getAdapter()).notifyDataSetChanged();
 				}
             }
         });
+
+        Intent myIntent = getIntent();
+        //cost_weight = myIntent.getExtras().getDouble("cost_weight");
+        //distance_weight = myIntent.getExtras().getDouble("distance_weight");
 	}
 
 
@@ -216,7 +228,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 				String tmp = polygon.getId();
 				int id = POLYGON_CACHE.get(tmp);
-                ListView list = ((ListView)findViewById(R.id.list));
                 Parking p = parking.get(0);
                 Parking p1 = null;
                 for(Parking p_tmp: parking ){
@@ -241,8 +252,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
-        sortList(parking);
-		ListView list = (ListView)findViewById(R.id.list);
+        sortList(parking,cost_weight,distance_weight);
 		final MyListAdapter myListAdapter = new MyListAdapter(this,parking);
 		list.setAdapter(myListAdapter);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -361,15 +371,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		return tmp;
 
 	}
-    private void sortList(ArrayList<Parking> al){
+    private void sortList(ArrayList<Parking> al, final double cost_weight, final double distance_weight){
         Collections.sort(parking, new Comparator<Parking>() {
             @Override
             public int compare(Parking lhs, Parking rhs) {
-                return lhs.getDistance() >= rhs.getDistance() ? 1 : -1 ;
+                return lhs.getDistance()*distance_weight+lhs.getCost()*cost_weight >= rhs.getDistance()*distance_weight+rhs.getCost()*cost_weight ? 1 : -1 ;
             }
         });
     }
 
+
+	private void lock_unlock_scroll(final boolean interrupt){
+		list.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if(event.getAction()==MotionEvent.ACTION_MOVE)
+					return interrupt;
+				return true;
+
+			}
+		});
+	}
 
 
 
