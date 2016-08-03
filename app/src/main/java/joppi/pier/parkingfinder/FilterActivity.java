@@ -39,17 +39,7 @@ public class FilterActivity extends AppCompatActivity
             }
         });
 
-        startApp = (Button)findViewById(R.id.startList);
-        startApp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Define Intent to go to map activity ( TO DO )
 
-                Intent go = new Intent(FilterActivity.this,ListParking.class);
-                startActivity(go);
-                finish();
-            }
-        });
     }
 	
 	ViewListener viewListener = new ViewListener() {

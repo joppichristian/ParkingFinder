@@ -17,6 +17,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -62,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	LatLng trento = new LatLng(46.076200, 11.111455);
     private double cost_weight = 0.5;
     private double distance_weight = 0.5;
+    private Parking clicked;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -243,6 +245,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     cont++;
                 }
                 parking.set(index,p);
+                clicked = parking.get(0);
                 Log.w("CHANGE POS:",p.getName()+": 0"+ p1.getName() + ": "+index);
                 ((MyListAdapter)list.getAdapter()).notifyDataSetChanged();
                 list.setSelection(0);
@@ -259,7 +262,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Parking clicked = (Parking) myListAdapter.getItem(position);
-
 				Intent intent = new Intent(MapsActivity.this,ParkingDetail.class);
 				intent.putExtra("name",clicked.getName());
 				intent.putExtra("cost",clicked.getCost());
@@ -269,9 +271,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 				startActivity(intent);
 			}
 		});
-        //list.setEnabled(false);
+        clicked = parking.get(0);
+        ((RelativeLayout)findViewById(R.id.view_list)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this,ParkingDetail.class);
+                intent.putExtra("name",clicked.getName());
+                intent.putExtra("cost",clicked.getCost());
+                intent.putExtra("dist",clicked.getDistance());
+                intent.putExtra("lat",searchClosestPoint(clicked).latitude);
+                intent.putExtra("long",searchClosestPoint(clicked).longitude);
+                startActivity(intent);
+            }
+        });
 	}
-
 	public LatLng PolygonCenter(List<LatLng> points)
 	{
 		double longitude = 0;
