@@ -2,6 +2,8 @@ package joppi.pier.parkingfinder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -12,70 +14,99 @@ import com.synnapps.carouselview.ViewListener;
 
 public class FilterActivity extends AppCompatActivity
 {
-    CarouselView customCarouselView;
-    int NUMBER_OF_PAGES = 3;
+	CarouselView customCarouselView;
+	int NUMBER_OF_PAGES = 3;
 
-    @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-        setContentView(R.layout.activity_filter);
+	class ShiftViewHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			int viewNum = (int) msg.obj;
+			customCarouselView.setCurrentItem(viewNum);
+		}
+	}
+	Handler shiftViewHandler = new ShiftViewHandler();
 
-        customCarouselView = (CarouselView) findViewById(R.id.carouselView);
-        customCarouselView.setPageCount(NUMBER_OF_PAGES);
-        // set ViewListener for custom view 
-        customCarouselView.setViewListener(viewListener);
-		
-        Button startApp = (Button)findViewById(R.id.startMap);
-        startApp.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                //Define Intent to go to map activity ( TO DO )
+	@Override
+	public void onCreate(Bundle icicle)
+	{
+		super.onCreate(icicle);
+		setContentView(R.layout.activity_filter);
 
-                Intent go = new Intent(FilterActivity.this, MapsActivity.class);
-                startActivity(go);
-                finish();
-            }
-        });
+		customCarouselView = (CarouselView) findViewById(R.id.carouselView);
+		customCarouselView.setPageCount(NUMBER_OF_PAGES);
+		// set ViewListener for custom view
+		customCarouselView.setViewListener(viewListener);
+
+		Button startApp = (Button) findViewById(R.id.startMap);
+		startApp.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				//Define Intent to go to map activity ( TO DO )
+
+				Intent go = new Intent(FilterActivity.this, MapsActivity.class);
+				startActivity(go);
+				finish();
+			}
+		});
+	}
+
+	public void onTimePickDoneClick (View v)
+	{
+		Message viewNum = new Message();
+		viewNum.obj = 2;
+		shiftViewHandler.sendMessageDelayed(viewNum, 200);
+	}
+
+	ViewListener viewListener = new ViewListener()
+	{
+		@Override
+		public View setViewForPosition(int position)
+		{
+			View customView = null;
+			switch(position){
+				case 0:
+					customView = getLayoutInflater().inflate(R.layout.carousel_layout_vehicle, null);
+					break;
+				case 1:
+					customView = getLayoutInflater().inflate(R.layout.carousel_layout_time, null);
+					break;
+				default:
+					customView = getLayoutInflater().inflate(R.layout.carousel_layout_cost, null);
+					break;
+			}
+
+			//set view attributes here
+			return customView;
+		}
+	};
+
+	public void onRadioButtonClicked(View view)
+	{
+		// Is the button now checked?
+		boolean checked = ((RadioButton) view).isChecked();
+
+		// Check which radio button was clicked
+		switch(view.getId()){
+			case R.id.radio_car:
+				if(checked)
+				break;
+			case R.id.radio_motor:
+				if(checked)
+				break;
+			case R.id.radio_caravan:
+				if(checked)
+					break;
 
 
-    }
-	
-	ViewListener viewListener = new ViewListener() {
+		}
 
-        @Override
-        public View setViewForPosition(int position) {
-            View customView = null;
-            switch (position){
-                case 0 : customView = getLayoutInflater().inflate(R.layout.carousel_layout_vehicle, null);break;
-                case 1 : customView = getLayoutInflater().inflate(R.layout.carousel_layout_time, null);break;
-                default:customView = getLayoutInflater().inflate(R.layout.carousel_layout_cost, null);break;
-            }
-
-            //set view attributes here
-
-            return customView;
-        }
-    };
-
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.radio_car:
-                if (checked)
-                    break;
-            case R.id.radio_caravan:
-                if (checked)
-                    break;
-
-            case R.id.radio_motor:
-                if (checked)
-                    break;
-        }
-    }
-
+		// If checked shift to next page (delayed)
+		if(checked){
+			Message viewNum = new Message();
+			viewNum.obj = 1;
+			shiftViewHandler.sendMessageDelayed(viewNum, 200);
+		}
+	}
 }
