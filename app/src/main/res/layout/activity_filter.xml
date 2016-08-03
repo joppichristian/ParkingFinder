@@ -58,27 +58,5 @@
                 app:strokeWidth="1dp"
                 android:layout_marginTop="40dp"/>
         </TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="0">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/startMap"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_column="0"
-                    android:layout_weight="1"
-                    android:background="@color/buttonColor"
-                    android:text="Map"
-                    />
-            </LinearLayout>
-        </TableRow>
     </TableLayout>
 </RelativeLayout>

@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RadioButton;
 
 import com.synnapps.carouselview.CarouselView;
@@ -36,21 +35,15 @@ public class FilterActivity extends AppCompatActivity
 		customCarouselView.setPageCount(NUMBER_OF_PAGES);
 		// set ViewListener for custom view
 		customCarouselView.setViewListener(viewListener);
-
-		Button startApp = (Button) findViewById(R.id.startMap);
-		startApp.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				//Define Intent to go to map activity ( TO DO )
-
-				Intent go = new Intent(FilterActivity.this, MapsActivity.class);
-				startActivity(go);
-				finish();
-			}
-		});
 	}
+
+	public void onStartResearchClick (View v)
+	{
+		Intent go = new Intent(FilterActivity.this, MapsActivity.class);
+		startActivity(go);
+		finish();
+	}
+
 
 	public void onTimePickDoneClick (View v)
 	{
