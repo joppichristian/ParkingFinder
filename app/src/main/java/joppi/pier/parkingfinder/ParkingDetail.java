@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class ParkingDetail extends Activity {
         setContentView(R.layout.activity_parking_detail);
         name = getIntent().getExtras().getString("name");
         Double cost = getIntent().getExtras().getDouble("cost");
-        Float dist = getIntent().getExtras().getFloat("dist");
+        Double dist = getIntent().getExtras().getDouble("dist");
         lat = getIntent().getExtras().getDouble("lat");
         lon = getIntent().getExtras().getDouble("long");
 
@@ -39,7 +40,7 @@ public class ParkingDetail extends Activity {
         tx_cost.setText(cost +" €");
 
         TextView tx_distance = (TextView)findViewById(R.id.det_dist);
-        tx_distance.setText(dist + " metri");
+        tx_distance.setText(dist.intValue() + " metri");
 
 
         Button goMap = (Button)findViewById(R.id.go_toMap);

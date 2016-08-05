@@ -11,12 +11,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.util.Log;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -338,6 +340,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		return false;
 	}
 
+	public void showPopup(View v) {
+		PopupMenu popup = new PopupMenu(this, v);
+		MenuInflater inflater = popup.getMenuInflater();
+		inflater.inflate(R.menu.maps_menu, popup.getMenu());
+		popup.show();
+	}
+
 	public static boolean intersect( final double[] x, final double[] y, int i1, int i2 )
 	{
 		System.out.println( "i: " + i1 + ", j: " + i2 );
@@ -405,6 +414,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			}
 		});
 	}
+
 
 
 
