@@ -21,11 +21,7 @@
             android:name=".SplashActivity"
             android:label="@string/title_activity_splash"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".FilterActivity"
@@ -37,7 +33,14 @@
         <activity
             android:name=".MapsActivity"
             android:theme="@style/AppTheme"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_maps" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ParkingDetail" android:theme="@style/Theme.AppCompat"></activity>
     </application>
 </manifest>

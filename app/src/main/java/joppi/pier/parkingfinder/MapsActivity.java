@@ -2,16 +2,22 @@ package joppi.pier.parkingfinder;
 
 import android.Manifest;
 import android.app.LauncherActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
+import android.graphics.Path;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
@@ -19,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -40,6 +47,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 
 
 import joppi.pier.parkingfinder.db.Coordinate;
@@ -66,6 +74,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double cost_weight = 0.5;
     private double distance_weight = 0.5;
     private Parking clicked;
+
+	private DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -107,6 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        createMenu();
         Intent myIntent = getIntent();
         //cost_weight = myIntent.getExtras().getDouble("cost_weight");
         //distance_weight = myIntent.getExtras().getDouble("distance_weight");
@@ -203,7 +216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		LatLng tmp = null;
         Integer result = 0;
 		for(Parking p : parking){
-			tmp = searchClosestPoint(p);
+			/*tmp = searchClosestPoint(p);
 			if(tmp!=null)
 			{
                 try {
@@ -215,9 +228,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 				Log.w("DIST: ", p.getName() + "-"+ result + "");
 
 			}
-			else{
+			else{*/
 				p.setDistance(Integer.MAX_VALUE);
-			}
+			/*}*/
 		}
 
 
@@ -286,6 +299,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(intent);
             }
         });
+
+
 	}
 	public LatLng PolygonCenter(List<LatLng> points)
 	{
@@ -340,12 +355,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		return false;
 	}
 
-	public void showPopup(View v) {
-		PopupMenu popup = new PopupMenu(this, v);
-		MenuInflater inflater = popup.getMenuInflater();
-		inflater.inflate(R.menu.maps_menu, popup.getMenu());
-		popup.show();
+	public void showMenu(View v) {
+
+        mDrawerLayout.openDrawer(Gravity.LEFT);
 	}
+
+
 
 	public static boolean intersect( final double[] x, final double[] y, int i1, int i2 )
 	{
@@ -415,7 +430,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		});
 	}
 
+    private void createMenu(){
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
 
+		MenuAdapter adapter = new MenuAdapter(getApplicationContext());
+		mDrawerList.setAdapter(adapter);
+    }
+
+	public void changeVehicle(View view) {
+		// Is the button now checked?
+		boolean checked = ((RadioButton) view).isChecked();
+
+		switch (view.getId()) {
+			case R.id.radio_car:
+				if (checked)
+					break;
+			case R.id.radio_motor:
+				if (checked)
+					break;
+			case R.id.radio_caravan:
+				if (checked)
+					break;
+
+
+		}
+	}
 
 
 }

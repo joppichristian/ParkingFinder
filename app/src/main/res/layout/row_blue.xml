@@ -49,7 +49,8 @@
         <View android:background="@drawable/rectangle_blue"
             android:layout_width="5pt"
             android:layout_height="match_parent"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:id="@+id/colors_view"/>
     </RelativeLayout>
 
 </LinearLayout>

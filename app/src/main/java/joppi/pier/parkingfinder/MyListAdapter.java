@@ -1,6 +1,8 @@
 package joppi.pier.parkingfinder;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +53,6 @@ public class MyListAdapter extends BaseAdapter {
         {
             vi = inflater.inflate(R.layout.row_blue, null);
         }
-
         TextView text_name = (TextView) vi.findViewById(R.id.park_name);
         text_name.setText(data.get(position).toString());
         TextView text_details = (TextView) vi.findViewById(R.id.park_distance);
