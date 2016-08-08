@@ -18,7 +18,7 @@ import java.net.URL;
 /**
  * Created by christian on 01/08/16.
  */
-public class RetrieveDistance extends AsyncTask<LatLng,Void,Integer> {
+public class DistanceMatrixAPI extends AsyncTask<LatLng,Void,Integer> {
 
     @Override
     protected Integer doInBackground(LatLng... params) {

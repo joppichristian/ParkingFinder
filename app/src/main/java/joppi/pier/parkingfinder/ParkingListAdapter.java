@@ -1,7 +1,6 @@
 package joppi.pier.parkingfinder;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,27 +14,27 @@ import joppi.pier.parkingfinder.db.Parking;
 /**
  * Created by christian on 18/06/16.
  */
-public class MyListAdapter extends BaseAdapter {
+public class ParkingListAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<Parking> data;
+    ArrayList<Parking> parkingList;
     private static LayoutInflater inflater = null;
 
-    public MyListAdapter(Context context, ArrayList<Parking> data) {
+    public ParkingListAdapter(Context context, ArrayList<Parking> parkingList) {
         this.context = context;
-        this.data = data;
+        this.parkingList = parkingList;
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return data.size();
+        return parkingList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return data.get(position);
+        return parkingList.get(position);
     }
 
     @Override
@@ -48,16 +47,21 @@ public class MyListAdapter extends BaseAdapter {
 
         View vi = convertView;
         if (vi == null)
-        {
-            vi = inflater.inflate(R.layout.row_blue, null);
-        }
+            vi = inflater.inflate(R.layout.parking_list_item, null);
 
         TextView text_name = (TextView) vi.findViewById(R.id.park_name);
-        text_name.setText(data.get(position).toString());
+        text_name.setText(parkingList.get(position).toString());
         TextView text_details = (TextView) vi.findViewById(R.id.park_distance);
-        text_details.setText("" + Math.round(data.get(position).getDistance()) + " metri");
+
+        // TODO: show km if more than x (1100m)
+		double distance = parkingList.get(position).getDistance();
+		CharSequence text = "" + Math.round(distance) + " m";
+		if(distance == -1.0)
+			text = "... m";
+
+        text_details.setText(text);
         TextView text_price = (TextView) vi.findViewById(R.id.park_price);
-        text_price.setText("" + data.get(position).getCost() + " €");
+        text_price.setText("" + parkingList.get(position).getCost() + " €/h");
 
         return vi;
     }

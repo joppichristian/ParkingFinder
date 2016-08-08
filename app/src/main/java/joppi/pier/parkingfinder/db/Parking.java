@@ -1,7 +1,5 @@
 package joppi.pier.parkingfinder.db;
 
-import java.util.ArrayList;
-
 /**
  * Created by christian on 29/05/16.
  */
@@ -21,16 +19,9 @@ public class Parking {
     private double distance;
 
     public Parking(String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
-        this.id = -1;
-        this.name = name;
-        this.cost = cost;
-        this.disco = disco;
-        this.car = car;
-        this.moto = moto;
-        this.caravan = caravan;
-        this.indoor = indoor;
-        this.distance = 0;
+        this(-1, name, cost, disco, car, moto, caravan, indoor);
     }
+
     public Parking(int id,String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
         this.id = id;
         this.name = name;
@@ -40,7 +31,7 @@ public class Parking {
         this.moto = moto;
         this.caravan = caravan;
         this.indoor = indoor;
-        this.distance = 0;
+        this.distance = -1.0;
     }
     public int getId(){
         return this.id;
