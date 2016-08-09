@@ -1,8 +1,5 @@
 package joppi.pier.parkingfinder;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -15,78 +12,71 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by christian on 01/08/16.
- */
-public class DistanceMatrixAPI extends AsyncTask<LatLng,Void,Integer> {
+// TODO: create a quite complete class for DistanceMatrix requests (vehicle, duration, traffic etc...)
+public class DistanceMatrixAPI
+{
+	public DistanceMatrixAPI()
+	{
+	}
 
-    @Override
-    protected Integer doInBackground(LatLng... params) {
+	public int getDistanceMatrix(LatLng... params)
+	{
+		int iDistance = 0;
+		StringBuilder urlString = new StringBuilder();
+		urlString.append("http://maps.googleapis.com/maps/api/directions/json?");
+		urlString.append("origin=");
+		urlString.append( Double.toString(params[0].latitude));
+		urlString.append(",");
+		urlString.append( Double.toString(params[0].longitude));
+		urlString.append("&destination=");
+		urlString.append( Double.toString(params[1].latitude));
+		urlString.append(",");
+		urlString.append( Double.toString(params[1].longitude));
+		urlString.append("&mode=driving");
+		//Log.d("xxx","URL="+urlString.toString());
 
-        int iDistance = 0;
-        StringBuilder urlString = new StringBuilder();
-        urlString.append("http://maps.googleapis.com/maps/api/directions/json?");
-        urlString.append("origin=");//from
-        urlString.append( Double.toString(params[0].latitude));
-        urlString.append(",");
-        urlString.append( Double.toString(params[0].longitude));
-        urlString.append("&destination=");//to
-        urlString.append( Double.toString(params[1].latitude));
-        urlString.append(",");
-        urlString.append( Double.toString(params[1].longitude));
-        urlString.append("&mode=walking&sensor=true");
-        Log.d("xxx","URL="+urlString.toString());
+		// Get the JSON And parse it to get the directions data.
+		HttpURLConnection urlConnection= null;
+		URL url = null;
 
-        // get the JSON And parse it to get the directions data.
-        HttpURLConnection urlConnection= null;
-        URL url = null;
+		try
+		{
+			url = new URL(urlString.toString());
+			urlConnection=(HttpURLConnection)url.openConnection();
+			urlConnection.setRequestMethod("GET");
+			urlConnection.setDoOutput(true);
+			urlConnection.setDoInput(true);
+			urlConnection.connect();
 
-        try {
-            url = new URL(urlString.toString());
-            urlConnection=(HttpURLConnection)url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setDoOutput(true);
-            urlConnection.setDoInput(true);
-            urlConnection.connect();
+			InputStream inStream = urlConnection.getInputStream();
+			BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
 
-            InputStream inStream = urlConnection.getInputStream();
-            BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
+			String temp, response = "";
+			while((temp = bReader.readLine()) != null){
+				//Parse data
+				response += temp;
+			}
 
-            String temp, response = "";
-            while((temp = bReader.readLine()) != null){
-                //Parse data
-                response += temp;
-            }
-            //Close the reader, stream & connection
-            bReader.close();
-            inStream.close();
-            urlConnection.disconnect();
+			//Close the reader, stream & connection
+			bReader.close();
+			inStream.close();
+			urlConnection.disconnect();
 
-            //Sortout JSONresponse
-            JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
-            JSONArray array = object.getJSONArray("routes");
-            //Log.d("JSON","array: "+array.toString());
+			//Sortout JSONresponse
+			JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+			JSONArray array = object.getJSONArray("routes");
 
-            //Routes is a combination of objects and arrays
-            JSONObject routes = array.getJSONObject(0);
-            //Log.d("JSON","routes: "+routes.toString());
+			//Routes is a combination of objects and arrays
+			JSONObject routes = array.getJSONObject(0);
+			String summary = routes.getString("summary");
+			JSONArray legs = routes.getJSONArray("legs");
+			JSONObject steps = legs.getJSONObject(0);
+			JSONObject distance = steps.getJSONObject("distance");
 
-            String summary = routes.getString("summary");
-            //Log.d("JSON","summary: "+summary);
-
-            JSONArray legs = routes.getJSONArray("legs");
-            //Log.d("JSON","legs: "+legs.toString());
-
-            JSONObject steps = legs.getJSONObject(0);
-            //Log.d("JSON","steps: "+steps.toString());
-
-            JSONObject distance = steps.getJSONObject("distance");
-            //Log.d("JSON","distance: "+distance.toString());
-
-            iDistance = distance.getInt("value");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return iDistance;
-    }
+			iDistance = distance.getInt("value");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return iDistance;
+	}
 }

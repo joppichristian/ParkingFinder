@@ -70,7 +70,7 @@
                     android:layout_gravity="left">
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/park_capacity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
@@ -163,13 +163,14 @@
             android:layout_width="13dp"
             android:layout_height="match_parent"
             android:background="#3fe3c0"
-            />
+            android:id="@+id/rightColor"/>
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="#3fe3c0"/>
+        android:layout_height="2dp"
+        android:background="#3fe3c0"
+        android:id="@+id/bottomColor"/>
 
 </LinearLayout>

@@ -2,41 +2,46 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
         xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
-        sothree:umanoPanelHeight="104dp"
+        sothree:umanoPanelHeight="103dp"
         sothree:umanoShadowHeight="4dp"
         sothree:umanoFadeColor="@android:color/transparent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-            <fragment android:id="@+id/map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="joppi.pier.parkingfinder.MapsActivity"/>
-            <include layout="@layout/parking_list_item"/>
+            <!--<FrameLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+                <fragment android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:context="joppi.pier.parkingfinder.MapsActivity"/>
+            <!--<ImageView-->
+                <!--android:layout_width="40dp"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:src="@drawable/scroll_indicator"-->
+                <!--android:layout_gravity="bottom|center_horizontal"/>-->
+            <!--</FrameLayout>-->
         </LinearLayout>
-        <RelativeLayout android:layout_height="match_parent"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:background="#00FFFFFF"
-            android:id="@+id/view_list">
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:id="@+id/frameLayout">
             <ListView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:id="@+id/list"
+                android:id="@+id/parkingListView"
                 />
-        </RelativeLayout>
-
-
+        </FrameLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 </LinearLayout>

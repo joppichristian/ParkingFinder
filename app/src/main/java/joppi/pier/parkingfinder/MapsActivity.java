@@ -3,14 +3,14 @@ package joppi.pier.parkingfinder;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,24 +20,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 import joppi.pier.parkingfinder.db.Parking;
 import joppi.pier.parkingfinder.db.ParkingMgr;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+															  LocationProvider.OnLocationChangedListener,
+															  ParkingMgr.OnDistUpdateCompleteListener,
+															  SlidingUpPanelLayout.PanelSlideListener
 {
 	private GoogleMap mMap;
-
 	private ParkingMgr parkingMgr;
+	private LocationProvider locationProvider;
 
-    ListView list;
+    ListView parkingListView;
+	View mSelectedParkingView;
+	ParkingListAdapter mParkingListAdapter;
 	LatLng trento = new LatLng(46.076200, 11.111455);
-    private double cost_weight = 0.5;
-    private double distance_weight = 0.5;
-    private Parking clicked;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -49,38 +49,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 
+		// Add Sliding Up panel layout
 		SlidingUpPanelLayout slidingLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
-		slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-			@Override
-			public void onPanelSlide(View panel, float slideOffset) {
-
-			}
-
-			@Override
-			public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-				if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-					list.setEnabled(false);
-				}
-				if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-					list.setEnabled(true);
-				}
-				if(newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
-					// TODO: check if executed only once!
-					sortList(parkingMgr.getParkingList(),cost_weight,distance_weight);
-					ListView list = (ListView)findViewById(R.id.list);
-					((ParkingListAdapter)list.getAdapter()).notifyDataSetChanged();
-				}
-			}
-		});
+		slidingLayout.addPanelSlideListener(this);
 
 		// Load parking DB
 		parkingMgr = new ParkingMgr(this);
 		parkingMgr.loadDbAsync();
+		parkingMgr.addDistUpdateCompleteListener(this);
+		parkingMgr.registerListSortComparator(new Comparator<Parking>()
+		{
+			@Override
+			public int compare(Parking lhs, Parking rhs)
+			{
+				// TODO: get info from FilterActivity
+				double distance_weight = 0.5;
+				double cost_weight = 0.5;
 
-		// Disable Parking listView
-		list = (ListView)findViewById(R.id.list);
-		//lock_unlock_scroll(true);
-		list.setEnabled(false);
+				return lhs.getDistance() * distance_weight + lhs.getCost() * cost_weight >= rhs.getDistance() * distance_weight + rhs.getCost() * cost_weight ? 1 : -1;
+			}
+		});
+
+		// Set-up parking listView
+		parkingListView = (ListView)findViewById(R.id.parkingListView);
+		parkingListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+		// Create location provider
+		locationProvider = new LocationProvider(this, getApplicationContext());
+		locationProvider.addLocationChangedListener(this);
 	}
 
 	/**
@@ -109,73 +105,101 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			}
 		});
 
+		// TODO: implement parking markers and show polygons only for user reference
 		mMap.setOnPolygonClickListener(parkingMgr);
 
-		if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+		if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
 			ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-			ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 		}
+
 		mMap.setMyLocationEnabled(true);
 		mMap.getUiSettings().setZoomControlsEnabled(true);
 
-		// TODO: to be called inside 'LocationChanged' callback
-		parkingMgr.updateDistancesAsync();
+		// Sort parking list
+		parkingMgr.sortList();
 
-        sortList(parkingMgr.getParkingList(),cost_weight,distance_weight);
-
-		final ParkingListAdapter myListAdapter = new ParkingListAdapter(this,parkingMgr.getParkingList());
-		list.setAdapter(myListAdapter);
-
-		//region List itemClickListener
-		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		mParkingListAdapter = new ParkingListAdapter(this, parkingMgr);
+		parkingListView.setAdapter(mParkingListAdapter);
+		parkingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Parking clicked = (Parking) myListAdapter.getItem(position);
-				Intent intent = new Intent(MapsActivity.this,ParkingDetail.class);
-				intent.putExtra("name",clicked.getName());
-				intent.putExtra("cost",clicked.getCost());
-				intent.putExtra("dist",clicked.getDistance());
-//				intent.putExtra("lat",searchClosestPoint(clicked).latitude);
-//				intent.putExtra("long",searchClosestPoint(clicked).longitude);
-				startActivity(intent);
+				openParkingDetailActivity(position);
 			}
 		});
 
-        clicked = parkingMgr.getParkingList().get(0);
-        ((RelativeLayout)findViewById(R.id.view_list)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MapsActivity.this,ParkingDetail.class);
-                intent.putExtra("name",clicked.getName());
-                intent.putExtra("cost",clicked.getCost());
-                intent.putExtra("dist",clicked.getDistance());
-//                intent.putExtra("lat",searchClosestPoint(clicked).latitude);
-//                intent.putExtra("long",searchClosestPoint(clicked).longitude);
-                startActivity(intent);
-            }
-        });
-
-		//endregion
+		FrameLayout layout = (FrameLayout)findViewById(R.id.frameLayout);
+		mSelectedParkingView = mParkingListAdapter.getView(0, null, null);
+		mSelectedParkingView.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				openParkingDetailActivity(0);
+			}
+		});
+		layout.addView(mSelectedParkingView);
 	}
 
-    private void sortList(ArrayList<Parking> al, final double cost_weight, final double distance_weight){
-        Collections.sort(parkingMgr.getParkingList(), new Comparator<Parking>() {
-            @Override
-            public int compare(Parking lhs, Parking rhs) {
-                return lhs.getDistance()*distance_weight+lhs.getCost()*cost_weight >= rhs.getDistance()*distance_weight+rhs.getCost()*cost_weight ? 1 : -1 ;
-            }
-        });
-    }
+	private void openParkingDetailActivity(int itemPos)
+	{
+		Parking clicked = (Parking) mParkingListAdapter.getItem(itemPos);
+		Intent intent = new Intent(MapsActivity.this,ParkingDetail.class);
+		intent.putExtra("name",clicked.getName());
+		intent.putExtra("cost",clicked.getCost());
+		intent.putExtra("dist",clicked.getDistance());
+		//				intent.putExtra("lat",searchClosestPoint(clicked).latitude);
+		//				intent.putExtra("long",searchClosestPoint(clicked).longitude);
+		startActivity(intent);
+	}
 
-	private void lock_unlock_scroll(final boolean interrupt){
-		list.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if(event.getAction()==MotionEvent.ACTION_MOVE)
-					return interrupt;
-				return true;
+	@Override
+	public void onPanelSlide(View panel, float slideOffset)
+	{
+		float alpha = 1.0f - slideOffset*1.5f;
+		if(alpha < 0.0f)
+			alpha = 0.0f;
+		mSelectedParkingView.setAlpha(alpha);
+	}
 
-			}
-		});
+	@Override
+	public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+		if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+			mSelectedParkingView.setClickable(true);
+		}
+		else if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+			mSelectedParkingView.setClickable(false);
+		}
+		else if(newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
+			parkingMgr.sortList();
+			ListView list = (ListView)findViewById(R.id.parkingListView);
+			((ParkingListAdapter)list.getAdapter()).notifyDataSetChanged();
+			parkingListView.setSelection(0);
+		}
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		locationProvider.onStart();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		locationProvider.onDestroy();
+	}
+
+	@Override
+	public void onLocationChanged(Location newLoc)
+	{
+		parkingMgr.updateDistancesAsync();
+	}
+
+	@Override
+	public void onDistUpdateComplete()
+	{
+		mSelectedParkingView = mParkingListAdapter.getView(0, mSelectedParkingView, null);
+		ListView list = (ListView)findViewById(R.id.parkingListView);
+		((ParkingListAdapter)list.getAdapter()).notifyDataSetChanged();
 	}
 }
