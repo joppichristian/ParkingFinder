@@ -443,13 +443,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		boolean checked = ((RadioButton) view).isChecked();
 
 		switch (view.getId()) {
-			case R.id.radio_car:
+			case R.id.radio_menu_car:
 				if (checked)
 					break;
-			case R.id.radio_motor:
+			case R.id.radio_menu_motor:
 				if (checked)
 					break;
-			case R.id.radio_caravan:
+			case R.id.radio_menu_caravan:
 				if (checked)
 					break;
 
