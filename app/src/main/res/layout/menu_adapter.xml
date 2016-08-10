@@ -176,4 +176,25 @@
             android:layout_height="wrap_content"
             android:text="Disco" />
     </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Aggiorna"
+            android:id="@+id/updateResult"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:textSize="18dp"
+            android:textAlignment="center"
+            android:background="@drawable/button_background"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:onClick="updateResult"/>
+    </FrameLayout>
 </LinearLayout>

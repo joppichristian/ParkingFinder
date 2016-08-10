@@ -15,7 +15,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -27,6 +29,7 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -430,13 +433,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		});
 	}
 
-    private void createMenu(){
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
+    private void createMenu() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
 
-		MenuAdapter adapter = new MenuAdapter(getApplicationContext());
-		mDrawerList.setAdapter(adapter);
+        MenuAdapter adapter = new MenuAdapter(getApplicationContext());
+        mDrawerList.setAdapter(adapter);
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        LayoutInflater inflater = (LayoutInflater) ParkingFinderApplication.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogLayout = inflater.inflate(R.layout.menu_adapter, null);
+		dialogLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.w("LOG","CLICK");
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+			}
+		});
+
     }
+
+	public void updateResult(View v){
+		Log.w("LOG","CLICK");
+		mDrawerLayout.closeDrawer(Gravity.LEFT);
+	}
 
 	public void changeVehicle(View view) {
 		// Is the button now checked?
