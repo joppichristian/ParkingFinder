@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark">
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
         xmlns:sothree="http://schemas.android.com/apk/res-auto"
@@ -22,7 +23,6 @@
             <fragment android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:map="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -34,7 +34,6 @@
                     android:contentDescription="Bo"
                     android:onClick="showMenu" />
             </fragment>
-            <include layout="@layout/row_blue"/>
 
         </LinearLayout>
         <FrameLayout
@@ -50,11 +49,13 @@
         </FrameLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
-    <!-- Listview to display slider menu -->
-    <ListView
-        android:id="@+id/list_slidermenu"
-        android:layout_width="240dp"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/menu"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#53586b"/>
+        android:background="@color/colorPrimaryDark"
+        
+        app:headerLayout="@layout/drawer_top"
+        app:menu="@menu/maps_menu"/>
 </android.support.v4.widget.DrawerLayout>

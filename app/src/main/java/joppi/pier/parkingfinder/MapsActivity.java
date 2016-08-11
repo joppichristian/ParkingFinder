@@ -1,16 +1,33 @@
 package joppi.pier.parkingfinder;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	private GoogleMap mMap;
 	private ParkingMgr parkingMgr;
 	private LocationProvider locationProvider;
+    private MenuManager menuManager;
 
     ListView parkingListView;
 	View mSelectedParkingView;
@@ -77,6 +95,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		// Create location provider
 		locationProvider = new LocationProvider(this, getApplicationContext());
 		locationProvider.addLocationChangedListener(this);
+
+        menuManager = new MenuManager((DrawerLayout)findViewById(R.id.drawer_layout),(NavigationView)findViewById(R.id.menu),MapsActivity.this);
+
 	}
 
 	/**
@@ -202,4 +223,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		ListView list = (ListView)findViewById(R.id.parkingListView);
 		((ParkingListAdapter)list.getAdapter()).notifyDataSetChanged();
 	}
+
+
+    public void showMenu(View v){
+        menuManager.openMenu();
+    }
+
 }
