@@ -37,12 +37,10 @@ public class ParkingMgr implements GoogleMap.OnPolygonClickListener
 
 	public interface OnDistUpdateCompleteListener
 	{
-		/**
-		 * Called when distance update is completed.
-		 */
 		void onDistUpdateComplete();
 	}
 
+	// Called when distance update is completed.
 	private List<OnDistUpdateCompleteListener> mDistUpdateCompleteListeners = new ArrayList<>();
 
 	private Comparator<Parking> mParkingListComparator;
@@ -74,6 +72,8 @@ public class ParkingMgr implements GoogleMap.OnPolygonClickListener
 		mLoadDbTask.start();
 	}
 
+	// TODO: Show markers only as parking
+	// TODO: Markers color should depend only on price (distance is already shown right?)
 	public void addParkingListOnMap(GoogleMap map)
 	{
 		mMap = map;
