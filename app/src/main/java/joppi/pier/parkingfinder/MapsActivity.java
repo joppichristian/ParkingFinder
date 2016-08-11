@@ -78,8 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double distance_weight = 0.5;
     private Parking clicked;
 
-	private DrawerLayout mDrawerLayout;
-	private ListView mDrawerList;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -360,7 +359,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 	public void showMenu(View v) {
 
-        mDrawerLayout.openDrawer(Gravity.LEFT);
+
 	}
 
 
@@ -434,30 +433,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	}
 
     private void createMenu() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
-
-        MenuAdapter adapter = new MenuAdapter(getApplicationContext());
-        mDrawerList.setAdapter(adapter);
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
-        LayoutInflater inflater = (LayoutInflater) ParkingFinderApplication.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogLayout = inflater.inflate(R.layout.menu_adapter, null);
-		TextView tx = (TextView)dialogLayout.findViewById(R.id.updateResult);
-		tx.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.w("LOG","CLICK");
-				mDrawerLayout.closeDrawer(Gravity.LEFT);
-			}
-		});
 
     }
 
-	public void updateResult(View v){
-		Log.w("LOG","CLICK");
-		mDrawerLayout.closeDrawer(Gravity.LEFT);
-	}
 
 	public void changeVehicle(View view) {
 		// Is the button now checked?
