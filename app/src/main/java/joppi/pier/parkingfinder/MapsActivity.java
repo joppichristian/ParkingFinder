@@ -443,7 +443,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         LayoutInflater inflater = (LayoutInflater) ParkingFinderApplication.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogLayout = inflater.inflate(R.layout.menu_adapter, null);
-		dialogLayout.setOnClickListener(new View.OnClickListener() {
+		TextView tx = (TextView)dialogLayout.findViewById(R.id.updateResult);
+		tx.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Log.w("LOG","CLICK");
