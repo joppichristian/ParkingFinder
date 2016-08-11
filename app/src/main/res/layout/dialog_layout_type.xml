@@ -18,11 +18,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Seleziona il veicolo"
+            android:layout_margin="20dp"
+            android:text="Seleziona le tipologie"
             android:textColor="#ffffff"
             android:textIsSelectable="true"
             android:textSize="20dp"
-            android:layout_margin="20dp"
             android:textStyle="bold"
             android:typeface="serif" />
     </LinearLayout>
@@ -31,54 +31,48 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:orientation="vertical"
         android:background="#50000000"
+        android:orientation="vertical"
         >
-
-        <RadioGroup
-            android:layout_width="match_parent"
+        <CheckBox
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:gravity="center_vertical"
-            >
-
-            <RadioButton
-                android:id="@+id/radio_car"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Automobile"
-                android:textSize="18dp" />
-
-            <RadioButton
-                android:id="@+id/radio_motor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Moto"
-                android:textSize="18dp" />
-
-            <RadioButton
-                android:id="@+id/radio_caravan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Caravan"
-                android:textSize="18dp" />
-        </RadioGroup>
-
+            android:layout_margin="10dp"
+            android:id="@+id/chkInterrato"
+            android:text="Interrato"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:id="@+id/chkCoperto"
+            android:text="Coperto"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:id="@+id/chkStradale"
+            android:text="Lato Strada"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:id="@+id/chkDisco"
+            android:text="Disco orario"/>
         <View
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
 
         <TextView
-            android:id="@+id/confirmVehicleOption"
+            android:id="@+id/confirmTypeOption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="#50000000"
-            android:onClick="closeDialog"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:text="Conferma"
+            android:onClick="closeDialog"
             android:textAlignment="center"
             android:textSize="18dp" />
     </LinearLayout>

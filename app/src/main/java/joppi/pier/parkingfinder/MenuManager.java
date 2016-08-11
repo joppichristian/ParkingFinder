@@ -20,6 +20,8 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Activity activity;
+    private Dialog dialog;
+
     public MenuManager(DrawerLayout drawerLayout, NavigationView navigationView, Activity activity){
         this.drawerLayout = drawerLayout;
         this.navigationView = navigationView;
@@ -33,38 +35,58 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        final Dialog dialog = new Dialog(activity);
+        dialog = new Dialog(activity);
 
         if (id == R.id.vehicleOption) {
             dialog.setContentView(R.layout.dialog_layout_vehicle);
             dialog.show();
+            dialog.findViewById(R.id.confirmVehicleOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Save parameters
+                    dialog.dismiss();
+                }
+            });
             return true;
         }
         if (id == R.id.timeOption) {
             dialog.setContentView(R.layout.dialog_layout_time);
             dialog.show();
+            dialog.findViewById(R.id.confirmTimeOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Save parameters
+                    dialog.dismiss();
+                }
+            });
             return true;
         }
         if (id == R.id.orderOption) {
             dialog.setContentView(R.layout.dialog_layout_cost);
             dialog.show();
+            dialog.findViewById(R.id.confirmCostOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Save parameters
+                    dialog.dismiss();
+                }
+            });
             return true;
         }
         if (id == R.id.typeOption) {
-            dialog.setContentView(R.layout.dialog_layout_vehicle);
+            dialog.setContentView(R.layout.dialog_layout_type);
             dialog.show();
+            dialog.findViewById(R.id.confirmTypeOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Save parameters
+                    dialog.dismiss();
+                }
+            });
             return true;
         }
 
         return true;
     }
 
-    public void showPopup(){
-
-
-
-
-
-
-    }
 }
