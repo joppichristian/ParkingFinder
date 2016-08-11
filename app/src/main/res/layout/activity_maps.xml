@@ -1,7 +1,10 @@
-<LinearLayout
-    android:layout_height="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_height="match_parent">
+
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
         xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
@@ -15,22 +18,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-            <!--<FrameLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent">-->
-                <fragment android:id="@+id/map"
-                    android:name="com.google.android.gms.maps.SupportMapFragment"
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:tools="http://schemas.android.com/tools"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:context="joppi.pier.parkingfinder.MapsActivity"/>
-            <!--<ImageView-->
-                <!--android:layout_width="40dp"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:src="@drawable/scroll_indicator"-->
-                <!--android:layout_gravity="bottom|center_horizontal"/>-->
-            <!--</FrameLayout>-->
+
+            <fragment android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="joppi.pier.parkingfinder.MapsActivity">
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_overflow"
+                    android:contentDescription="Bo"
+                    android:onClick="showMenu" />
+            </fragment>
+            <include layout="@layout/row_blue"/>
+
         </LinearLayout>
         <FrameLayout
             android:layout_width="match_parent"
@@ -44,4 +49,12 @@
                 />
         </FrameLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
-</LinearLayout>
+
+    <!-- Listview to display slider menu -->
+    <ListView
+        android:id="@+id/list_slidermenu"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#53586b"/>
+</android.support.v4.widget.DrawerLayout>

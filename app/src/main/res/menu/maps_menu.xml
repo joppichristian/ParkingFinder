@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="all">
+        <item android:id="@+id/inside"
+            android:title="Inside" />
+        <item android:id="@+id/outside"
+            android:title="Outside" />
+        <item android:id="@+id/underground"
+            android:title="Underground" />
+        <item android:id="@+id/disco"
+            android:title="Disco" />
+        <item android:id="@+id/free"
+            android:title="Free" />
+    </group>
+</menu>
