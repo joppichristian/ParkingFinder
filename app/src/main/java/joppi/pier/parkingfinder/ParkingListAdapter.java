@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import joppi.pier.parkingfinder.db.Parking;
 import joppi.pier.parkingfinder.db.ParkingMgr;
 
 public class ParkingListAdapter extends BaseAdapter
@@ -47,11 +48,13 @@ public class ParkingListAdapter extends BaseAdapter
 		if(vi == null)
 			vi = inflater.inflate(R.layout.parking_list_item, null);
 
+		Parking currParking = mParkingMgr.getParkingList().get(position);
+
 		TextView text_name = (TextView) vi.findViewById(R.id.park_name);
-		text_name.setText(mParkingMgr.getParkingList().get(position).toString());
+		text_name.setText(currParking.toString());
 		TextView text_details = (TextView) vi.findViewById(R.id.park_distance);
 
-		double distance = mParkingMgr.getParkingList().get(position).getDistance();
+		double distance = currParking.getCurrDistance();
 		long distM = Math.round(distance);
 		CharSequence text = "NA"; // TODO: replace with loading image or something
 		if(distM > 1100)
@@ -61,10 +64,14 @@ public class ParkingListAdapter extends BaseAdapter
 
 		text_details.setText(text);
 		TextView text_price = (TextView) vi.findViewById(R.id.park_price);
-		text_price.setText("" + mParkingMgr.getParkingList().get(position).getCost() + " €/h");
+		text_price.setText("" + currParking.getCost() + " €/h");
 
 		// TODO: rank should come from sorting algorithm... (ParkingMgr)
 		double rank = 1.0/(mParkingMgr.getParkingList().size()-1) * position;
+
+		// TODO: rank should be assigned elsewhere!!!
+		currParking.setCurrPriceRank(rank);
+		currParking.setCurrDistRank(rank);
 
 		// From GREEN (0x30e0c0) to YELLOW@0.5 (0xffc280) to RED (0xff7080)
 		int color = AppUtils.generateColorFromRank(0x30e0c0, 0xffc280, 0xff7080, rank);

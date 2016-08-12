@@ -6,17 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-
-import joppi.pier.parkingfinder.db.Coordinate;
-import joppi.pier.parkingfinder.db.CoordinateDAO;
-import joppi.pier.parkingfinder.db.CoordinateDAO_DB_impl;
-import joppi.pier.parkingfinder.db.Parking;
-import joppi.pier.parkingfinder.db.ParkingDAO;
-import joppi.pier.parkingfinder.db.ParkingDAO_DB_impl;
 
 public class ParkingDetail extends Activity {
 

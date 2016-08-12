@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_action_overflow"
                     android:contentDescription="Bo"
-                    android:onClick="showMenu" />
+                    android:onClick="optionsMenuButtonClick" />
             </fragment>
 
         </LinearLayout>

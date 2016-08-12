@@ -28,12 +28,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_MOTO = "moto";
     public static final String COLUMN_CARAVAN = "caravan";
 
-
-    public static final String TABLE2_NAME = "coordinates";
-    public static final String COLUMN_PARKING = "id_parking";
-    public static final String COLUMN_LATITUDE = "latitude";
-    public static final String COLUMN_LONGITUDE = "longitude";
-
     private static final String DATABASE_NAME = "parking.db";
     private static final int DATABASE_VERSION = 1;
 
@@ -49,8 +43,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public static void copyDataBase(Context myContext) throws IOException {
-
+    public static void copyDataBase(Context myContext) throws IOException
+    {
         InputStream myInput = myContext.getAssets().open(MySQLiteHelper.DATABASE_NAME);
 
         String outFileName = "data/data/joppi.pier.parkingfinder/databases/" + MySQLiteHelper.DATABASE_NAME;

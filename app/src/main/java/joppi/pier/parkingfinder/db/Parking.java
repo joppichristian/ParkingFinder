@@ -1,12 +1,11 @@
 package joppi.pier.parkingfinder.db;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
-
-/**
- * Created by christian on 29/05/16.
- */
 
 //    Parking
 //    {
@@ -22,153 +21,188 @@ import java.util.ArrayList;
 //        -time_frame ( Open,Close )
 //    }
 //
-public class Parking {
+public class Parking
+{
+	public static int TYPE_SURFACE = 0x00000001;
+	public static int TYPE_STRUCTURE = 0x0000002;
+	public static int TYPE_ROAD = 0x0000004;
+	public static int TYPE_SUBTERRANEAN = 0x00000008;
+	public static int TYPE_SURVEILED = 0x00000010;
 
-    public static int TYPE_SURFACE = 0x00000001;
-    public static int TYPE_STRUCTURE = 0x0000002;
-    public static int TYPE_ROAD = 0x0000004;
-    public static int TYPE_SUBTERRANEAN = 0x80000008;
-    public static int TYPE_SURVEILED = 0x80000010;
+	private int id;
+	private String name;
+	//cost = costo:durata:fascia:giorni
+	private String cost;
 
-    private int id;
-    private String name;
-    //cost = costo:durata:fascia:giorni
-    private String cost;
+	private String timeLimit;
+	private int type;
+	private String notes;
+	private String location;
+	private String area;
+	private String timeFrame;
+	private int car;
+	private int moto;
+	private int caravan;
 
-    private String time_limit;
-    private int type;
-    private String notes;
-    private String location;
-    private String area;
-    private String time_frame;
-    private int car;
-    private int moto;
-    private int caravan;
+	private int currDistance;
 
-    private double distance;
+	private double currPriceRank;
+	private double currDistanceRank;
 
-    public Parking(int id,String name,String cost,String time_limit,int type,String notes, String location, String area,String time_frame,int car,int moto,int caravan){
-        this.id = id;
-        this.name = name;
-        this.setCost(cost);
-        this.setTime_limit(time_limit);
-        this.setType(type);
-        this.setNotes(notes);
-        this.setLocation(location);
-        this.setArea(area);
-        this.setTime_frame(time_frame);
-        this.car = car;
-        this.moto = moto;
-        this.caravan = caravan;
-        this.distance = -1.0;
-    }
-    public int getId(){
-        return this.id;
-    }
+	public Parking(int id, String name, String cost, String timeLimit, int type, String notes, String location, String area, String timeFrame, int car, int moto, int caravan)
+	{
+		this.id = id;
+		this.name = name;
+		this.cost = cost;
+		this.timeLimit = timeLimit;
+		this.type = type;
+		this.notes = notes;
+		this.location = location;
+		this.area = area;
+		this.timeFrame = timeFrame;
+		this.car = car;
+		this.moto = moto;
+		this.caravan = caravan;
+		this.currDistance = -1;
+		this.currPriceRank = -1.0;
+		this.currDistanceRank = -1.0;
+	}
 
-    public String getName(){
-        return this.name;
-    }
+	public int getId()
+	{
+		return this.id;
+	}
 
+	public String getName()
+	{
+		return this.name;
+	}
 
-    @Override
-    public String toString(){
-        return name;
-    }
+	public String getCostRaw(){return cost;}
 
-    public double getDistance() {
-        return distance;
-    }
+	// TODO: temporary implementation
+	public double getCost()
+	{
+		try{
+			return Double.parseDouble(cost);
+		}catch(Exception e){}
+		return 0.0;
+	}
 
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
+	public String getTimeLimit(){return timeLimit;}
 
-    public String getCost() {
-        return cost;
-    }
+	public int getType()
+	{
+		return type;
+	}
 
-    public void setCost(String cost) {
-        this.cost = cost;
-    }
+	public String getNotes()
+	{
+		return notes;
+	}
 
-    public String getTime_limit() {
-        return time_limit;
-    }
+	public String getLocationRaw(){return location;}
 
-    public void setTime_limit(String time_limit) {
-        this.time_limit = time_limit;
-    }
+	public LatLng getLocation()
+	{
+		try{
+			String[] locStr = location.split(",");
+			return new LatLng(Double.parseDouble(locStr[0]), Double.parseDouble(locStr[1]));
+		}catch(Exception e){}
+		return null;
+	}
 
-    public int getType() {
-        return type;
-    }
+	public String getAreaRaw()
+	{
+		return area;
+	}
 
-    public void setType(int type) {
-        this.type = type;
-    }
+	public String getTimeFrame()
+	{
+		return timeFrame;
+	}
 
-    public String getNotes() {
-        return notes;
-    }
+	public int getCar()
+	{
+		return car;
+	}
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+	public int getMoto()
+	{
+		return moto;
+	}
 
-    public String getLocation() {
-        return location;
-    }
+	public int getCaravan()
+	{
+		return caravan;
+	}
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+	public int getCurrDistance()
+	{
+		return currDistance;
+	}
 
-    public String getArea() {
-        return area;
-    }
+	public double getCurrentPriceRank(){ return currPriceRank; }
 
-    public void setArea(String area) {
-        this.area = area;
-    }
+	public double getCurrentDistanceRank(){ return currDistanceRank; }
 
-    public String getTime_frame() {
-        return time_frame;
-    }
+	public void setCurrDistance(int currDistance)
+	{
+		this.currDistance = currDistance;
+	}
 
-    public void setTime_frame(String time_frame) {
-        this.time_frame = time_frame;
-    }
+	public void setCurrPriceRank(double rank){ currPriceRank = rank; }
 
-    public int getCar() {
-        return car;
-    }
+	public void setCurrDistRank(double rank){ currDistanceRank = rank; }
 
-    public void setCar(int car) {
-        this.car = car;
-    }
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 
-    public int getMoto() {
-        return moto;
-    }
+	public ContentValues getContentValues()
+	{
+		ContentValues content = new ContentValues();
 
-    public void setMoto(int moto) {
-        this.moto = moto;
-    }
+		content.put(MySQLiteHelper.COLUMN_NAME, name);
+		content.put(MySQLiteHelper.COLUMN_COST, cost);
+		content.put(MySQLiteHelper.COLUMN_TIME_LIMIT, timeLimit);
+		content.put(MySQLiteHelper.COLUMN_NOTES, notes);
+		content.put(MySQLiteHelper.COLUMN_TYPE, type);
+		content.put(MySQLiteHelper.COLUMN_LOCATION, location);
+		content.put(MySQLiteHelper.COLUMN_AREA, area);
+		content.put(MySQLiteHelper.COLUMN_TIME_FRAME, timeFrame);
+		content.put(MySQLiteHelper.COLUMN_CAR, car);
+		content.put(MySQLiteHelper.COLUMN_MOTO, moto);
+		content.put(MySQLiteHelper.COLUMN_CARAVAN, caravan);
+		return content;
+	}
 
-    public int getCaravan() {
-        return caravan;
-    }
+	public static Parking Parse(Cursor cursor)
+	{
+		int id = cursor.getInt(0);
+		String name = cursor.getString(1);
+		String cost = cursor.getString(2);
+		String timeLimit = cursor.getString(3);
+		String notes = cursor.getString(4);
+		int type = cursor.getInt(5);
+		String location = cursor.getString(6);
+		String area = cursor.getString(7);
+		String timeFrame = cursor.getString(8);
+		int car = cursor.getInt(9);
+		int moto = cursor.getInt(10);
+		int caravan = cursor.getInt(11);
 
-    public void setCaravan(int caravan) {
-        this.caravan = caravan;
-    }
+		return new Parking(id, name, cost, timeLimit, type, notes, location, area, timeFrame, car, moto, caravan);
+	}
 
-    public static ArrayList<LatLng> parseCoordinates(String coordinates){
-        ArrayList<LatLng> ar = new ArrayList<>();
-        for(String s : coordinates.split(";")){
-            ar.add(new LatLng(Double.parseDouble(s.split(",")[0]),Double.parseDouble(s.split(",")[1])));
-        }
-        return ar;
-    }
+	public static ArrayList<LatLng> parseCoordinates(String coordinates)
+	{
+		ArrayList<LatLng> ar = new ArrayList<>();
+		for(String s : coordinates.split(";")){
+			ar.add(new LatLng(Double.parseDouble(s.split(",")[0]), Double.parseDouble(s.split(",")[1])));
+		}
+		return ar;
+	}
 }

@@ -40,7 +40,7 @@ public class DistanceMatrixResult
 
 	public boolean getStatusOk()
 	{
-		return (mStatus == "OK");
+		return mStatus.equals("OK");
 	}
 
 	public String getStatusText()
