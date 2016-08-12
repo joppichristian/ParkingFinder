@@ -14,17 +14,22 @@ import joppi.pier.parkingfinder.ParkingFinderApplication;
 
 public class ParkingDAO_DB_impl implements ParkingDAO {
 
+
     private MySQLiteHelper helper;
     private SQLiteDatabase database;
     private String [] allColumns = {
             MySQLiteHelper.COLUMN_ID,
             MySQLiteHelper.COLUMN_NAME,
             MySQLiteHelper.COLUMN_COST,
-            MySQLiteHelper.COLUMN_DISCO,
+            MySQLiteHelper.COLUMN_TIME_LIMIT,
+            MySQLiteHelper.COLUMN_NOTES,
+            MySQLiteHelper.COLUMN_TYPE,
+            MySQLiteHelper.COLUMN_LOCATION,
+            MySQLiteHelper.COLUMN_AREA,
+            MySQLiteHelper.COLUMN_TIME_FRAME,
             MySQLiteHelper.COLUMN_CAR,
             MySQLiteHelper.COLUMN_MOTO,
-            MySQLiteHelper.COLUMN_CARAVAN,
-            MySQLiteHelper.COLUMN_INDOOR
+            MySQLiteHelper.COLUMN_CARAVAN
     };
 
     @Override
@@ -58,26 +63,38 @@ public class ParkingDAO_DB_impl implements ParkingDAO {
 
     private ContentValues parkingToValues(Parking parking){
         ContentValues content = new ContentValues();
+
+
+
         content.put(MySQLiteHelper.COLUMN_NAME,parking.getName());
         content.put(MySQLiteHelper.COLUMN_COST, parking.getCost());
-        content.put(MySQLiteHelper.COLUMN_DISCO, parking.getDisco());
-        content.put(MySQLiteHelper.COLUMN_CAR, parking.isCar());
-        content.put(MySQLiteHelper.COLUMN_MOTO, parking.isMoto());
-        content.put(MySQLiteHelper.COLUMN_CARAVAN, parking.isCaravan());
-        content.put(MySQLiteHelper.COLUMN_INDOOR, parking.isIndoor());
+        content.put(MySQLiteHelper.COLUMN_TIME_LIMIT, parking.getTime_limit());
+        content.put(MySQLiteHelper.COLUMN_NOTES, parking.getNotes());
+        content.put(MySQLiteHelper.COLUMN_TYPE, parking.getType());
+        content.put(MySQLiteHelper.COLUMN_LOCATION, parking.getLocation());
+        content.put(MySQLiteHelper.COLUMN_AREA, parking.getArea());
+        content.put(MySQLiteHelper.COLUMN_TIME_FRAME, parking.getTime_frame());
+        content.put(MySQLiteHelper.COLUMN_CAR, parking.getCar());
+        content.put(MySQLiteHelper.COLUMN_MOTO, parking.getMoto());
+        content.put(MySQLiteHelper.COLUMN_CARAVAN, parking.getCaravan());
         return content;
     }
 
     private Parking valuesToParking(Cursor cursor){
         int id = cursor.getInt(0);
         String name = cursor.getString(1);
-        double cost = cursor.getDouble(2);
-        int disco = cursor.getInt(3);
-        boolean car = cursor.getInt(4)>0;
-        boolean moto = cursor.getInt(5)>0;
-        boolean caravan = cursor.getInt(6)>0;
-        boolean indoor = cursor.getInt(7)>0;
-        return  new Parking(id,name,cost,disco,car,moto,caravan,indoor);
+        String cost = cursor.getString(2);
+        String time_limit = cursor.getString(3);
+        String notes = cursor.getString(4);
+        int type = cursor.getInt(5);
+        String location = cursor.getString(6);
+        String area = cursor.getString(7);
+        String time_frame = cursor.getString(8);
+        int car = cursor.getInt(9);
+        int moto = cursor.getInt(10);
+        int caravan = cursor.getInt(11);
+
+        return  new Parking(id,name,cost,time_limit,type,notes,location,area,time_frame,car,moto,caravan);
     }
     @Override
     public ArrayList<Parking> getAllParking() {

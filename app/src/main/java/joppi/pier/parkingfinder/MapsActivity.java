@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -85,7 +86,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 				double distance_weight = 0.5;
 				double cost_weight = 0.5;
 
-				return lhs.getDistance() * distance_weight + lhs.getCost() * cost_weight >= rhs.getDistance() * distance_weight + rhs.getCost() * cost_weight ? 1 : -1;
+				return 1;
+				//lhs.getDistance() * distance_weight + lhs.getCost() * cost_weight >= rhs.getDistance() * distance_weight + rhs.getCost() * cost_weight ? 1 : -1;
 			}
 		});
 
@@ -103,6 +105,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String prova = preferencesManager.getInstance(MapsActivity.this).getStringPreference(getString(R.string.preferenceVehicle));
 
         Log.w("PROVA PREF: ", prova);
+
+        ArrayList<LatLng> ar = new ArrayList<>();
+        ar = Parking.parseCoordinates(parkingMgr.getParkingList().get(0).getArea());
     }
 
 	/**

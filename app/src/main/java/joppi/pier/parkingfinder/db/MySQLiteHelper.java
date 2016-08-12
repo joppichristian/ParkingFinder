@@ -18,11 +18,16 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_COST = "cost";
-    public static final String COLUMN_DISCO = "disco";
+    public static final String COLUMN_TIME_LIMIT = "time_limit";
+    public static final String COLUMN_NOTES = "notes";
+    public static final String COLUMN_TYPE = "type";
+    public static final String COLUMN_LOCATION = "location";
+    public static final String COLUMN_AREA = "area";
+    public static final String COLUMN_TIME_FRAME = "time_frame";
     public static final String COLUMN_CAR = "car";
-    public static final String COLUMN_CARAVAN = "caravan";
     public static final String COLUMN_MOTO = "moto";
-    public static final String COLUMN_INDOOR = "indoor";
+    public static final String COLUMN_CARAVAN = "caravan";
+
 
     public static final String TABLE2_NAME = "coordinates";
     public static final String COLUMN_PARKING = "id_parking";
