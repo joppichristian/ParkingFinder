@@ -55,7 +55,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/colorPrimaryDark"
-
         app:headerLayout="@layout/drawer_top"
         app:menu="@menu/maps_menu"/>
 </android.support.v4.widget.DrawerLayout>

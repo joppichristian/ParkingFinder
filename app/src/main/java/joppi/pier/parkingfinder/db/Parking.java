@@ -18,10 +18,6 @@ public class Parking {
 
     private double distance;
 
-    public Parking(String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
-        this(-1, name, cost, disco, car, moto, caravan, indoor);
-    }
-
     public Parking(int id,String name,double cost,int disco,boolean car,boolean moto, boolean caravan, boolean indoor){
         this.id = id;
         this.name = name;

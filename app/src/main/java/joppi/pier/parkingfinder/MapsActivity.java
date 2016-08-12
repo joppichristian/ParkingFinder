@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Comparator;
+import java.util.Map;
 
 import joppi.pier.parkingfinder.db.Parking;
 import joppi.pier.parkingfinder.db.ParkingMgr;
@@ -97,8 +98,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		locationProvider.addLocationChangedListener(this);
 
         menuManager = new MenuManager((DrawerLayout)findViewById(R.id.drawer_layout),(NavigationView)findViewById(R.id.menu),MapsActivity.this);
+        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
+        preferencesManager.setPreference(getString(R.string.preferenceVehicle),"Moto");
+        String prova = preferencesManager.getInstance(MapsActivity.this).getStringPreference(getString(R.string.preferenceVehicle));
 
-	}
+        Log.w("PROVA PREF: ", prova);
+    }
 
 	/**
 	 * Manipulates the map once available.
