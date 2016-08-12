@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import joppi.pier.parkingfinder.DistanceMatrixAPI;
+import joppi.pier.parkingfinder.DistanceMatrixResult;
 
 import static android.location.Location.distanceBetween;
 
@@ -241,8 +242,12 @@ public class ParkingMgr implements GoogleMap.OnPolygonClickListener
 				LatLng tmp = searchClosestPoint(p);
 				if(tmp != null){
 					int result = 0;
-					try{
-						result = new DistanceMatrixAPI().getDistanceMatrix(trento, tmp);
+					try
+					{
+						//result = new DistanceMatrixAPI().getDistanceMatrix(trento, tmp);
+						DistanceMatrixResult queryResult = new DistanceMatrixAPI("").exec(trento, tmp);
+						if(queryResult.getStatusOk())
+							result = queryResult.getDistance();
 					}catch(Exception e){
 						e.printStackTrace();
 					}

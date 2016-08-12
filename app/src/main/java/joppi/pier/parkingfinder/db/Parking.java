@@ -17,6 +17,7 @@ public class Parking {
 //        -type (Surface, Structure, Surveiled, ...)
 //        -location (LatLng)
 //        -area (LatLng,LatLng)
+//		  -timeframe (Opening, Closing times)
 //    }
 //
 //    Places

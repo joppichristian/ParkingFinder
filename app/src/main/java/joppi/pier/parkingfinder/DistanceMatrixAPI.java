@@ -2,38 +2,60 @@ package joppi.pier.parkingfinder;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-// TODO: create a quite complete class for DistanceMatrix requests (vehicle, duration, traffic etc...)
 public class DistanceMatrixAPI
 {
-	public DistanceMatrixAPI()
+	public static String MODE_DRIVING = "mode=driving";
+	public static String MODE_WALKING = "mode=walking";
+	public static String MODE_BICYCLING = "mode=bicycling";
+	public static String MODE_TRANSIT = "mode=transit";
+
+	public static String AVOID_TOLLS = "avoid=tolls";
+	public static String AVOID_HIGHWAYS = "avoid=highways";
+	public static String AVOID_FERRIES = "avoid=ferries";
+	public static String AVOID_INDOOR = "avoid=indoor";
+
+
+	private String appKey = "";
+	private String travelMode = "";
+	private String avoid = "";
+
+	public DistanceMatrixAPI(String key)
 	{
+		appKey = key;
 	}
 
-	public int getDistanceMatrix(LatLng... params)
+	public DistanceMatrixAPI setTravelMode(String travelMode )
 	{
-		int iDistance = 0;
+		this.travelMode = travelMode;
+		return this;
+	}
+
+	public DistanceMatrixAPI setRestriction(String restriction)
+	{
+		avoid = restriction;
+		return this;
+	}
+
+	public DistanceMatrixResult exec(LatLng origin, LatLng destination)
+	{
 		StringBuilder urlString = new StringBuilder();
-		urlString.append("http://maps.googleapis.com/maps/api/directions/json?");
-		urlString.append("origin=");
-		urlString.append( Double.toString(params[0].latitude));
+		urlString.append("https://maps.googleapis.com/maps/api/distancematrix/json?");
+		urlString.append("origins=");
+		urlString.append( Double.toString(origin.latitude));
 		urlString.append(",");
-		urlString.append( Double.toString(params[0].longitude));
-		urlString.append("&destination=");
-		urlString.append( Double.toString(params[1].latitude));
+		urlString.append( Double.toString(origin.longitude));
+		urlString.append("&destinations=");
+		urlString.append( Double.toString(destination.latitude));
 		urlString.append(",");
-		urlString.append( Double.toString(params[1].longitude));
+		urlString.append( Double.toString(destination.longitude));
+//		urlString.append("&key=" + appKey);
 		urlString.append("&mode=driving");
-		//Log.d("xxx","URL="+urlString.toString());
 
 		// Get the JSON And parse it to get the directions data.
 		HttpURLConnection urlConnection= null;
@@ -62,21 +84,11 @@ public class DistanceMatrixAPI
 			inStream.close();
 			urlConnection.disconnect();
 
-			//Sortout JSONresponse
-			JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
-			JSONArray array = object.getJSONArray("routes");
-
-			//Routes is a combination of objects and arrays
-			JSONObject routes = array.getJSONObject(0);
-			String summary = routes.getString("summary");
-			JSONArray legs = routes.getJSONArray("legs");
-			JSONObject steps = legs.getJSONObject(0);
-			JSONObject distance = steps.getJSONObject("distance");
-
-			iDistance = distance.getInt("value");
+			return new DistanceMatrixResult(response);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return iDistance;
+
+		return null;
 	}
 }
