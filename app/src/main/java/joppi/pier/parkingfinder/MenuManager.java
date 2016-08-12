@@ -1,102 +1,92 @@
 package joppi.pier.parkingfinder;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.Dialog;
+import android.graphics.drawable.Drawable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
+import android.widget.Toast;
 
 /**
  * Created by christian on 11/08/16.
  */
+public class MenuManager extends Activity implements NavigationView.OnNavigationItemSelectedListener {
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Activity activity;
+    private Dialog dialog;
 
-
-
-public class MenuManager extends Activity {
-
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private ArrayList<MenuItem> menuItems;
-    public MenuManager(){
-
-        menuItems.add(new MenuItem("Titolo1","ic_action_creditcard"));
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
-
-        MenuAdapter adapter = new MenuAdapter(ParkingFinderApplication.getAppContext(),menuItems);
-        mDrawerList.setAdapter(adapter);
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
+    public MenuManager(DrawerLayout drawerLayout, NavigationView navigationView, Activity activity){
+        this.drawerLayout = drawerLayout;
+        this.navigationView = navigationView;
+        this.activity = activity;
+        this.navigationView.setNavigationItemSelectedListener(this);
     }
-
     public void openMenu(){
-        mDrawerLayout.openDrawer(Gravity.LEFT);
+        drawerLayout.openDrawer(Gravity.LEFT);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        dialog = new Dialog(activity);
 
-    public class MenuAdapter extends BaseAdapter {
-
-        Context context;
-        ArrayList<MenuItem> items;
-        public MenuAdapter(Context context, ArrayList<MenuItem> items) {
-            this.context = context;
-            this.items = items;
+        if (id == R.id.vehicleOption) {
+            dialog.setContentView(R.layout.dialog_layout_vehicle);
+            dialog.show();
+            dialog.findViewById(R.id.confirmVehicleOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Save parameters
+                    dialog.dismiss();
+                }
+            });
+            return true;
         }
-        @Override
-        public int getCount() {
-            return items.size();
+        if (id == R.id.timeOption) {
+            dialog.setContentView(R.layout.dialog_layout_time);
+            dialog.show();
+            dialog.findViewById(R.id.confirmTimeOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Save parameters
+                    dialog.dismiss();
+                }
+            });
+            return true;
+        }
+        if (id == R.id.orderOption) {
+            dialog.setContentView(R.layout.dialog_layout_cost);
+            dialog.show();
+            dialog.findViewById(R.id.confirmCostOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Save parameters
+                    dialog.dismiss();
+                }
+            });
+            return true;
+        }
+        if (id == R.id.typeOption) {
+            dialog.setContentView(R.layout.dialog_layout_type);
+            dialog.show();
+            dialog.findViewById(R.id.confirmTypeOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Save parameters
+                    dialog.dismiss();
+                }
+            });
+            return true;
         }
 
-        @Override
-        public Object getItem(int position) {
-            return items.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater mInflater = (LayoutInflater)
-                        context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-                convertView = mInflater.inflate(R.layout.menu_adapter, null);
-
-            }
-            //TextView tx = (TextView)convertView.findViewById(R.id.title_item);
-            //tx.setText(items.get(position).getTitle());
-            //tx.drawable
-            return convertView;
-        }
+        return true;
     }
 
-
-    public class MenuItem {
-        private String title;
-        private String iconName;
-        public MenuItem(String title,String iconName){
-            this.title = title;
-            this.iconName = iconName;
-
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getIconName() {
-            return iconName;
-        }
-    }
 }

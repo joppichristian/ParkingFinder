@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:baselineAligned="false"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Seleziona il veicolo"
+            android:textColor="#ffffff"
+            android:textIsSelectable="true"
+            android:textSize="20dp"
+            android:layout_margin="20dp"
+            android:textStyle="bold"
+            android:typeface="serif" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:background="#50000000"
+        >
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:gravity="center_vertical"
+            >
+
+            <RadioButton
+                android:id="@+id/radio_car"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Automobile"
+                android:textSize="18dp" />
+
+            <RadioButton
+                android:id="@+id/radio_motor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Moto"
+                android:textSize="18dp" />
+
+            <RadioButton
+                android:id="@+id/radio_caravan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Caravan"
+                android:textSize="18dp" />
+        </RadioGroup>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/confirmVehicleOption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="#50000000"
+            android:onClick="closeDialog"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="Conferma"
+            android:textAlignment="center"
+            android:textSize="18dp" />
+    </LinearLayout>
+</LinearLayout>

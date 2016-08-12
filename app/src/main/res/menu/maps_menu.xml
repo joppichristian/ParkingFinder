@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="all">
-        <item android:id="@+id/inside"
-            android:title="Inside" />
-        <item android:id="@+id/outside"
-            android:title="Outside" />
-        <item android:id="@+id/underground"
-            android:title="Underground" />
-        <item android:id="@+id/disco"
-            android:title="Disco" />
-        <item android:id="@+id/free"
-            android:title="Free" />
-    </group>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MapsActivity">
+    <item android:title="Opzioni">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/vehicleOption"
+                    android:icon="@drawable/ic_action_car"
+                    android:title="Veicolo" />
+                <item
+                    android:id="@+id/timeOption"
+                    android:icon="@drawable/ic_action_clock"
+                    android:title="Tempo di sosta" />
+                <item
+                    android:id="@+id/orderOption"
+                    android:icon="@drawable/ic_filter_list"
+                    android:title="Ordinamento" />
+                <item
+                    android:id="@+id/typeOption"
+                    android:icon="@drawable/ic_local_parking"
+                    android:title="Tipo di parcheggio" />
+            </group>
+        </menu>
+    </item>
 </menu>
