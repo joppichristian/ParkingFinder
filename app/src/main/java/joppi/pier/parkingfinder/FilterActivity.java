@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.RadioButton;
+import android.widget.TimePicker;
 
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ViewListener;
@@ -16,6 +17,7 @@ public class FilterActivity extends AppCompatActivity
 	CarouselView customCarouselView;
 	int NUMBER_OF_PAGES = 3;
 	String vehicle;
+    String time;
 
 	class ShiftViewHandler extends Handler {
 		@Override
@@ -37,13 +39,14 @@ public class FilterActivity extends AppCompatActivity
 		// set ViewListener for custom view
 		customCarouselView.setViewListener(viewListener);
 		vehicle = "car";
+        time="";
 	}
 
 	public void onStartResearchClick (View v)
 	{
 		Intent go = new Intent(FilterActivity.this, MapsActivity.class);
-		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference("vehicle",vehicle);
-		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference("vehicle",vehicle);
+		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_VEHICLE,vehicle);
+		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_TIME,time);
 		startActivity(go);
 		finish();
 	}
@@ -54,6 +57,14 @@ public class FilterActivity extends AppCompatActivity
 		Message viewNum = new Message();
 		viewNum.obj = 2;
 		shiftViewHandler.sendMessageDelayed(viewNum, 200);
+        TimePicker time_picker = (TimePicker)findViewById(R.id.timePicker);
+        time_picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                time = hourOfDay+":"+minute;
+            }
+        });
+
 	}
 
 	ViewListener viewListener = new ViewListener()

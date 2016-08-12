@@ -38,7 +38,7 @@
         <TimePicker
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/timePicker"
+            android:id="@+id/timePickerOption"
             android:timePickerMode="spinner"
             android:layout_marginTop="20dp"
             android:layout_gravity="center_horizontal"/>

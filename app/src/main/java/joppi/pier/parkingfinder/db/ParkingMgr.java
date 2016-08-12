@@ -205,11 +205,9 @@ public class ParkingMgr implements GoogleMap.OnPolygonClickListener
 				coordinates = coordinateDAO.getCoordinateOfParking(p.getId());
 				polygonCoordinates.clear();
 				for(Coordinate c : coordinates){
-					Log.w("COORD", c.getLatitude() + ":" + c.getLongitude());
 					polygonCoordinates.add(new LatLng(c.getLatitude(), c.getLongitude()));
 				}
 
-				Log.w("NUMERO:", polygonCoordinates.size() + "");
 				if(polygonCoordinates.size() > 2){
 					PolygonOptions pol = new PolygonOptions()
 							.addAll(polygonCoordinates)

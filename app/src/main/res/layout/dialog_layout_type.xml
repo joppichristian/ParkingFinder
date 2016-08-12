@@ -38,26 +38,44 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:id="@+id/chkInterrato"
+            android:id="@+id/chkSubterranean"
+            android:checked="true"
             android:text="Interrato"/>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:id="@+id/chkCoperto"
+            android:id="@+id/chkStructure"
+            android:checked="true"
             android:text="Coperto"/>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:id="@+id/chkStradale"
+            android:id="@+id/chkRoad"
+            android:checked="true"
             android:text="Lato Strada"/>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:id="@+id/chkDisco"
+            android:checked="true"
             android:text="Disco orario"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:id="@+id/chkSurface"
+            android:checked="true"
+            android:text="In Superficie"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:id="@+id/chkSurveiled"
+            android:checked="true"
+            android:text="Sorvegliato"/>
         <View
             android:layout_width="wrap_content"
             android:layout_height="1dp"

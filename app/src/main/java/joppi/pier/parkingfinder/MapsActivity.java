@@ -102,9 +102,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         menuManager = new MenuManager((DrawerLayout)findViewById(R.id.drawer_layout),(NavigationView)findViewById(R.id.menu),MapsActivity.this);
         SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
         preferencesManager.setPreference(getString(R.string.preferenceVehicle),"Moto");
-        String prova = preferencesManager.getInstance(MapsActivity.this).getStringPreference(getString(R.string.preferenceVehicle));
+        Float prova = preferencesManager.getInstance(MapsActivity.this).getFloatPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT);
 
-        Log.w("PROVA PREF: ", prova);
+        Log.w("PROVA PREF: ", prova+"");
 
         ArrayList<LatLng> ar = new ArrayList<>();
         ar = Parking.parseCoordinates(parkingMgr.getParkingList().get(0).getArea());
