@@ -15,6 +15,7 @@ public class FilterActivity extends AppCompatActivity
 {
 	CarouselView customCarouselView;
 	int NUMBER_OF_PAGES = 3;
+	String vehicle;
 
 	class ShiftViewHandler extends Handler {
 		@Override
@@ -35,11 +36,14 @@ public class FilterActivity extends AppCompatActivity
 		customCarouselView.setPageCount(NUMBER_OF_PAGES);
 		// set ViewListener for custom view
 		customCarouselView.setViewListener(viewListener);
+		vehicle = "car";
 	}
 
 	public void onStartResearchClick (View v)
 	{
 		Intent go = new Intent(FilterActivity.this, MapsActivity.class);
+		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference("vehicle",vehicle);
+		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference("vehicle",vehicle);
 		startActivity(go);
 		finish();
 	}
@@ -84,12 +88,15 @@ public class FilterActivity extends AppCompatActivity
 		switch(view.getId()){
 			case R.id.radio_car:
 				if(checked)
+					vehicle = "car";
 				break;
 			case R.id.radio_motor:
 				if(checked)
+					vehicle = "moto";
 				break;
 			case R.id.radio_caravan:
 				if(checked)
+					vehicle = "caravan";
 					break;
 
 
