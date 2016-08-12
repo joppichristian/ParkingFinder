@@ -64,8 +64,10 @@ public class ParkingListAdapter extends BaseAdapter
 		text_price.setText("" + mParkingMgr.getParkingList().get(position).getCost() + " €/h");
 
 		// TODO: rank should come from sorting algorithm... (ParkingMgr)
-		double rank = 100.0/(mParkingMgr.getParkingList().size()-1) * position;
-		int color = genColorFromRank(rank);
+		double rank = 1.0/(mParkingMgr.getParkingList().size()-1) * position;
+
+		// From GREEN (0x30e0c0) to YELLOW@0.5 (0xffc280) to RED (0xff7080)
+		int color = AppUtils.generateColorFromRank(0x30e0c0, 0xffc280, 0xff7080, rank);
 
 		View tmp = vi.findViewById(R.id.rightColor);
 		tmp.setBackgroundColor(color);
@@ -80,22 +82,5 @@ public class ParkingListAdapter extends BaseAdapter
 		tmp2.setTextColor(color);
 
 		return vi;
-	}
-
-	private int genColorFromRank(double rank)
-	{
-		// From GREEN (0x30e0c0) to RED (0xff7080), delta 0xcf7040
-		// Include YELLOW(0xffc280) at 50%
-
-		int R = (int)(0xCF/50.0*rank+0x30);
-		int G = (int)(0xe0-(0x70/140.0*rank)); // Trade-off for red, yellow: 187.0
-		int B = (int)(0xc0-(0x40/50.0*rank));
-
-		// Trim changes for yellow@50 and red@100
-		if(R > 0xFF)
-			R = 0xFF;
-		if(B < 0x80)
-			B = 0x80;
-		return (0xFF << 24) | (R << 16) | (G << 8) | (B);
 	}
 }

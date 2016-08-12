@@ -16,6 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -88,8 +89,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	{
 		mMap = googleMap;
 
+		BitmapDescriptor bd = AppUtils.getCustomParkingMarker(0.5);
+
 		// DEBUG: Add a marker and move the camera
-		mMap.addMarker(new MarkerOptions().position(trento).title("This is Trento"));
+		mMap.addMarker(new MarkerOptions()
+				.position(trento)
+				.title("This is Trento")
+				.icon(bd)
+		);
+
 		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 16.0f));
 
 		// Add all parking zones to Map

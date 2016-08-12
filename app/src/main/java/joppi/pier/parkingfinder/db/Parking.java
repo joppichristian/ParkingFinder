@@ -6,6 +6,26 @@ package joppi.pier.parkingfinder.db;
 
 public class Parking {
 
+//    Parking
+//    {
+//        -id
+//        -name
+//        -cost (string)
+//        -time_limit (string)
+//        -notes (string)
+//        -places -> Places
+//        -type (Surface, Structure, Surveiled, ...)
+//        -location (LatLng)
+//        -area (LatLng,LatLng)
+//    }
+//
+//    Places
+//    {
+//        -car
+//        -moto
+//        -caravan
+//    }
+
     private int id;
     private String name;
 

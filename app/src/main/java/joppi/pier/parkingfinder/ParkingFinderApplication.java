@@ -6,7 +6,8 @@ import android.content.Context;
 /**
  * Created by christian on 30/05/16.
  */
-public class ParkingFinderApplication extends Application {
+public class ParkingFinderApplication extends Application
+{
     private static Context context;
     public void onCreate(){
         super.onCreate();

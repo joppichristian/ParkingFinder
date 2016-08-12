@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -115,33 +116,32 @@ public class ParkingMgr implements GoogleMap.OnPolygonClickListener
 	@Override
 	public void onPolygonClick(Polygon polygon)
 	{
-		//		LatLng pt = PolygonCenter(polygon.getPoints());
-		//
-		//		String tmp = polygon.getId();
-		//		int id = POLYGON_CACHE.get(tmp);
-		//		Parking p = parking.get(0);
-		//		Parking p1 = null;
-		//		for(Parking p_tmp: parking ){
-		//			if(p_tmp.getId() == id)
-		//				p1=p_tmp;
-		//		}
-		//		int index=0;
-		//		parking.set(0,p1);
-		//		int cont=0;
-		//		for(Parking p_tmp: parking ){
-		//			if(p_tmp.getId() == id)
-		//				index = cont;
-		//			cont++;
-		//		}
-		//		parking.set(index,p);
-		//		clicked = parking.get(0);
-		//		Log.w("CHANGE POS:",p.getName()+": 0"+ p1.getName() + ": "+index);
-		//		((MyListAdapter)list.getAdapter()).notifyDataSetChanged();
-		//		list.setSelection(0);
-		//		//Marker mrk = mMap.addMarker(new MarkerOptions().position(pt).title(index + " " +parking.get(0).getName()));
-		//		mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
-		//		//mrk.showInfoWindow();
+		LatLng pt = PolygonCenter(polygon.getPoints());
 
+//		String tmp = polygon.getId();
+//		int id = POLYGON_CACHE.get(tmp);
+//		Parking p = parking.get(0);
+//		Parking p1 = null;
+//		for(Parking p_tmp: parking ){
+//			if(p_tmp.getId() == id)
+//				p1=p_tmp;
+//		}
+//		int index=0;
+//		parking.set(0,p1);
+//		int cont=0;
+//		for(Parking p_tmp: parking ){
+//			if(p_tmp.getId() == id)
+//				index = cont;
+//			cont++;
+//		}
+//		parking.set(index,p);
+//		clicked = parking.get(0);
+//		Log.w("CHANGE POS:",p.getName()+": 0"+ p1.getName() + ": "+index);
+//		((MyListAdapter)list.getAdapter()).notifyDataSetChanged();
+//		list.setSelection(0);
+
+		mMap.addMarker(new MarkerOptions().position(pt).title(polygon.getId()));
+		mMap.moveCamera(CameraUpdateFactory.newLatLng(pt));
 	}
 
 	public void addDistUpdateCompleteListener(OnDistUpdateCompleteListener listener)
