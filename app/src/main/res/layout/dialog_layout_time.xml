@@ -3,7 +3,8 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              android:gravity="center_horizontal">
+              android:gravity="center_horizontal"
+    android:layout_marginBottom="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +39,7 @@
         <TimePicker
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/timePicker"
+            android:id="@+id/timePickerOption"
             android:timePickerMode="spinner"
             android:layout_marginTop="20dp"
             android:layout_gravity="center_horizontal"/>

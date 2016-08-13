@@ -49,13 +49,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
 
-		// TODO: delete, just for debug purposes
-		try {
-			MySQLiteHelper.copyDataBase(ParkingFinderApplication.getAppContext());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		// Obtain the SupportMapFragment and get notified when the map is ready to be used (onMapReady).
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
