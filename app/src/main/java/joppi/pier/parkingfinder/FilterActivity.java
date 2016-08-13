@@ -7,17 +7,20 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TimePicker;
 
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ViewListener;
 
+import java.sql.Time;
+import java.util.Calendar;
+
 public class FilterActivity extends AppCompatActivity
 {
 	CarouselView customCarouselView;
 	int NUMBER_OF_PAGES = 3;
-	String vehicle;
-    String time;
 
 	class ShiftViewHandler extends Handler {
 		@Override
@@ -38,15 +41,28 @@ public class FilterActivity extends AppCompatActivity
 		customCarouselView.setPageCount(NUMBER_OF_PAGES);
 		// set ViewListener for custom view
 		customCarouselView.setViewListener(viewListener);
-		vehicle = "car";
-        time="";
+
+
+
 	}
 
 	public void onStartResearchClick (View v)
 	{
 		Intent go = new Intent(FilterActivity.this, MapsActivity.class);
+		int id_checked = ((RadioGroup)findViewById(R.id.filterVehicleGroup)).getCheckedRadioButtonId();
+		String vehicle = ((RadioButton)findViewById(id_checked)).getText().toString();
+
+		TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
+		String time = timePicker.getCurrentHour() + ":" + timePicker.getCurrentMinute();
+
+		SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
+		float cost_weight = seekBar.getProgress()/10.0f;
+
+
 		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_VEHICLE,vehicle);
 		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_TIME,time);
+		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_COST_WEIGHT,cost_weight);
+		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT,(1-cost_weight));
 		startActivity(go);
 		finish();
 	}
@@ -57,14 +73,6 @@ public class FilterActivity extends AppCompatActivity
 		Message viewNum = new Message();
 		viewNum.obj = 2;
 		shiftViewHandler.sendMessageDelayed(viewNum, 200);
-        TimePicker time_picker = (TimePicker)findViewById(R.id.timePicker);
-        time_picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                time = hourOfDay+":"+minute;
-            }
-        });
-
 	}
 
 	ViewListener viewListener = new ViewListener()
@@ -73,6 +81,8 @@ public class FilterActivity extends AppCompatActivity
 		public View setViewForPosition(int position)
 		{
 			View customView = null;
+            SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance(FilterActivity.this);
+
 			switch(position){
 				case 0:
 					customView = getLayoutInflater().inflate(R.layout.carousel_layout_vehicle, null);
@@ -82,7 +92,11 @@ public class FilterActivity extends AppCompatActivity
 					break;
 				default:
 					customView = getLayoutInflater().inflate(R.layout.carousel_layout_cost, null);
-					break;
+                    SeekBar seekBar = (SeekBar)customView.findViewById(R.id.seekBar);
+                    int progress = (int)(preferencesManager.getFloatPreference(SharedPreferencesManager.PREF_COST_WEIGHT)*10.0f);
+                    if(seekBar != null)
+                        seekBar.setProgress(progress);
+                    break;
 			}
 
 			//set view attributes here
@@ -99,15 +113,12 @@ public class FilterActivity extends AppCompatActivity
 		switch(view.getId()){
 			case R.id.radio_car:
 				if(checked)
-					vehicle = "car";
 				break;
 			case R.id.radio_motor:
 				if(checked)
-					vehicle = "moto";
 				break;
 			case R.id.radio_caravan:
 				if(checked)
-					vehicle = "caravan";
 					break;
 
 

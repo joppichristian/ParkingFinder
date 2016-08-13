@@ -44,21 +44,21 @@
             >
 
             <RadioButton
-                android:id="@+id/radio_car"
+                android:id="@+id/radio_car_option"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Automobile"
                 android:textSize="18dp" />
 
             <RadioButton
-                android:id="@+id/radio_motor"
+                android:id="@+id/radio_motor_option"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Moto"
                 android:textSize="18dp" />
 
             <RadioButton
-                android:id="@+id/radio_caravan"
+                android:id="@+id/radio_caravan_option"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Caravan"

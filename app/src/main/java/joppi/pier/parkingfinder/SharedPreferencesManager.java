@@ -74,13 +74,13 @@ public class SharedPreferencesManager {
 
     public int getIntPreference(String key) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        int var = sharedPreferences.getInt(key, -1);
+        int var = sharedPreferences.getInt(key, 0);
         return var;
     }
 
     public Float getFloatPreference(String key) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Float var = sharedPreferences.getFloat(key, -1);
+        Float var = sharedPreferences.getFloat(key, 0.5f);
         return var;
     }
     public Boolean getBooleanPreference(String key) {
