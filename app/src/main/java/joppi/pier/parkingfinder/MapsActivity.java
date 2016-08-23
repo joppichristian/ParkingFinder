@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -21,10 +22,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.io.IOException;
 import java.util.Comparator;
 
-import joppi.pier.parkingfinder.db.MySQLiteHelper;
 import joppi.pier.parkingfinder.db.Parking;
 import joppi.pier.parkingfinder.db.ParkingMgr;
 
@@ -41,6 +40,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ListView parkingListView;
 	View mSelectedParkingView;
 	ParkingListAdapter mParkingListAdapter;
+
+	// TODO: remove & implement on current location
 	LatLng trento = new LatLng(46.062228, 11.112906);
 
 	@Override
@@ -57,9 +58,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		SlidingUpPanelLayout slidingLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
 		slidingLayout.addPanelSlideListener(this);
 
+		// Set-up parking listView
+		parkingListView = (ListView)findViewById(R.id.parkingListView);
+		parkingListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+		// Create location provider
+		locationProvider = new LocationProvider(this, getApplicationContext());
+		locationProvider.addLocationChangedListener(this);
+
+		// Crate options menu manager
+        menuManager = new MenuManager((DrawerLayout)findViewById(R.id.drawer_layout),(NavigationView)findViewById(R.id.menu),MapsActivity.this);
+    }
+
+	/**
+	 * Manipulates the map once available.
+	 * This callback is triggered when the map is ready to be used.
+	 */
+	@Override
+	public void onMapReady(GoogleMap googleMap)
+	{
+		mMap = googleMap;
+
 		// Load parking DB
-		mParkingMgr = new ParkingMgr(this);
-		mParkingMgr.loadDbAsync();
+		mParkingMgr = new ParkingMgr(this, mMap);
+
 		mParkingMgr.addUiRefreshHandler(this);
 		mParkingMgr.registerListSortComparator(new Comparator<Parking>()
 		{
@@ -74,35 +96,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			}
 		});
 
-		// Set-up parking listView
-		parkingListView = (ListView)findViewById(R.id.parkingListView);
-		parkingListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-
-		// Create location provider
-		locationProvider = new LocationProvider(this, getApplicationContext());
-		locationProvider.addLocationChangedListener(this);
-
-		// Crate options menu manager
-        menuManager = new MenuManager((DrawerLayout)findViewById(R.id.drawer_layout),(NavigationView)findViewById(R.id.menu),MapsActivity.this);
-
-//        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
-//        preferencesManager.setPreference(getString(R.string.preferenceVehicle),"Moto");
-//        String prova = preferencesManager.getInstance(MapsActivity.this).getStringPreference(getString(R.string.preferenceVehicle));
-    }
-
-	/**
-	 * Manipulates the map once available.
-	 * This callback is triggered when the map is ready to be used.
-	 */
-	@Override
-	public void onMapReady(GoogleMap googleMap)
-	{
-		mMap = googleMap;
-
-		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 16.0f));
-
-		// Add all parking zones to Map
-		mParkingMgr.addParkingListOnMap(mMap);
+		// TODO: implement on current location
+		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 13.0f));
 
 		// Click handler to let user add parking zones
 		mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
@@ -122,9 +117,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		}
 		mMap.setMyLocationEnabled(true);
 		mMap.getUiSettings().setZoomControlsEnabled(true);
-
-		// Sort parking list
-		mParkingMgr.sortList();
 
 		mParkingListAdapter = new ParkingListAdapter(this, mParkingMgr);
 		parkingListView.setAdapter(mParkingListAdapter);
@@ -147,6 +139,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			}
 		});
 		layout.addView(mSelectedParkingView);
+
+		// TODO: delete, for DEBUG purpose only
+		if(Build.FINGERPRINT.startsWith("generic"))
+		{
+			Location tmp = new Location("tmp");
+			tmp.setLatitude(trento.latitude);
+			tmp.setLongitude(trento.longitude);
+			onCoarseLocationChanged(tmp);
+			onFineLocationChanged(tmp);
+		}
 	}
 
 	private void openParkingDetailActivity(int itemPos)
@@ -179,9 +181,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			mSelectedParkingView.setClickable(false);
 		}
 		else if(newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
-			mParkingMgr.sortList();
-			ListView list = (ListView)findViewById(R.id.parkingListView);
-			((ParkingListAdapter)list.getAdapter()).notifyDataSetChanged();
 			parkingListView.setSelection(0);
 		}
 	}
@@ -199,13 +198,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	}
 
 	@Override
-	public void onLocationChanged(Location newLoc)
+	public void onFineLocationChanged(Location newLoc)
 	{
 		mParkingMgr.updateDistancesAsync();
 	}
 
 	@Override
-	public void onUiRefreshHandler()
+	public void onCoarseLocationChanged(Location newLoc)
+	{
+		mParkingMgr.updateParkingListAsync(newLoc);
+	}
+
+	@Override
+	public void uiRefreshHandler()
 	{
 		int selectedItem = mParkingMgr.getSelectedParkingIndex();
 		if(selectedItem < 0){

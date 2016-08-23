@@ -37,7 +37,8 @@ public class Parking
 	private String timeLimit;
 	private int type;
 	private String notes;
-	private String location;
+	private String latitude;
+	private String longitude;
 	private String area;
 	private String timeFrame;
 	private int car;
@@ -45,11 +46,9 @@ public class Parking
 	private int caravan;
 
 	private int currDistance;
+	private double currRank;
 
-	private double currPriceRank;
-	private double currDistanceRank;
-
-	public Parking(int id, String name, String cost, String timeLimit, int type, String notes, String location, String area, String timeFrame, int car, int moto, int caravan)
+	public Parking(int id, String name, String cost, String timeLimit, int type, String notes, String latitude, String longitude, String area, String timeFrame, int car, int moto, int caravan)
 	{
 		this.id = id;
 		this.name = name;
@@ -57,15 +56,15 @@ public class Parking
 		this.timeLimit = timeLimit;
 		this.type = type;
 		this.notes = notes;
-		this.location = location;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.area = area;
 		this.timeFrame = timeFrame;
 		this.car = car;
 		this.moto = moto;
 		this.caravan = caravan;
 		this.currDistance = -1;
-		this.currPriceRank = -1.0;
-		this.currDistanceRank = -1.0;
+		this.currRank = -1.0;
 	}
 
 	public int getId()
@@ -101,13 +100,14 @@ public class Parking
 		return notes;
 	}
 
-	public String getLocationRaw(){return location;}
+	public String getLatitudeRaw(){return latitude;}
+
+	public String getLongitudeRaw(){return longitude;}
 
 	public LatLng getLocation()
 	{
 		try{
-			String[] locStr = location.split(",");
-			return new LatLng(Double.parseDouble(locStr[0]), Double.parseDouble(locStr[1]));
+			return new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
 		}catch(Exception e){}
 		return null;
 	}
@@ -142,18 +142,14 @@ public class Parking
 		return currDistance;
 	}
 
-	public double getCurrentPriceRank(){ return currPriceRank; }
-
-	public double getCurrentDistanceRank(){ return currDistanceRank; }
+	public double getCurrRank(){ return currRank; }
 
 	public void setCurrDistance(int currDistance)
 	{
 		this.currDistance = currDistance;
 	}
 
-	public void setCurrPriceRank(double rank){ currPriceRank = rank; }
-
-	public void setCurrDistRank(double rank){ currDistanceRank = rank; }
+	public void setCurrRank(double rank){ currRank = rank; }
 
 	@Override
 	public String toString()
@@ -170,7 +166,8 @@ public class Parking
 		content.put(MySQLiteHelper.COLUMN_TIME_LIMIT, timeLimit);
 		content.put(MySQLiteHelper.COLUMN_NOTES, notes);
 		content.put(MySQLiteHelper.COLUMN_TYPE, type);
-		content.put(MySQLiteHelper.COLUMN_LOCATION, location);
+		content.put(MySQLiteHelper.COLUMN_LATITUDE, latitude);
+		content.put(MySQLiteHelper.COLUMN_LONGITUDE, longitude);
 		content.put(MySQLiteHelper.COLUMN_AREA, area);
 		content.put(MySQLiteHelper.COLUMN_TIME_FRAME, timeFrame);
 		content.put(MySQLiteHelper.COLUMN_CAR, car);
@@ -181,20 +178,22 @@ public class Parking
 
 	public static Parking Parse(Cursor cursor)
 	{
-		int id = cursor.getInt(0);
-		String name = cursor.getString(1);
-		String cost = cursor.getString(2);
-		String timeLimit = cursor.getString(3);
-		String notes = cursor.getString(4);
-		int type = cursor.getInt(5);
-		String location = cursor.getString(6);
-		String area = cursor.getString(7);
-		String timeFrame = cursor.getString(8);
-		int car = cursor.getInt(9);
-		int moto = cursor.getInt(10);
-		int caravan = cursor.getInt(11);
+		int i=0;
+		int id = cursor.getInt(i++);
+		String name = cursor.getString(i++);
+		String cost = cursor.getString(i++);
+		String timeLimit = cursor.getString(i++);
+		String notes = cursor.getString(i++);
+		int type = cursor.getInt(i++);
+		String latitude = cursor.getString(i++);
+		String longitude = cursor.getString(i++);
+		String area = cursor.getString(i++);
+		String timeFrame = cursor.getString(i++);
+		int car = cursor.getInt(i++);
+		int moto = cursor.getInt(i++);
+		int caravan = cursor.getInt(i++);
 
-		return new Parking(id, name, cost, timeLimit, type, notes, location, area, timeFrame, car, moto, caravan);
+		return new Parking(id, name, cost, timeLimit, type, notes, latitude, longitude, area, timeFrame, car, moto, caravan);
 	}
 
 	public static ArrayList<LatLng> parseCoordinates(String coordinates)

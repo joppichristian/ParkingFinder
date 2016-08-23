@@ -3,9 +3,6 @@ package joppi.pier.parkingfinder;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-
-import static android.provider.Settings.Global.getString;
 
 /**
  * Created by christian on 11/08/16.
@@ -88,7 +85,4 @@ public class SharedPreferencesManager {
         Boolean var = sharedPreferences.getBoolean(key, false);
         return var;
     }
-
-
-
 }

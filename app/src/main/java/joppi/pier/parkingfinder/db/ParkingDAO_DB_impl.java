@@ -2,29 +2,17 @@ package joppi.pier.parkingfinder.db;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 
 import java.util.ArrayList;
 
+import joppi.pier.parkingfinder.AppUtils;
 import joppi.pier.parkingfinder.ParkingFinderApplication;
 
 public class ParkingDAO_DB_impl implements ParkingDAO
 {
 	private MySQLiteHelper helper;
 	private SQLiteDatabase database;
-	private String[] allColumns = {
-			MySQLiteHelper.COLUMN_ID,
-			MySQLiteHelper.COLUMN_NAME,
-			MySQLiteHelper.COLUMN_COST,
-			MySQLiteHelper.COLUMN_TIME_LIMIT,
-			MySQLiteHelper.COLUMN_NOTES,
-			MySQLiteHelper.COLUMN_TYPE,
-			MySQLiteHelper.COLUMN_LOCATION,
-			MySQLiteHelper.COLUMN_AREA,
-			MySQLiteHelper.COLUMN_TIME_FRAME,
-			MySQLiteHelper.COLUMN_CAR,
-			MySQLiteHelper.COLUMN_MOTO,
-			MySQLiteHelper.COLUMN_CARAVAN
-	};
 
 	@Override
 	public void open()
@@ -44,7 +32,7 @@ public class ParkingDAO_DB_impl implements ParkingDAO
 	public Parking insertParking(Parking parking)
 	{
 		long insertId = database.insert(MySQLiteHelper.TABLE_NAME, null, parking.getContentValues());
-		Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME, allColumns, MySQLiteHelper.COLUMN_ID + " = ?", new String[]{"" + insertId}, null, null, null);
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME, null, MySQLiteHelper.COLUMN_ID + " = ?", new String[]{"" + insertId}, null, null, null);
 		cursor.moveToFirst();
 		Parking p = Parking.Parse(cursor);
 		cursor.close();
@@ -59,10 +47,26 @@ public class ParkingDAO_DB_impl implements ParkingDAO
 	}
 
 	@Override
-	public ArrayList<Parking> getParkingList()
+	public ArrayList<Parking> getParkingList(Location currLocation, double kmRadius)
 	{
-		ArrayList<Parking> parking = new ArrayList<Parking>();
-		Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME, allColumns, null, null, null, null, null);
+		// filter parkinglist (show only near ones)
+		// (filter by query first (square area latlng)
+
+		double geoDegDist = AppUtils.getGeoDegDistance((kmRadius/2.0) * 1000.0);
+
+		String latMin = String.valueOf(currLocation.getLatitude() - geoDegDist);
+		String latMax = String.valueOf(currLocation.getLatitude() + geoDegDist);
+		String lngMin = String.valueOf(currLocation.getLongitude() - geoDegDist);
+		String lngMax = String.valueOf(currLocation.getLongitude() + geoDegDist);
+
+		String whereClause = MySQLiteHelper.COLUMN_LATITUDE+">? AND "+MySQLiteHelper.COLUMN_LATITUDE+"<? AND "+MySQLiteHelper.COLUMN_LONGITUDE+">? AND "+MySQLiteHelper.COLUMN_LONGITUDE+"<?";
+		String[] whereArgs = new String[] {
+				latMin,latMax,
+				lngMin, lngMax
+		};
+
+		ArrayList<Parking> parking = new ArrayList<>();
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME, null, whereClause, whereArgs, null, null, null);
 		cursor.moveToFirst();
 		while(!cursor.isAfterLast())
 		{
@@ -77,8 +81,7 @@ public class ParkingDAO_DB_impl implements ParkingDAO
 	@Override
 	public Parking getParking(int id)
 	{
-		Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME,
-				allColumns, MySQLiteHelper.COLUMN_ID + " = ? ", new String[]{"" + id}, null, null, null);
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME, null, MySQLiteHelper.COLUMN_ID + " = ? ", new String[]{"" + id}, null, null, null);
 		cursor.moveToFirst();
 
 		Parking parking = Parking.Parse(cursor);

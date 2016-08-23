@@ -1,6 +1,7 @@
 package joppi.pier.parkingfinder.db;
 
 import android.app.Activity;
+import android.location.Location;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -28,15 +29,14 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 	ArrayList<Parking> mParkingList;
 	Map<Marker, Parking> parkingMarkersHashMap;
 
+	Location mCurrLocation;
 	Parking mSelectedParking;
-
 	Thread mUpdateDistancesThread;
-
 	private final Semaphore listAccessSema = new Semaphore(1, true);
 
 	public interface UiRefreshHandler
 	{
-		void onUiRefreshHandler();
+		void uiRefreshHandler();
 	}
 
 	// Called when Ui refresh is needed.
@@ -44,13 +44,16 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 	private Comparator<Parking> mParkingListComparator;
 
-	public ParkingMgr(Activity activity)
+	public ParkingMgr(Activity activity, GoogleMap map)
 	{
 		mapsActivity = activity;
+		mMap = map;
+
 		mParkingList = null;
 		mParkingListComparator = null;
 		mSelectedParking = null;
 		parkingMarkersHashMap = new HashMap<>();
+		mCurrLocation = null;
 	}
 
 	public Parking getSelectedParking()
@@ -62,15 +65,24 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 	{
 		try{
 			return mParkingList.indexOf(mSelectedParking);
-		}catch(Exception e){}
+		}catch(Exception e){
+		}
 		return -1;
 	}
 
 	public ArrayList<Parking> getParkingList()
 	{
-		if(!mLoadDbTask.isAlive())
-			return mParkingList;
-		return null;
+		// We might incur in concurrent modifications on the list
+		try{
+			listAccessSema.acquire();
+		}catch(InterruptedException e){
+			return null;
+		}
+
+		ArrayList<Parking> list = mParkingList;
+		listAccessSema.release();
+
+		return list;
 	}
 
 	public void setSelection(int index)
@@ -79,20 +91,12 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			mSelectedParking = mParkingList.get(index);
 	}
 
-	public void loadDbAsync()
+	public void updateParkingListAsync(Location currLocation)
 	{
+		mCurrLocation = currLocation;
+
 		// Start separated thread
-		mLoadDbTask.start();
-	}
-
-	// TODO: Area is displayed to user only after click on parking and just for reference
-	// TODO: Markers color should depend only on price (distance is already shown right?)
-	public void addParkingListOnMap(GoogleMap map)
-	{
-		mMap = map;
-
-		// Have to do this on the UI thread
-		// mapsActivity.runOnUiThread(mUpdateParkingMarkers);
+		(new Thread(mUpdateParkingListTask)).start();
 	}
 
 	public void updateDistancesAsync()
@@ -112,28 +116,31 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 	public void drawPolyClickHandler(LatLng latLng)
 	{
-//		drawPolyPts.add(latLng);
-//		if(drawPolyPts.size() > 1){
-//			if(drawPoly == null){
-//				drawPoly = mMap.addPolygon(new PolygonOptions()
-//						.addAll(drawPolyPts)
-//						.strokeColor(0x66ff0000)
-//						.fillColor(0x22ff0000)
-//						.clickable(true));
-//			} else{
-//				drawPoly.setPoints(drawPolyPts);
-//				if(isPolyComplex(drawPolyPts))
-//					Toast.makeText(mapsActivity, "Invalid selection", Toast.LENGTH_LONG).show();
-//			}
-//		}
+		//		drawPolyPts.add(latLng);
+		//		if(drawPolyPts.size() > 1){
+		//			if(drawPoly == null){
+		//				drawPoly = mMap.addPolygon(new PolygonOptions()
+		//						.addAll(drawPolyPts)
+		//						.strokeColor(0x66ff0000)
+		//						.fillColor(0x22ff0000)
+		//						.clickable(true));
+		//			} else{
+		//				drawPoly.setPoints(drawPolyPts);
+		//				if(isPolyComplex(drawPolyPts))
+		//					Toast.makeText(mapsActivity, "Invalid selection", Toast.LENGTH_LONG).show();
+		//			}
+		//		}
 	}
 
+	// TODO: Area is displayed to user only after click on parking and just for reference
 	@Override
 	public boolean onMarkerClick(Marker marker)
 	{
 		// Set current selection
 		mSelectedParking = parkingMarkersHashMap.get(marker);
-		mapsActivity.runOnUiThread(mDispatchOnUiRefreshHandlers);
+
+		// Force UI refresh
+		mapsActivity.runOnUiThread(mDispatchUiRefreshHandlers);
 		return false;
 	}
 
@@ -149,8 +156,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 	public void sortList()
 	{
-		if(mParkingListComparator != null)
-		{
+		if(mParkingListComparator != null){
 			// We might incur in concurrent modifications on the list
 			try{
 				listAccessSema.acquire();
@@ -158,7 +164,8 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 				Collections.sort(mParkingList, mParkingListComparator);
 
 				listAccessSema.release();
-			}catch(Exception e){}
+			}catch(Exception e){
+			}
 		}
 	}
 
@@ -169,13 +176,13 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 		try{
 			listAccessSema.acquire();
-		}catch(InterruptedException e){}
+		}catch(InterruptedException e){
+		}
 
 		// Add parkings markers
-		for(Parking parking : mParkingList)
-		{
+		for(Parking parking : mParkingList){
 			// Check price rank only?
-			BitmapDescriptor bd = AppUtils.getCustomParkingMarker(parking.getCurrentPriceRank());
+			BitmapDescriptor bd = AppUtils.getCustomParkingMarker(parking.getCurrRank());
 
 
 			Marker newMarker = mMap.addMarker(new MarkerOptions()
@@ -187,7 +194,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		listAccessSema.release();
 	}
 
-	private Thread mLoadDbTask = new Thread()
+	private Runnable mUpdateParkingListTask = new Runnable()
 	{
 		@Override
 		public void run()
@@ -198,13 +205,20 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 			try{
 				listAccessSema.acquire();
-			}catch(InterruptedException e){}
+			}catch(InterruptedException e){
+			}
 
-			mParkingList = parkingDAO.getParkingList();
+			// TODO: temp. implementation, get filter radius from prefs or whatever
+			if(mCurrLocation != null)
+				mParkingList = parkingDAO.getParkingList(mCurrLocation, 10.0); // 10km search radius
 
 			parkingDAO.close();
 
 			listAccessSema.release();
+
+			// Force distance update (with subseq UI refresh etc...)
+			mUpdateDistancesThread = new Thread(mUpdateDistancesTask);
+			mUpdateDistancesThread.start();
 		}
 	};
 
@@ -215,12 +229,16 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		{
 			try{
 				listAccessSema.acquire();
-			}catch(InterruptedException e){}
+			}catch(InterruptedException e){
+			}
 
-			for(Parking parking: mParkingList)
-			{
-				try
-				{
+			if(mParkingList == null){
+				listAccessSema.release();
+				return;
+			}
+
+			for(Parking parking : mParkingList){
+				try{
 					// TODO: remove this and implement methods on current location
 					LatLng trento = new LatLng(46.062228, 11.112906);
 
@@ -237,21 +255,29 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			// Sort parking list
 			sortList();
 
+			// Update rank
+			for(int i = 0; i < mParkingList.size(); i++){
+				Parking p = mParkingList.get(i);
+
+				double rank = 1.0 / (mParkingList.size() - 1) * i;
+				p.setCurrRank(rank);
+			}
+
 			// If nothing is selected
 			if(getSelectedParkingIndex() < 0)
 				setSelection(0);
 
-			mapsActivity.runOnUiThread(mDispatchOnUiRefreshHandlers);
+			mapsActivity.runOnUiThread(mDispatchUiRefreshHandlers);
 		}
 	};
 
-	private Runnable mDispatchOnUiRefreshHandlers = new Runnable()
+	private Runnable mDispatchUiRefreshHandlers = new Runnable()
 	{
 		@Override
 		public void run()
 		{
 			for(UiRefreshHandler l : mUiRefreshHandlers){
-				l.onUiRefreshHandler();
+				l.uiRefreshHandler();
 			}
 			updateParkingMarkers();
 		}

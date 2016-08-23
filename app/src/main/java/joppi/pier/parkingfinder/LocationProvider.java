@@ -33,6 +33,11 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	protected Activity currActivity;
 
 	Location mLocation;
+	Location mLastCoarseLoc;
+
+	private long mFineLocMillis;
+	private float mFineLocDispl;
+	private float mCoarseLocDispl;
 	private GoogleApiClient mGoogleApiClient;
 	private LocationRequest mLocationRequest;
 
@@ -41,19 +46,37 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	public interface OnLocationChangedListener
 	{
 		/**
-		 * Called when a sliding pane's position changes.
+		 * Called when location changes (little changes)
 		 *
 		 * @param loc The new location
 		 */
-		void onLocationChanged(Location loc);
+		void onFineLocationChanged(Location loc);
+
+		/**
+		 * Called when location changes (big changes)
+		 *
+		 * @param loc The new location
+		 */
+		void onCoarseLocationChanged(Location loc);
 	}
 
 	public LocationProvider(Activity activity, Context context)
 	{
 		currActivity = activity;
-
 		this.context = context;
+
+		mLastCoarseLoc = null;
+		mFineLocMillis = 2000; // 2 sec
+		mFineLocDispl = 5; // 5 meters
+		mCoarseLocDispl = 250; // 250 meters
 		buildGoogleApiClient();
+	}
+
+	public void setUpdateRules(long fineLocMillis, float fineLocDispl, float coarseLocDispl)
+	{
+		mFineLocMillis = fineLocMillis;
+		mFineLocDispl = fineLocDispl;
+		mCoarseLocDispl = coarseLocDispl;
 	}
 
 	@Override
@@ -61,8 +84,8 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	{
 		mLocationRequest = LocationRequest.create();
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-		mLocationRequest.setInterval(4000); // Update location every second
-		mLocationRequest.setSmallestDisplacement(10); // Update every 2 meters
+		mLocationRequest.setInterval(mFineLocMillis); // Update location every x milliseconds
+		mLocationRequest.setSmallestDisplacement(mFineLocDispl); // Update every x meters
 
 		if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
 			ActivityCompat.requestPermissions(currActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -140,8 +163,27 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	@Override
 	public void onLocationChanged(Location arg0)
 	{
+		// Dispatch coarse location changes
+		if(mLastCoarseLoc == null)
+		{
+			mLastCoarseLoc = arg0;
+			for(OnLocationChangedListener l : mLocationChangedListeners){
+				l.onCoarseLocationChanged(mLastCoarseLoc);
+			}
+		}
+		else if(mLastCoarseLoc.distanceTo(arg0) > mCoarseLocDispl) // Update every x meters
+		{
+			mLastCoarseLoc = arg0;
+			for(OnLocationChangedListener l : mLocationChangedListeners){
+				l.onCoarseLocationChanged(mLastCoarseLoc);
+			}
+		}
+
+		// Dispatch fine location changes
 		mLocation = arg0;
-		dispatchOnLocationChanged(arg0);
+		for(OnLocationChangedListener l : mLocationChangedListeners){
+			l.onFineLocationChanged(arg0);
+		}
 	}
 
 	public Location getCurrentLocation()
@@ -152,12 +194,5 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	public void addLocationChangedListener(OnLocationChangedListener listener)
 	{
 		mLocationChangedListeners.add(listener);
-	}
-
-	void dispatchOnLocationChanged(Location loc)
-	{
-		for(OnLocationChangedListener l : mLocationChangedListeners){
-			l.onLocationChanged(loc);
-		}
 	}
 }

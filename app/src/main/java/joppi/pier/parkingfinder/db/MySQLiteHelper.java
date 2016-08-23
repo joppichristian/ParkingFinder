@@ -9,9 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Created by christian on 29/05/16.
- */
 public class MySQLiteHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_NAME = "parking";
@@ -21,7 +18,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TIME_LIMIT = "time_limit";
     public static final String COLUMN_NOTES = "notes";
     public static final String COLUMN_TYPE = "type";
-    public static final String COLUMN_LOCATION = "location";
+    public static final String COLUMN_LATITUDE = "latitude";
+    public static final String COLUMN_LONGITUDE = "longitude";
     public static final String COLUMN_AREA = "area";
     public static final String COLUMN_TIME_FRAME = "time_frame";
     public static final String COLUMN_CAR = "car";

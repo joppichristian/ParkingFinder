@@ -11,6 +11,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public class AppUtils
 {
+	public static double getGeoDegDistance(double meters)
+	{
+		// 1° => ~111 km
+		// 1' => ~1.85 km
+		// 1" => ~30.9 m
+
+		return meters/111000.00;
+	}
+
 	public static int generateColorFromRank(int startColor, int endColor, double rank)
 	{
 		// START colors

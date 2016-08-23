@@ -1,5 +1,7 @@
 package joppi.pier.parkingfinder.db;
 
+import android.location.Location;
+
 import java.util.ArrayList;
 
 public interface ParkingDAO
@@ -12,7 +14,7 @@ public interface ParkingDAO
 
 	public boolean clear();
 
-	public ArrayList<Parking> getParkingList();
+	public ArrayList<Parking> getParkingList(Location currLocation, double kmRadius);
 
 	public Parking getParking(int id);
 }

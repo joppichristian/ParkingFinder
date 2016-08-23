@@ -14,8 +14,9 @@ import android.widget.TimePicker;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ViewListener;
 
-import java.sql.Time;
-import java.util.Calendar;
+import java.io.IOException;
+
+import joppi.pier.parkingfinder.db.MySQLiteHelper;
 
 public class FilterActivity extends AppCompatActivity
 {
@@ -42,8 +43,11 @@ public class FilterActivity extends AppCompatActivity
 		// set ViewListener for custom view
 		customCarouselView.setViewListener(viewListener);
 
-
-
+		try {
+			MySQLiteHelper.copyDataBase(ParkingFinderApplication.getAppContext());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onStartResearchClick (View v)
