@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -145,13 +144,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		layout.addView(mSelectedParkingView);
 
 		// TODO: delete, for DEBUG purpose only
-		if(Build.FINGERPRINT.startsWith("generic"))
+		//if(Build.FINGERPRINT.startsWith("generic"))
 		{
 			Location tmp = new Location("tmp");
 			tmp.setLatitude(trento.latitude);
 			tmp.setLongitude(trento.longitude);
+            locationProvider.setCurrentLocation(tmp);
 			onCoarseLocationChanged(tmp);
-			onFineLocationChanged(tmp);
 		}
 	}
 
@@ -216,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	@Override
 	public void onCoarseLocationChanged(Location newLoc)
 	{
-		mParkingMgr.updateParkingListAsync(newLoc);
+        triggerParkingListUpdate();
 	}
 
 	@Override
@@ -240,6 +239,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void optionsMenuButtonClick(View v)
 	{
         menuManager.openMenu();
+    }
+
+    public void triggerParkingListUpdate()
+    {
+        mParkingMgr.updateParkingListAsync(locationProvider.getCurrentLocation());
     }
 
 }

@@ -14,7 +14,7 @@ public interface ParkingDAO
 
 	public boolean clear();
 
-	public ArrayList<Parking> getParkingList(Location currLocation, double kmRadius);
+	public ArrayList<Parking> getParkingList(Location currLocation, double kmRadius,String vehicle);
 
 	public Parking getParking(int id);
 }

@@ -3,11 +3,13 @@ package joppi.pier.parkingfinder.db;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 import joppi.pier.parkingfinder.AppUtils;
 import joppi.pier.parkingfinder.ParkingFinderApplication;
+import joppi.pier.parkingfinder.SharedPreferencesManager;
 
 public class ParkingDAO_DB_impl implements ParkingDAO
 {
@@ -47,8 +49,7 @@ public class ParkingDAO_DB_impl implements ParkingDAO
 	}
 
 	@Override
-	public ArrayList<Parking> getParkingList(Location currLocation, double kmRadius)
-	{
+	public ArrayList<Parking> getParkingList(Location currLocation, double kmRadius,String vehicle){
 		// filter parkinglist (show only near ones)
 		// (filter by query first (square area latlng)
 
@@ -59,11 +60,24 @@ public class ParkingDAO_DB_impl implements ParkingDAO
 		String lngMin = String.valueOf(currLocation.getLongitude() - geoDegDist);
 		String lngMax = String.valueOf(currLocation.getLongitude() + geoDegDist);
 
+		// Search radius filter
 		String whereClause = MySQLiteHelper.COLUMN_LATITUDE+">? AND "+MySQLiteHelper.COLUMN_LATITUDE+"<? AND "+MySQLiteHelper.COLUMN_LONGITUDE+">? AND "+MySQLiteHelper.COLUMN_LONGITUDE+"<?";
+
+
+        Log.w("VEHICLE",vehicle);
+        // Vehicle filter
+        switch (vehicle){
+            case "Automobile":whereClause += " AND "+ MySQLiteHelper.COLUMN_CAR + " > 0";break;
+            case "Moto":whereClause += " AND "+ MySQLiteHelper.COLUMN_MOTO + " > 0";break;
+            case "Caravan":whereClause += " AND "+ MySQLiteHelper.COLUMN_CARAVAN + " > 0";break;
+        }
+
 		String[] whereArgs = new String[] {
 				latMin,latMax,
 				lngMin, lngMax
 		};
+
+
 
 		ArrayList<Parking> parking = new ArrayList<>();
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME, null, whereClause, whereArgs, null, null, null);

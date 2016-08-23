@@ -21,6 +21,7 @@ import java.util.concurrent.Semaphore;
 import joppi.pier.parkingfinder.AppUtils;
 import joppi.pier.parkingfinder.DistanceMatrixAPI;
 import joppi.pier.parkingfinder.DistanceMatrixResult;
+import joppi.pier.parkingfinder.SharedPreferencesManager;
 
 public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 {
@@ -208,10 +209,14 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			}catch(InterruptedException e){
 			}
 
-			// TODO: temp. implementation, get filter radius from prefs or whatever
-			if(mCurrLocation != null)
-				mParkingList = parkingDAO.getParkingList(mCurrLocation, 10.0); // 10km search radius
 
+			SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(mapsActivity);
+			// TODO: temp. implementation, get filter radius from prefs or whatever
+			if(mCurrLocation != null) {
+                String vehicle = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE);
+                int radius = sharedPreferencesManager.getIntPreference(SharedPreferencesManager.PREF_RADIUS);
+                mParkingList = parkingDAO.getParkingList(mCurrLocation, radius, vehicle ); // 10km search radius
+            }
 			parkingDAO.close();
 
 			listAccessSema.release();

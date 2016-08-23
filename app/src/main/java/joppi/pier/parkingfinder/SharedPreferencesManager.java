@@ -22,6 +22,8 @@ public class SharedPreferencesManager {
     public static String PREF_TYPE_SUBTERRANEAN = "Subterranean";
     public static String PREF_TYPE_SURVEILED = "Surviled";
     public static String PREF_TYPE_TIME_LIMITATED = "TimeLimitated";
+    public static String PREF_RADIUS = "TimeLimitated";
+
 
     private SharedPreferencesManager() {
         sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
@@ -71,7 +73,7 @@ public class SharedPreferencesManager {
 
     public int getIntPreference(String key) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        int var = sharedPreferences.getInt(key, 0);
+        int var = sharedPreferences.getInt(key, 10);
         return var;
     }
 
