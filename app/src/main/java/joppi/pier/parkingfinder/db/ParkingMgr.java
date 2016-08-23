@@ -195,27 +195,66 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		listAccessSema.release();
 	}
 
+    private int getTypeMask(){
+
+
+        boolean disco = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED);
+        boolean surface = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURFACE);
+        boolean structure = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_STRUCTURE);
+        boolean road = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_ROAD);
+        boolean subterranean = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SUBTERRANEAN);
+        boolean surveiled = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED);
+        int typeFilter = 0x00000000;
+        if(disco)
+            typeFilter = typeFilter | Parking.TYPE_TIME_LIMITATED;
+        if(surface)
+            typeFilter = typeFilter | Parking.TYPE_SURFACE;
+        if(structure)
+            typeFilter = typeFilter | Parking.TYPE_STRUCTURE;
+        if(road)
+            typeFilter = typeFilter | Parking.TYPE_ROAD;
+        if(subterranean)
+            typeFilter = typeFilter | Parking.TYPE_SUBTERRANEAN;
+        if(surveiled)
+            typeFilter = typeFilter | Parking.TYPE_SURVEILED;
+
+        return typeFilter;
+    }
+
 	private Runnable mUpdateParkingListTask = new Runnable()
 	{
 		@Override
 		public void run()
 		{
+
 			// Load parking DB
 			ParkingDAO parkingDAO = new ParkingDAO_DB_impl();
 			parkingDAO.open();
 
-			try{
+
+
+            try{
 				listAccessSema.acquire();
 			}catch(InterruptedException e){
 			}
 
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(mapsActivity);
+            String vehicle = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE);
+            int radius = sharedPreferencesManager.getIntPreference(SharedPreferencesManager.PREF_RADIUS);
 
-			SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(mapsActivity);
-			// TODO: temp. implementation, get filter radius from prefs or whatever
-			if(mCurrLocation != null) {
-                String vehicle = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE);
-                int radius = sharedPreferencesManager.getIntPreference(SharedPreferencesManager.PREF_RADIUS);
-                mParkingList = parkingDAO.getParkingList(mCurrLocation, radius, vehicle ); // 10km search radius
+
+            if(mCurrLocation != null) {
+                mParkingList = parkingDAO.getParkingList(mCurrLocation, radius, vehicle );
+                int type_mask = getTypeMask();
+
+                for(int i=0;i<mParkingList.size();i++)
+                {
+                    if((mParkingList.get(i).getType() & type_mask) != 0) {
+                        mParkingList.remove(i);
+                        i--;
+                    }
+
+                }
             }
 			parkingDAO.close();
 

@@ -22,7 +22,7 @@ public class SharedPreferencesManager {
     public static String PREF_TYPE_SUBTERRANEAN = "Subterranean";
     public static String PREF_TYPE_SURVEILED = "Surviled";
     public static String PREF_TYPE_TIME_LIMITATED = "TimeLimitated";
-    public static String PREF_RADIUS = "TimeLimitated";
+    public static String PREF_RADIUS = "Radius";
 
 
     private SharedPreferencesManager() {
@@ -84,7 +84,7 @@ public class SharedPreferencesManager {
     }
     public Boolean getBooleanPreference(String key) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Boolean var = sharedPreferences.getBoolean(key, false);
+        Boolean var = sharedPreferences.getBoolean(key, true);
         return var;
     }
 }

@@ -32,6 +32,7 @@ public class Parking
 	public static int TYPE_ROAD = 0x0000004;
 	public static int TYPE_SUBTERRANEAN = 0x00000008;
 	public static int TYPE_SURVEILED = 0x00000010;
+    public static int TYPE_TIME_LIMITATED = 0x00000011;
 
 	private int id;
 	private String name;
