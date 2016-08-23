@@ -4,10 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,55 +81,64 @@ public class Parking
 		return this.name;
 	}
 
-	public String getCostRaw(){return cost;}
+	public String getCostRaw()
+	{
+		return cost;
+	}
 
 	// TODO: temporary implementation
-	public double getCost(String start,String stop, int today_number )
+	public double getCost(String start, String stop, int today_number)
 	{
 		ArrayList<String> costsList = new ArrayList<>();
 		costsList.addAll(Arrays.asList(cost.split(";")));
-        double res = 0.0;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm");
-        SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh.mm");
-        Log.w("FINEEE:", stop);
-		for (String c: costsList ) {
-			try {
+		double res = 0.0;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm");
+		SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh.mm");
+		Log.w("FINEEE:", stop);
+
+		for(String c : costsList)
+		{
+			try
+			{
 				Date date_start = dateFormat.parse(start);
 				Date date_stop = dateFormat.parse(stop);
-                if(date_start.after(date_stop))
-                    date_stop.setDate(date_stop.getDate()+1);
-                long tmp_diff = (date_stop.getTime() - date_start.getTime())/60000;
-				int diff = tmp_diff % 60 != 0 ? (int)(tmp_diff+60)/60 : (int)(tmp_diff/60);
+				if(date_start.after(date_stop))
+					date_stop.setDate(date_stop.getDate() + 1);
+				long tmp_diff = (date_stop.getTime() - date_start.getTime()) / 60000;
+				int diff = tmp_diff % 60 != 0 ? (int) (tmp_diff + 60) / 60 : (int) (tmp_diff / 60);
 				ArrayList<String> days = new ArrayList<>();
 				days.addAll(Arrays.asList(c.split(":")[3].split(",")));
-                Date fascia_start = dateFormat2.parse(c.split(":")[2].split(",")[0]);
-                Date fascia_stop = dateFormat2.parse(c.split(":")[2].split(",")[1]);
+				Date fascia_start = dateFormat2.parse(c.split(":")[2].split(",")[0]);
+				Date fascia_stop = dateFormat2.parse(c.split(":")[2].split(",")[1]);
 
-
-				if(days.contains(today_number+"") && diff>Integer.parseInt(c.split(":")[1]))
+				if(days.contains(today_number + "") && diff > Integer.parseInt(c.split(":")[1]))
 				{
-                    double costPerHour = Double.parseDouble(c.split(":")[0]);
-                    if(date_start.getTime() - fascia_start.getTime() <= 0  && date_stop.getTime() - fascia_start.getTime() <= 0)
-                        res += 0.0;
-                    else if(date_start.getTime() - fascia_start.getTime() <= 0  && date_stop.getTime() - fascia_stop.getTime() <= 0)
-                        res += costPerHour *diff - ((fascia_start.getTime() - date_start.getTime())/(1000 * 60 * 60))*costPerHour;
-                    else if(date_start.getTime() - fascia_start.getTime() > 0  && date_stop.getTime() - fascia_stop.getTime() < 0)
-                        res += costPerHour *diff;
-                    else if(date_start.getTime() - fascia_start.getTime() > 0  && date_stop.getTime() - fascia_stop.getTime() >= 0)
-                        res += costPerHour *diff - ((date_stop.getTime() - fascia_stop.getTime())/(1000 * 60 * 60))*costPerHour;
-                    else if(date_start.getTime() - fascia_stop.getTime() >= 0  && date_stop.getTime() - fascia_stop.getTime() >= 0)
-                        res += 0.0;
+					double costPerHour = Double.parseDouble(c.split(":")[0]);
+					if(date_start.getTime() - fascia_start.getTime() <= 0 && date_stop.getTime() - fascia_start.getTime() <= 0)
+						res += 0.0;
+					else if(date_start.getTime() - fascia_start.getTime() <= 0 && date_stop.getTime() - fascia_stop.getTime() <= 0)
+						res += costPerHour * diff - ((fascia_start.getTime() - date_start.getTime()) / (1000 * 60 * 60)) * costPerHour;
+					else if(date_start.getTime() - fascia_start.getTime() > 0 && date_stop.getTime() - fascia_stop.getTime() < 0)
+						res += costPerHour * diff;
+					else if(date_start.getTime() - fascia_start.getTime() > 0 && date_stop.getTime() - fascia_stop.getTime() >= 0)
+						res += costPerHour * diff - ((date_stop.getTime() - fascia_stop.getTime()) / (1000 * 60 * 60)) * costPerHour;
+					else if(date_start.getTime() - fascia_stop.getTime() >= 0 && date_stop.getTime() - fascia_stop.getTime() >= 0)
+						res += 0.0;
 				}
 
 
-			}catch (Exception ex){
-                Log.e("ParseCostError",ex.toString());
+			}catch(Exception ex){
+				Log.e("ParseCostError", ex.toString());
 			}
 		}
-		return (double)Math.round(res * 100) / 100;
+
+		return (double) Math.round(res * 100) / 100;
 	}
 
-	public String getTimeLimit(){return timeLimit;}
+	public String getTimeLimit()
+	{
+		return timeLimit;
+	}
 
 	public int getType()
 	{
@@ -143,15 +150,22 @@ public class Parking
 		return notes;
 	}
 
-	public String getLatitudeRaw(){return latitude;}
+	public String getLatitudeRaw()
+	{
+		return latitude;
+	}
 
-	public String getLongitudeRaw(){return longitude;}
+	public String getLongitudeRaw()
+	{
+		return longitude;
+	}
 
 	public LatLng getLocation()
 	{
 		try{
 			return new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
-		}catch(Exception e){}
+		}catch(Exception e){
+		}
 		return null;
 	}
 
@@ -185,14 +199,20 @@ public class Parking
 		return currDistance;
 	}
 
-	public double getCurrRank(){ return currRank; }
+	public double getCurrRank()
+	{
+		return currRank;
+	}
 
 	public void setCurrDistance(int currDistance)
 	{
 		this.currDistance = currDistance;
 	}
 
-	public void setCurrRank(double rank){ currRank = rank; }
+	public void setCurrRank(double rank)
+	{
+		currRank = rank;
+	}
 
 	@Override
 	public String toString()
@@ -221,7 +241,7 @@ public class Parking
 
 	public static Parking Parse(Cursor cursor)
 	{
-		int i=0;
+		int i = 0;
 		int id = cursor.getInt(i++);
 		String name = cursor.getString(i++);
 		String cost = cursor.getString(i++);

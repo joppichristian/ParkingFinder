@@ -16,16 +16,16 @@ import joppi.pier.parkingfinder.db.ParkingMgr;
 
 public class ParkingListAdapter extends BaseAdapter
 {
-	Context mAppContext;
+	Activity mMainActivity;
 	ParkingMgr mParkingMgr;
 	static LayoutInflater inflater = null;
 	Activity activity;
-	public ParkingListAdapter(Context context, ParkingMgr parkingMgr, Activity activity)
+
+	public ParkingListAdapter(Activity activity, ParkingMgr parkingMgr)
 	{
-		mAppContext = context;
+		mMainActivity = activity;
 		mParkingMgr = parkingMgr;
-		this.activity  =activity;
-		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater = (LayoutInflater) mMainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	@Override
@@ -34,7 +34,8 @@ public class ParkingListAdapter extends BaseAdapter
 		ArrayList<Parking> list = mParkingMgr.getParkingList();
 		if(list != null)
 			return list.size();
-		else return 0;
+		else
+			return 0;
 	}
 
 	@Override
@@ -57,8 +58,7 @@ public class ParkingListAdapter extends BaseAdapter
 			vi = inflater.inflate(R.layout.parking_list_item, null);
 
 		ArrayList<Parking> parkingList = mParkingMgr.getParkingList();
-		if(parkingList != null)
-		{
+		if(parkingList != null){
 			Parking currParking = parkingList.get(position);
 
 			TextView text_name = (TextView) vi.findViewById(R.id.park_name);
@@ -76,12 +76,12 @@ public class ParkingListAdapter extends BaseAdapter
 			text_details.setText(text);
 			TextView text_price = (TextView) vi.findViewById(R.id.park_price);
 
-		SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(activity);
-		String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
-		String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
-		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+			SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(activity);
+			String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
+			String start = Calendar.getInstance().get(Calendar.HOUR) + ":" + Calendar.getInstance().get(Calendar.MINUTE);
+			int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
-		text_price.setText("" + currParking.getCost(start,stop,today_number) + " €");
+			text_price.setText("" + currParking.getCost(start, stop, today_number) + " €");
 
 			// From GREEN (0x30e0c0) to YELLOW@0.5 (0xffc280) to RED (0xff7080)
 			int color = AppUtils.generateColorFromRank(0x30e0c0, 0xffc280, 0xff7080, currParking.getCurrRank());
