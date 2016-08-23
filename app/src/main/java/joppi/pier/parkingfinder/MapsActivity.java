@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Comparator;
 
 import joppi.pier.parkingfinder.db.MySQLiteHelper;
@@ -69,8 +70,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 				// TODO: get info from FilterActivity
 				double distance_weight = 0.5;
 				double cost_weight = 0.5;
-
-				return lhs.getCurrDistance() * distance_weight + lhs.getCost() * cost_weight >= rhs.getCurrDistance() * distance_weight + rhs.getCost() * cost_weight ? 1 : -1;
+				SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
+				String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
+				String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
+				int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+				return lhs.getCurrDistance() * distance_weight + lhs.getCost(start,stop,today_number) * cost_weight >= rhs.getCurrDistance() * distance_weight + rhs.getCost(start,stop,today_number) * cost_weight ? 1 : -1;
 			}
 		});
 
@@ -126,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		// Sort parking list
 		mParkingMgr.sortList();
 
-		mParkingListAdapter = new ParkingListAdapter(this, mParkingMgr);
+		mParkingListAdapter = new ParkingListAdapter(this, mParkingMgr,MapsActivity.this);
 		parkingListView.setAdapter(mParkingListAdapter);
 		parkingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -154,7 +158,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		Parking clicked = (Parking) mParkingListAdapter.getItem(itemPos);
 		Intent intent = new Intent(MapsActivity.this,ParkingDetail.class);
 		intent.putExtra("name",clicked.getName());
-		intent.putExtra("cost",clicked.getCost());
+
+		SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
+		String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
+		String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
+		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+		intent.putExtra("cost",clicked.getCost(start,stop,today_number));
 		intent.putExtra("dist",clicked.getCurrDistance());
 		//				intent.putExtra("lat",searchClosestPoint(clicked).latitude);
 		//				intent.putExtra("long",searchClosestPoint(clicked).longitude);

@@ -2,10 +2,16 @@ package joppi.pier.parkingfinder.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 
 //    Parking
 //    {
@@ -31,7 +37,7 @@ public class Parking
 
 	private int id;
 	private String name;
-	//cost = costo:durata:fascia:giorni
+	//cost = costo:durata:fascia:giorni;
 	private String cost;
 
 	private String timeLimit;
@@ -81,12 +87,49 @@ public class Parking
 	public String getCostRaw(){return cost;}
 
 	// TODO: temporary implementation
-	public double getCost()
+	public double getCost(String start,String stop, int today_number )
 	{
-		try{
-			return Double.parseDouble(cost);
-		}catch(Exception e){}
-		return 0.0;
+		ArrayList<String> costsList = new ArrayList<>();
+		costsList.addAll(Arrays.asList(cost.split(";")));
+        double res = 0.0;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh.mm");
+        Log.w("FINEEE:", stop);
+		for (String c: costsList ) {
+			try {
+				Date date_start = dateFormat.parse(start);
+				Date date_stop = dateFormat.parse(stop);
+                if(date_start.after(date_stop))
+                    date_stop.setDate(date_stop.getDate()+1);
+                long tmp_diff = (date_stop.getTime() - date_start.getTime())/60000;
+				int diff = tmp_diff % 60 != 0 ? (int)(tmp_diff+60)/60 : (int)(tmp_diff/60);
+				ArrayList<String> days = new ArrayList<>();
+				days.addAll(Arrays.asList(c.split(":")[3].split(",")));
+                Date fascia_start = dateFormat2.parse(c.split(":")[2].split(",")[0]);
+                Date fascia_stop = dateFormat2.parse(c.split(":")[2].split(",")[1]);
+
+
+				if(days.contains(today_number+"") && diff>Integer.parseInt(c.split(":")[1]))
+				{
+                    double costPerHour = Double.parseDouble(c.split(":")[0]);
+                    if(date_start.getTime() - fascia_start.getTime() <= 0  && date_stop.getTime() - fascia_start.getTime() <= 0)
+                        res += 0.0;
+                    else if(date_start.getTime() - fascia_start.getTime() <= 0  && date_stop.getTime() - fascia_stop.getTime() <= 0)
+                        res += costPerHour *diff - ((fascia_start.getTime() - date_start.getTime())/(1000 * 60 * 60))*costPerHour;
+                    else if(date_start.getTime() - fascia_start.getTime() > 0  && date_stop.getTime() - fascia_stop.getTime() < 0)
+                        res += costPerHour *diff;
+                    else if(date_start.getTime() - fascia_start.getTime() > 0  && date_stop.getTime() - fascia_stop.getTime() >= 0)
+                        res += costPerHour *diff - ((date_stop.getTime() - fascia_stop.getTime())/(1000 * 60 * 60))*costPerHour;
+                    else if(date_start.getTime() - fascia_stop.getTime() >= 0  && date_stop.getTime() - fascia_stop.getTime() >= 0)
+                        res += 0.0;
+				}
+
+
+			}catch (Exception ex){
+                Log.e("ParseCostError",ex.toString());
+			}
+		}
+		return (double)Math.round(res * 100) / 100;
 	}
 
 	public String getTimeLimit(){return timeLimit;}

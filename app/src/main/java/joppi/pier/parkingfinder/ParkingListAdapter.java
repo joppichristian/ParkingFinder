@@ -1,11 +1,14 @@
 package joppi.pier.parkingfinder;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import java.util.Calendar;
 
 import joppi.pier.parkingfinder.db.Parking;
 import joppi.pier.parkingfinder.db.ParkingMgr;
@@ -15,11 +18,12 @@ public class ParkingListAdapter extends BaseAdapter
 	Context mAppContext;
 	ParkingMgr mParkingMgr;
 	static LayoutInflater inflater = null;
-
-	public ParkingListAdapter(Context context, ParkingMgr parkingMgr)
+	Activity activity;
+	public ParkingListAdapter(Context context, ParkingMgr parkingMgr, Activity activity)
 	{
 		mAppContext = context;
 		mParkingMgr = parkingMgr;
+		this.activity  =activity;
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -64,7 +68,13 @@ public class ParkingListAdapter extends BaseAdapter
 
 		text_details.setText(text);
 		TextView text_price = (TextView) vi.findViewById(R.id.park_price);
-		text_price.setText("" + currParking.getCost() + " €/h");
+
+		SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(activity);
+		String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
+		String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
+		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+		text_price.setText("" + currParking.getCost(start,stop,today_number) + " €/h");
 
 		// TODO: rank should come from sorting algorithm... (ParkingMgr)
 		double rank = 1.0/(mParkingMgr.getParkingList().size()-1) * position;
