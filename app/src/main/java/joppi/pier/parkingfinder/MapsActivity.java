@@ -102,14 +102,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			@Override
 			public int compare(Parking lhs, Parking rhs)
 			{
-				// TODO: get info from FilterActivity
-				double distance_weight = 0.5;
-				double cost_weight = 0.5;
+
 				SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
 				String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
-				String start = Calendar.getInstance().get(Calendar.HOUR) + ":" + Calendar.getInstance().get(Calendar.MINUTE);
+				String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
+				double cost_weight = sharedPreferencesManager.getFloatPreference(SharedPreferencesManager.PREF_COST_WEIGHT);
+				double distance_weight = sharedPreferencesManager.getFloatPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT);;
+
+
 				int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-				return lhs.getCurrDistance() * distance_weight + lhs.getCost(start, stop, today_number) * cost_weight >= rhs.getCurrDistance() * distance_weight + rhs.getCost(start, stop, today_number) * cost_weight ? 1 : -1;
+				return lhs.getCurrDistance() * distance_weight + lhs.getCost(start,stop,today_number) * cost_weight >= rhs.getCurrDistance() * distance_weight + rhs.getCost(start,stop,today_number) * cost_weight ? 1 : -1;
 			}
 		});
 
@@ -231,7 +233,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	@Override
 	public void onCoarseLocationChanged(Location newLoc)
 	{
-		mParkingMgr.updateParkingListAsync(newLoc);
+        triggerParkingListUpdate();
 	}
 
 	@Override
@@ -256,6 +258,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	}
 
 	// Set current location
+    public void triggerParkingListUpdate()
+    {
+        mParkingMgr.updateParkingListAsync(locationProvider.getCurrentLocation());
+    }
+	
 	public void setCurrLocationClick(View v)
 	{
 		Location loc = mMap.getMyLocation();

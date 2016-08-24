@@ -21,6 +21,7 @@ import java.util.concurrent.Semaphore;
 import joppi.pier.parkingfinder.AppUtils;
 import joppi.pier.parkingfinder.DistanceMatrixAPI;
 import joppi.pier.parkingfinder.DistanceMatrixResult;
+import joppi.pier.parkingfinder.SharedPreferencesManager;
 
 public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 {
@@ -182,7 +183,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		// Add parkings markers
 		for(Parking parking : mParkingList){
 			// Check price rank only?
-			BitmapDescriptor bd = AppUtils.getCustomParkingMarker(parking.getCurrRank());
+			BitmapDescriptor bd = AppUtils.getCustomParkingMarker(parking.getCurrRank(),parking);
 
 
 			Marker newMarker = mMap.addMarker(new MarkerOptions()
@@ -194,24 +195,90 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		listAccessSema.release();
 	}
 
+    private int getTypeMask(){
+
+
+        boolean surface = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURFACE);
+        boolean structure = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_STRUCTURE);
+        boolean road = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_ROAD);
+        boolean subterranean = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SUBTERRANEAN);
+
+        int typeFilter = 0x0;
+
+        if(surface)
+            typeFilter = typeFilter | Parking.TYPE_SURFACE;
+        if(structure)
+            typeFilter = typeFilter | Parking.TYPE_STRUCTURE;
+        if(road)
+            typeFilter = typeFilter | Parking.TYPE_ROAD;
+        if(subterranean)
+            typeFilter = typeFilter | Parking.TYPE_SUBTERRANEAN;
+
+        return typeFilter;
+    }
+
+    private int getSpecMask(){
+
+
+        boolean disco = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED);
+        boolean surveiled = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED);
+
+        int typeFilter = 0x0;
+        if(disco)
+            typeFilter = typeFilter | Parking.SPEC_TIME_LIMIT;
+        if(surveiled)
+            typeFilter = typeFilter | Parking.SPEC_SURVEILED;
+
+        return typeFilter;
+    }
 	private Runnable mUpdateParkingListTask = new Runnable()
 	{
 		@Override
 		public void run()
 		{
+
 			// Load parking DB
 			ParkingDAO parkingDAO = new ParkingDAO_DB_impl();
 			parkingDAO.open();
 
-			try{
+
+
+            try{
 				listAccessSema.acquire();
 			}catch(InterruptedException e){
 			}
 
-			// TODO: temp. implementation, get filter radius from prefs or whatever
-			if(mCurrLocation != null)
-				mParkingList = parkingDAO.getParkingList(mCurrLocation, 10.0); // 10km search radius
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(mapsActivity);
+            String vehicle = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE);
+            int radius = sharedPreferencesManager.getIntPreference(SharedPreferencesManager.PREF_RADIUS);
 
+
+            if(mCurrLocation != null) {
+                mParkingList = parkingDAO.getParkingList(mCurrLocation, radius, vehicle );
+                int type_mask = getTypeMask();
+                int spec_mask = getSpecMask();
+
+                for(int i=0;i<mParkingList.size();i++)
+                {
+                    int type = mParkingList.get(i).getType();
+                    if(((type & type_mask) == 0))
+					{
+                        mParkingList.remove(i);
+                        i--;
+                    }
+                    else if(((type & Parking.SPEC_TIME_LIMIT & spec_mask) == 0)&& ((type & Parking.SPEC_TIME_LIMIT)!= 0))
+                    {
+                        mParkingList.remove(i);
+                        i--;
+                    }
+                    else if(((type & Parking.SPEC_SURVEILED & spec_mask) == 0)&& ((spec_mask & Parking.SPEC_SURVEILED)!= 0))
+                    {
+                        mParkingList.remove(i);
+                        i--;
+                    }
+
+                }
+            }
 			parkingDAO.close();
 
 			listAccessSema.release();

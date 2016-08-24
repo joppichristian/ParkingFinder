@@ -92,6 +92,7 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 		}
 
 		LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        if(LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient) != null)
 		mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
 		LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
@@ -190,6 +191,12 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	{
 		return mLocation;
 	}
+
+	public void setCurrentLocation(Location location)
+    {
+        if(location != null)
+            mLocation = location;
+    }
 
 	public void addLocationChangedListener(OnLocationChangedListener listener)
 	{
