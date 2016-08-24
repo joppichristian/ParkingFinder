@@ -198,15 +198,13 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
     private int getTypeMask(){
 
 
-        boolean disco = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED);
         boolean surface = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURFACE);
         boolean structure = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_STRUCTURE);
         boolean road = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_ROAD);
         boolean subterranean = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SUBTERRANEAN);
-        boolean surveiled = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED);
-        int typeFilter = 0x00000000;
-        if(disco)
-            typeFilter = typeFilter | Parking.TYPE_TIME_LIMITATED;
+
+        int typeFilter = 0x0;
+
         if(surface)
             typeFilter = typeFilter | Parking.TYPE_SURFACE;
         if(structure)
@@ -215,12 +213,24 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
             typeFilter = typeFilter | Parking.TYPE_ROAD;
         if(subterranean)
             typeFilter = typeFilter | Parking.TYPE_SUBTERRANEAN;
-        if(surveiled)
-            typeFilter = typeFilter | Parking.TYPE_SURVEILED;
 
         return typeFilter;
     }
 
+    private int getSpecMask(){
+
+
+        boolean disco = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED);
+        boolean surveiled = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED);
+
+        int typeFilter = 0x0;
+        if(disco)
+            typeFilter = typeFilter | Parking.SPEC_TIME_LIMIT;
+        if(surveiled)
+            typeFilter = typeFilter | Parking.SPEC_SURVEILED;
+
+        return typeFilter;
+    }
 	private Runnable mUpdateParkingListTask = new Runnable()
 	{
 		@Override
@@ -246,10 +256,23 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
             if(mCurrLocation != null) {
                 mParkingList = parkingDAO.getParkingList(mCurrLocation, radius, vehicle );
                 int type_mask = getTypeMask();
+                int spec_mask = getSpecMask();
 
                 for(int i=0;i<mParkingList.size();i++)
                 {
-                    if((mParkingList.get(i).getType() & type_mask) != 0) {
+                    int type = mParkingList.get(i).getType();
+                    if(((type & type_mask) == 0))
+					{
+                        mParkingList.remove(i);
+                        i--;
+                    }
+                    else if(((type & Parking.SPEC_TIME_LIMIT & spec_mask) == 0)&& ((type & Parking.SPEC_TIME_LIMIT)!= 0))
+                    {
+                        mParkingList.remove(i);
+                        i--;
+                    }
+                    else if(((type & Parking.SPEC_SURVEILED & spec_mask) == 0)&& ((spec_mask & Parking.SPEC_SURVEILED)!= 0))
+                    {
                         mParkingList.remove(i);
                         i--;
                     }

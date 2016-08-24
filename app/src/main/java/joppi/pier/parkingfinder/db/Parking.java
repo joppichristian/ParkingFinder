@@ -27,12 +27,15 @@ import java.util.Date;
 //
 public class Parking
 {
-	public static int TYPE_SURFACE = 0x00000001;
-	public static int TYPE_STRUCTURE = 0x0000002;
-	public static int TYPE_ROAD = 0x0000004;
-	public static int TYPE_SUBTERRANEAN = 0x00000008;
-	public static int TYPE_SURVEILED = 0x00000010;
-    public static int TYPE_TIME_LIMITATED = 0x00000011;
+    public static int TYPE_MASK = 0xFFFF;
+	public static int TYPE_SURFACE = 0x0001;
+	public static int TYPE_STRUCTURE = 0x0002;
+	public static int TYPE_ROAD = 0x0004;
+	public static int TYPE_SUBTERRANEAN = 0x0008;
+
+    public static int SPEC_MASK = 0xFFFF0000;
+	public static int SPEC_SURVEILED = 0x10000;
+    public static int SPEC_TIME_LIMIT = 0x20000;
 
 	private int id;
 	private String name;

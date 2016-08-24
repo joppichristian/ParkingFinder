@@ -18,11 +18,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:text="Seleziona le tipologie"
+            android:text="Mostra anche parcheggi a disco orario"
             android:textColor="#ffffff"
             android:textIsSelectable="true"
             android:textSize="20dp"
+            android:layout_margin="20dp"
             android:textStyle="bold"
             android:typeface="serif" />
     </LinearLayout>
@@ -31,48 +31,48 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:background="#50000000"
         android:orientation="vertical"
+        android:background="#50000000"
         >
-        <CheckBox
-            android:layout_width="wrap_content"
+
+        <RadioGroup
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:id="@+id/chkSubterranean"
-            android:text="Interrato"/>
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:id="@+id/chkStructure"
-            android:text="Coperto"/>
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:id="@+id/chkRoad"
-            android:text="Lato Strada"/>
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:id="@+id/chkSurface"
-            android:text="In Superficie"/>
+            android:layout_margin="20dp"
+            android:gravity="center_vertical"
+            android:id="@+id/optionDiscoGroup"
+            >
+
+            <RadioButton
+                android:id="@+id/radio_disco_yes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Si"
+                android:textSize="18dp" />
+
+            <RadioButton
+                android:id="@+id/radio_disco_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No"
+                android:textSize="18dp" />
+        </RadioGroup>
+
         <View
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
 
         <TextView
-            android:id="@+id/confirmTypeOption"
+            android:id="@+id/confirmDiscoOption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="#50000000"
+            android:onClick="closeDialog"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:text="Conferma"
-            android:onClick="closeDialog"
             android:textAlignment="center"
             android:textSize="18dp" />
     </LinearLayout>

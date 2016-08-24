@@ -120,19 +120,15 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
         if (id == R.id.typeOption) {
             dialog.setContentView(R.layout.dialog_layout_type);
 
-            boolean disco = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED);
             boolean surface = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURFACE);
             boolean structure = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_STRUCTURE);
             boolean road = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_ROAD);
             boolean subterranean = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SUBTERRANEAN);
-            boolean surveiled = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED);
 
-            ((CheckBox)dialog.findViewById(R.id.chkDisco)).setChecked(disco);
             ((CheckBox)dialog.findViewById(R.id.chkSurface)).setChecked(surface);
             ((CheckBox)dialog.findViewById(R.id.chkStructure)).setChecked(structure);
             ((CheckBox)dialog.findViewById(R.id.chkRoad)).setChecked(road);
             ((CheckBox)dialog.findViewById(R.id.chkSubterranean)).setChecked(subterranean);
-            ((CheckBox)dialog.findViewById(R.id.chkSurveiled)).setChecked(surveiled);
 
 
             dialog.show();
@@ -141,18 +137,66 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
             dialog.findViewById(R.id.confirmTypeOption).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    boolean chkDisco = ((CheckBox)dialog.findViewById(R.id.chkDisco)).isChecked();
                     boolean chkSurface = ((CheckBox)dialog.findViewById(R.id.chkSurface)).isChecked();
                     boolean chkStructure = ((CheckBox)dialog.findViewById(R.id.chkStructure)).isChecked();
                     boolean chkRoad = ((CheckBox)dialog.findViewById(R.id.chkRoad)).isChecked();
                     boolean chkSubterranean = ((CheckBox)dialog.findViewById(R.id.chkSubterranean)).isChecked();
-                    boolean chkSurveiled = ((CheckBox)dialog.findViewById(R.id.chkSurveiled)).isChecked();
-                    SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED,chkDisco);
                     SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_SURFACE,chkSurface);
                     SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_STRUCTURE,chkStructure);
                     SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_ROAD,chkRoad);
                     SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_SUBTERRANEAN,chkSubterranean);
-                    SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED,chkSurveiled);
+                    dialog.dismiss();
+                    mapsActivity.triggerParkingListUpdate();
+                    drawerLayout.closeDrawer(Gravity.LEFT);
+                }
+            });
+            return true;
+        }
+        if (id == R.id.timeLimitOption) {
+            dialog.setContentView(R.layout.dialog_layout_disco);
+
+            Boolean disco = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED);
+            if(disco)
+                ((RadioButton)dialog.findViewById(R.id.radio_disco_yes)).setChecked(true);
+            else
+                ((RadioButton)dialog.findViewById(R.id.radio_disco_no)).setChecked(true);
+
+
+            dialog.show();
+            dialog.findViewById(R.id.confirmDiscoOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int id_checked = ((RadioGroup)dialog.findViewById(R.id.optionDiscoGroup)).getCheckedRadioButtonId();
+                    if(id_checked == R.id.radio_disco_yes)
+                        SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED,true);
+                    else
+                        SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED,false);
+                    dialog.dismiss();
+                    mapsActivity.triggerParkingListUpdate();
+                    drawerLayout.closeDrawer(Gravity.LEFT);
+                }
+            });
+            return true;
+        }
+        if (id == R.id.surveiledOption) {
+            dialog.setContentView(R.layout.dialog_layout_surveiled);
+
+            Boolean surveiled = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED);
+            if(surveiled)
+                ((RadioButton)dialog.findViewById(R.id.radio_surveiled_yes)).setChecked(true);
+            else
+                ((RadioButton)dialog.findViewById(R.id.radio_surveiled_no)).setChecked(true);
+
+
+            dialog.show();
+            dialog.findViewById(R.id.confirmSurveiledOption).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int id_checked = ((RadioGroup)dialog.findViewById(R.id.optionSurveiledGroup)).getCheckedRadioButtonId();
+                    if(id_checked == R.id.radio_surveiled_yes)
+                        SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED,true);
+                    else
+                        SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED,false);
                     dialog.dismiss();
                     mapsActivity.triggerParkingListUpdate();
                     drawerLayout.closeDrawer(Gravity.LEFT);
@@ -167,6 +211,7 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
             int progress = (SharedPreferencesManager.getInstance(mapsActivity).getIntPreference(SharedPreferencesManager.PREF_RADIUS));
             seekBar.setProgress(progress);
             seek_value = (TextView)dialog.findViewById(R.id.seekValue);
+            seek_value.setText(progress + " Km");
             seekBar.setOnSeekBarChangeListener(this);
 
             dialog.show();

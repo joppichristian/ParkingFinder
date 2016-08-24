@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="30dp"
                 android:layout_weight="1"
-                android:text="5 Km"
+                android:text="0 Km"
                 android:textAlignment="center"
                 android:textColor="#ffffff"
                 android:textIsSelectable="false"
