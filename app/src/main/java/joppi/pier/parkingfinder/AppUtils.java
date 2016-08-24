@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
+import joppi.pier.parkingfinder.db.Parking;
+
 public class AppUtils
 {
 	public static double getGeoDegDistance(double meters)
@@ -93,9 +95,31 @@ public class AppUtils
 		return num/den;
 	}
 
-	public static BitmapDescriptor getCustomParkingMarker(double rank)
+	public static BitmapDescriptor getCustomParkingMarker(double rank,Parking parking)
 	{
-		Drawable marker = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_parking_road);
+
+
+		Drawable marker;
+
+
+		switch (parking.getType() & Parking.TYPE_MASK){
+			case 1:
+				marker = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_parking_surface);
+				break;
+			case 2:
+				marker = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_parking_structure);
+				break;
+			case 4:
+				marker = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_parking_road);
+				break;
+			case 8:
+				marker = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_parking_covered);
+				break;
+            default:
+                marker = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_parking_surface);
+		}
+
+
 		Drawable markerBg = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_background);
 		if(marker != null && markerBg != null)
 		{

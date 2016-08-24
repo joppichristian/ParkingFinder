@@ -98,7 +98,6 @@ public class Parking
 		double res = 0.0;
 		SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm");
 		SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh.mm");
-		Log.w("FINEEE:", stop);
 
 		for(String c : costsList)
 		{

@@ -29,7 +29,7 @@
                     android:title="Disco orario" />
                 <item
                     android:id="@+id/surveiledOption"
-                    android:icon="@drawable/ic_videocam"
+                    android:icon="@drawable/parking_surveiled"
                     android:title="Sorveglianza" />
                 <item
                     android:id="@+id/radiusOption"

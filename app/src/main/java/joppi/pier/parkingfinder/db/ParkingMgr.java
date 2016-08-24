@@ -183,7 +183,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		// Add parkings markers
 		for(Parking parking : mParkingList){
 			// Check price rank only?
-			BitmapDescriptor bd = AppUtils.getCustomParkingMarker(parking.getCurrRank());
+			BitmapDescriptor bd = AppUtils.getCustomParkingMarker(parking.getCurrRank(),parking);
 
 
 			Marker newMarker = mMap.addMarker(new MarkerOptions()

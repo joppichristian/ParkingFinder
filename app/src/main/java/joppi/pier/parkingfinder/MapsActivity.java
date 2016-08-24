@@ -89,11 +89,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			public int compare(Parking lhs, Parking rhs)
 			{
 				// TODO: get info from FilterActivity
-				double distance_weight = 0.5;
-				double cost_weight = 0.5;
+
 				SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
 				String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
 				String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
+				double cost_weight = sharedPreferencesManager.getFloatPreference(SharedPreferencesManager.PREF_COST_WEIGHT);
+				double distance_weight = sharedPreferencesManager.getFloatPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT);;
+
+
 				int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 				return lhs.getCurrDistance() * distance_weight + lhs.getCost(start,stop,today_number) * cost_weight >= rhs.getCurrDistance() * distance_weight + rhs.getCost(start,stop,today_number) * cost_weight ? 1 : -1;
 			}
