@@ -10,6 +10,5 @@
 
     <string name="preferenceVehicle">Vehicle</string>
     <string name="preferenceTime">Time</string>
-    <string name="optionsMenuDesc">Options</string>
-
+    <string name="search_loc_hint">Sono diretto…</string>
 </resources>

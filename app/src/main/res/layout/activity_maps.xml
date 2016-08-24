@@ -27,12 +27,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context="joppi.pier.parkingfinder.MapsActivity">
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_action_overflow"
-                    android:contentDescription="@string/optionsMenuDesc"
-                    android:onClick="optionsMenuButtonClick" />
+                <fragment
+                    android:id="@+id/autocomplete_fragment"
+                    android:name="joppi.pier.parkingfinder.MapSearchFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </fragment>
 
         </LinearLayout>
