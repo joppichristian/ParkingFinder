@@ -2,12 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:elevation="6dp"
                     android:background="@drawable/searchbar_background"
                     android:layout_margin="12dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:id="@+id/relativeLayoutEx">
         <ImageView
             android:layout_width="28dp"
             android:layout_height="28dp"
@@ -52,7 +54,20 @@
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:onClick="setCurrLocationClick"/>
+            android:onClick="setCurrLocationBtnClick"/>
 
     </RelativeLayout>
+
+    <ProgressBar
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_marginTop="47dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:elevation="6dp"
+        android:visibility="invisible"
+        android:id="@+id/progressBar"/>
+
 </RelativeLayout>

@@ -2,6 +2,7 @@ package joppi.pier.parkingfinder.db;
 
 import android.app.Activity;
 import android.location.Location;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,8 +33,10 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 	Map<Marker, Parking> parkingMarkersHashMap;
 
 	Location mCurrLocation;
+	boolean mUserDefLocation;
 	Parking mSelectedParking;
 	Thread mUpdateDistancesThread;
+	SharedPreferencesManager mPrefManager;
 	private final Semaphore listAccessSema = new Semaphore(1, true);
 
 	public interface UiRefreshHandler
@@ -55,6 +59,25 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		mSelectedParking = null;
 		parkingMarkersHashMap = new HashMap<>();
 		mCurrLocation = null;
+		mUserDefLocation = false;
+
+		mPrefManager = SharedPreferencesManager.getInstance(mapsActivity);
+
+		mParkingListComparator = new Comparator<Parking>()
+		{
+			@Override
+			public int compare(Parking lhs, Parking rhs)
+			{
+				// TODO: move prefs elsewhere
+				String stop = mPrefManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
+				String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
+				double cost_weight = mPrefManager.getFloatPreference(SharedPreferencesManager.PREF_COST_WEIGHT);
+				double distance_weight = mPrefManager.getFloatPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT);
+
+				int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+				return lhs.getCurrDistance() * distance_weight + lhs.getCost(start,stop,today_number) * cost_weight >= rhs.getCurrDistance() * distance_weight + rhs.getCost(start,stop,today_number) * cost_weight ? 1 : -1;
+			}
+		};
 	}
 
 	public Parking getSelectedParking()
@@ -66,8 +89,8 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 	{
 		try{
 			return mParkingList.indexOf(mSelectedParking);
-		}catch(Exception e){
-		}
+		}catch(Exception e)
+		{e.printStackTrace();}
 		return -1;
 	}
 
@@ -92,10 +115,41 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			mSelectedParking = mParkingList.get(index);
 	}
 
-	public void updateParkingListAsync(Location currLocation)
+	public void setCurrentLocation(Location loc)
 	{
-		mCurrLocation = currLocation;
+		if(loc != null)
+			mCurrLocation = loc;
+	}
 
+	public void setUserDestination(LatLng loc)
+	{
+		Location tmp = null;
+		if(loc != null){
+			tmp = new Location("");
+			tmp.setLatitude(loc.latitude);
+			tmp.setLongitude(loc.longitude);
+		}
+		setUserDestination(tmp);
+	}
+
+	public void setUserDestination(Location loc)
+	{
+		if(loc == null)
+			mUserDefLocation = false;
+		else
+		{
+			mUserDefLocation = true;
+			mCurrLocation = loc;
+		}
+	}
+
+	public boolean isUserDestDefined()
+	{
+		return mUserDefLocation;
+	}
+
+	public void updateParkingListAsync()
+	{
 		// Start separated thread
 		(new Thread(mUpdateParkingListTask)).start();
 	}
@@ -150,24 +204,37 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		mUiRefreshHandlers.add(handler);
 	}
 
-	public void registerListSortComparator(Comparator<Parking> sortComparator)
-	{
-		mParkingListComparator = sortComparator;
-	}
-
 	public void sortList()
 	{
-		if(mParkingListComparator != null){
+		if(mParkingListComparator != null)
+		{
 			// We might incur in concurrent modifications on the list
 			try{
 				listAccessSema.acquire();
 
 				Collections.sort(mParkingList, mParkingListComparator);
+			}catch(Exception e)
+			{e.printStackTrace();}
 
-				listAccessSema.release();
-			}catch(Exception e){
-			}
+			listAccessSema.release();
 		}
+	}
+
+	private void updateRanks()
+	{
+		try{
+			listAccessSema.acquire();
+		}catch(InterruptedException e)
+		{e.printStackTrace();}
+
+		for(int i = 0; i < mParkingList.size(); i++){
+			Parking p = mParkingList.get(i);
+
+			double rank = 1.0 / (mParkingList.size() - 1) * i;
+			p.setCurrRank(rank);
+		}
+
+		listAccessSema.release();
 	}
 
 	private void updateParkingMarkers()
@@ -175,16 +242,10 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		mMap.clear();
 		parkingMarkersHashMap.clear();
 
-		try{
-			listAccessSema.acquire();
-		}catch(InterruptedException e){
-		}
-
-		// Add parkings markers
-		for(Parking parking : mParkingList){
-			// Check price rank only?
-			BitmapDescriptor bd = AppUtils.getCustomParkingMarker(parking.getCurrRank(),parking);
-
+		// Add parking markers
+		for(Parking parking : mParkingList)
+		{
+			BitmapDescriptor bd = AppUtils.getCustomParkingMarker(parking.getCurrRank(), parking);
 
 			Marker newMarker = mMap.addMarker(new MarkerOptions()
 					.position(parking.getLocation())
@@ -192,93 +253,47 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 					.icon(bd));
 			parkingMarkersHashMap.put(newMarker, parking);
 		}
-		listAccessSema.release();
 	}
 
-    private int getTypeMask(){
-
-
-        boolean surface = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURFACE);
-        boolean structure = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_STRUCTURE);
-        boolean road = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_ROAD);
-        boolean subterranean = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SUBTERRANEAN);
-
-        int typeFilter = 0x0;
-
-        if(surface)
-            typeFilter = typeFilter | Parking.TYPE_SURFACE;
-        if(structure)
-            typeFilter = typeFilter | Parking.TYPE_STRUCTURE;
-        if(road)
-            typeFilter = typeFilter | Parking.TYPE_ROAD;
-        if(subterranean)
-            typeFilter = typeFilter | Parking.TYPE_SUBTERRANEAN;
-
-        return typeFilter;
-    }
-
-    private int getSpecMask(){
-
-
-        boolean disco = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED);
-        boolean surveiled = SharedPreferencesManager.getInstance(mapsActivity).getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED);
-
-        int typeFilter = 0x0;
-        if(disco)
-            typeFilter = typeFilter | Parking.SPEC_TIME_LIMIT;
-        if(surveiled)
-            typeFilter = typeFilter | Parking.SPEC_SURVEILED;
-
-        return typeFilter;
-    }
 	private Runnable mUpdateParkingListTask = new Runnable()
 	{
 		@Override
 		public void run()
 		{
-
 			// Load parking DB
 			ParkingDAO parkingDAO = new ParkingDAO_DB_impl();
 			parkingDAO.open();
 
-
-
-            try{
+			try{
 				listAccessSema.acquire();
-			}catch(InterruptedException e){
+			}catch(InterruptedException e)
+			{e.printStackTrace();}
+
+			if(mCurrLocation != null)
+			{
+				String vehicle = mPrefManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE);
+				int radius = mPrefManager.getIntPreference(SharedPreferencesManager.PREF_RADIUS);
+
+				mParkingList = parkingDAO.getParkingList(mCurrLocation, radius, vehicle);
+
+				int type_mask = AppUtils.getPerfTypeMask(mPrefManager);
+				int spec_mask = AppUtils.getPrefSpecMask(mPrefManager);
+				for(int i = 0; i < mParkingList.size(); i++)
+				{
+					int type = mParkingList.get(i).getType();
+					if(((type & type_mask) == 0)){
+						mParkingList.remove(i);
+						i--;
+					} else if(((type & Parking.SPEC_TIME_LIMIT & spec_mask) == 0) && ((type & Parking.SPEC_TIME_LIMIT) != 0)){
+						mParkingList.remove(i);
+						i--;
+					} else if(((type & Parking.SPEC_SURVEILED & spec_mask) == 0) && ((spec_mask & Parking.SPEC_SURVEILED) != 0)){
+						mParkingList.remove(i);
+						i--;
+					}
+				}
 			}
 
-            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(mapsActivity);
-            String vehicle = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE);
-            int radius = sharedPreferencesManager.getIntPreference(SharedPreferencesManager.PREF_RADIUS);
-
-
-            if(mCurrLocation != null) {
-                mParkingList = parkingDAO.getParkingList(mCurrLocation, radius, vehicle );
-                int type_mask = getTypeMask();
-                int spec_mask = getSpecMask();
-
-                for(int i=0;i<mParkingList.size();i++)
-                {
-                    int type = mParkingList.get(i).getType();
-                    if(((type & type_mask) == 0))
-					{
-                        mParkingList.remove(i);
-                        i--;
-                    }
-                    else if(((type & Parking.SPEC_TIME_LIMIT & spec_mask) == 0)&& ((type & Parking.SPEC_TIME_LIMIT)!= 0))
-                    {
-                        mParkingList.remove(i);
-                        i--;
-                    }
-                    else if(((type & Parking.SPEC_SURVEILED & spec_mask) == 0)&& ((spec_mask & Parking.SPEC_SURVEILED)!= 0))
-                    {
-                        mParkingList.remove(i);
-                        i--;
-                    }
-
-                }
-            }
 			parkingDAO.close();
 
 			listAccessSema.release();
@@ -296,22 +311,25 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		{
 			try{
 				listAccessSema.acquire();
-			}catch(InterruptedException e){
-			}
+			}catch(InterruptedException e)
+			{e.printStackTrace();}
 
 			if(mParkingList == null){
 				listAccessSema.release();
 				return;
 			}
 
-			for(Parking parking : mParkingList){
-				try{
-					// TODO: remove this and implement methods on current location
-					LatLng trento = new LatLng(46.062228, 11.112906);
+			for(Parking parking : mParkingList)
+			{
+				try
+				{
+					LatLng tmp = new LatLng(mCurrLocation.getLatitude(), mCurrLocation.getLongitude());
 
-					DistanceMatrixResult queryResult = new DistanceMatrixAPI("").exec(trento, parking.getLocation());
+					DistanceMatrixResult queryResult = new DistanceMatrixAPI("").exec(tmp, parking.getLocation());
 					if(queryResult.getStatusOk())
 						parking.setCurrDistance(queryResult.getDistance());
+					else
+						Toast.makeText(mapsActivity, "DistanceMatrix error: " + queryResult.getStatusText(), Toast.LENGTH_LONG).show();
 				}catch(Exception e){
 					e.printStackTrace();
 				}
@@ -322,13 +340,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			// Sort parking list
 			sortList();
 
-			// Update rank
-			for(int i = 0; i < mParkingList.size(); i++){
-				Parking p = mParkingList.get(i);
-
-				double rank = 1.0 / (mParkingList.size() - 1) * i;
-				p.setCurrRank(rank);
-			}
+			updateRanks();
 
 			// If nothing is selected
 			if(getSelectedParkingIndex() < 0)
@@ -346,6 +358,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			for(UiRefreshHandler l : mUiRefreshHandlers){
 				l.uiRefreshHandler();
 			}
+
 			updateParkingMarkers();
 		}
 	};

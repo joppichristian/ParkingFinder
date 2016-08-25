@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 import joppi.pier.parkingfinder.AppUtils;
 import joppi.pier.parkingfinder.ParkingFinderApplication;
-import joppi.pier.parkingfinder.SharedPreferencesManager;
 
 public class ParkingDAO_DB_impl implements ParkingDAO
 {
@@ -76,8 +75,6 @@ public class ParkingDAO_DB_impl implements ParkingDAO
 				latMin,latMax,
 				lngMin, lngMax
 		};
-
-
 
 		ArrayList<Parking> parking = new ArrayList<>();
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_NAME, null, whereClause, whereArgs, null, null, null);
