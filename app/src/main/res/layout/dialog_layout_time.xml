@@ -33,7 +33,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:background="#50000000">
+        android:background="#50000000"
+        android:minWidth="250dp">
 
         <TimePicker
             android:layout_width="wrap_content"

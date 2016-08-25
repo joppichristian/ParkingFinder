@@ -109,10 +109,17 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		return list;
 	}
 
+	public void setSelection(Parking parking)
+	{
+		mSelectedParking = parking;
+	}
+
 	public void setSelection(int index)
 	{
 		if(mParkingList != null && index >= 0 && index < mParkingList.size())
 			mSelectedParking = mParkingList.get(index);
+		else if (index == -1)
+			mSelectedParking = null;
 	}
 
 	public void setCurrentLocation(Location loc)
@@ -239,7 +246,8 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 	private void updateParkingMarkers()
 	{
-		mMap.clear();
+		for(Marker m : parkingMarkersHashMap.keySet())
+			m.remove();
 		parkingMarkersHashMap.clear();
 
 		// Add parking markers
@@ -341,10 +349,6 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			sortList();
 
 			updateRanks();
-
-			// If nothing is selected
-			if(getSelectedParkingIndex() < 0)
-				setSelection(0);
 
 			mapsActivity.runOnUiThread(mDispatchUiRefreshHandlers);
 		}

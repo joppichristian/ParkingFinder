@@ -2,7 +2,6 @@ package joppi.pier.parkingfinder;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +58,8 @@ public class ParkingListAdapter extends BaseAdapter
 			vi = inflater.inflate(R.layout.parking_list_item, null);
 
 		ArrayList<Parking> parkingList = mParkingMgr.getParkingList();
-		if(parkingList != null){
+		if(parkingList != null)
+		{
 			Parking currParking = parkingList.get(position);
 
 			TextView text_name = (TextView) vi.findViewById(R.id.park_name);
@@ -142,6 +142,23 @@ public class ParkingListAdapter extends BaseAdapter
 
 
             }
+
+			View leftColor = vi.findViewById(R.id.leftColor);
+			View topColor = vi.findViewById(R.id.topColor);
+
+			// Set selection colors
+			if(currParking == mParkingMgr.getSelectedParking()){
+				leftColor.setBackgroundColor(color);
+				leftColor.setVisibility(View.VISIBLE);
+
+				topColor.setBackgroundColor(color);
+				topColor.setVisibility(View.VISIBLE);
+			}
+			else
+			{
+				leftColor.setVisibility(View.INVISIBLE);
+				topColor.setVisibility(View.INVISIBLE);
+			}
 
 		}
 

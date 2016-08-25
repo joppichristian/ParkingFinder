@@ -5,10 +5,24 @@
     android:background="@color/colorPrimaryDark"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/topColor"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#3fe3c0"
+        android:visibility="invisible"/>
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
+        <View
+            android:id="@+id/leftColor"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#3fe3c0"
+            android:visibility="invisible"/>
 
         <FrameLayout
             android:layout_width="wrap_content"

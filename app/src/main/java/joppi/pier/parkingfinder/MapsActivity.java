@@ -3,6 +3,7 @@ package joppi.pier.parkingfinder;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -23,8 +24,12 @@ import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Calendar;
@@ -38,16 +43,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 															  SlidingUpPanelLayout.PanelSlideListener,
 															  PlaceSelectionListener
 {
-	private static float PANEL_HEIGHT = 103.0f; // dp
+	private static float PANEL_HEIGHT = 104.0f; // dp
 
 	private GoogleMap mMap;
 	private ParkingMgr mParkingMgr;
 	private LocationProvider locationProvider;
 	private MenuManager menuManager;
 
+	Marker mDestMarker;
 	ListView parkingListView;
 	View mSelectedParkingView;
 	ProgressBar mProgressBar;
+	View mNewDestinationDialog;
 	SlidingUpPanelLayout mSlidingLayout;
 	ParkingListAdapter mParkingListAdapter;
 
@@ -57,6 +64,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
 
+		mNewDestinationDialog = null;
+
 		// Obtain the SupportMapFragment and get notified when the map is ready to be used (onMapReady).
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
@@ -64,10 +73,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		// Add Sliding Up panel layout
 		mSlidingLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 		mSlidingLayout.addPanelSlideListener(this);
-		mSlidingLayout.setPanelHeight((int)AppUtils.convertDpToPixel(PANEL_HEIGHT, this));
+		mSlidingLayout.setPanelHeight(0);
 
 		mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-		mProgressBar.setVisibility(View.VISIBLE);
+		//mProgressBar.setVisibility(View.VISIBLE);
 
 		// Create location provider (Slow for some reason)
 		locationProvider = new LocationProvider(this);
@@ -97,6 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	public void onMapReady(GoogleMap googleMap)
 	{
 		mMap = googleMap;
+		mDestMarker = null;
 
 		// Load parking DB
 		mParkingMgr = new ParkingMgr(this, mMap);
@@ -108,11 +118,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			@Override
 			public void onMapClick(LatLng latLng)
 			{
-//				mMap.addMarker(new MarkerOptions()
-//						.position(latLng)
-//						.title("Mia Destinazione")
-//						.icon(BitmapDescriptorFactory.fromResource(R.drawable.dest_marker)));
-//				mParkingMgr.setUserDestination(latLng);
+				mParkingMgr.setSelection(null);
+
+				if(mDestMarker != null)
+					mDestMarker.remove();
+				mDestMarker = mMap.addMarker(new MarkerOptions()
+						.position(latLng)
+						.title("Destinazione")
+						.icon(BitmapDescriptorFactory.fromResource(R.drawable.dest_marker)));
+
+
+				Projection projection = mMap.getProjection();
+				Point pt = projection.toScreenLocation(mDestMarker.getPosition());
+
+				final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.mapsFrameLayout);
+				mNewDestinationDialog = getLayoutInflater().inflate(R.layout.new_destination_dialog, null);
+				frameLayout.addView(mNewDestinationDialog);
+
+				View back = findViewById(R.id.newDestBackView);
+				back.setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						frameLayout.removeView(mNewDestinationDialog);
+						v.setClickable(false);
+						mDestMarker.remove();
+					}
+				});
+
+				int width = (int)AppUtils.convertDpToPixel(210, MapsActivity.this);
+				mNewDestinationDialog.setPadding(pt.x - width/2, pt.y - 350, 0, 0);
+
+				uiRefreshHandler();
 			}
 		});
 
@@ -124,7 +162,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		}
 
 		mMap.setMyLocationEnabled(true);
-		mMap.getUiSettings().setZoomControlsEnabled(true);
 		mMap.getUiSettings().setCompassEnabled(false);
 		mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
@@ -141,7 +178,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 		FrameLayout layout = (FrameLayout) findViewById(R.id.frameLayout);
 		mSelectedParkingView = mParkingListAdapter.getView(0, null, null);
-		mSelectedParkingView.setVisibility(View.INVISIBLE);
 		mSelectedParkingView.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -152,13 +188,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		});
 		layout.addView(mSelectedParkingView);
 
+		// TODO: remove, for emulator only
+		mMap.getUiSettings().setZoomControlsEnabled(true);
+
 		// TODO: delete, for DEBUG purpose only
 		LatLng trento = new LatLng(46.062228, 11.112906);
-//		Location tmp = new Location("tmp");
-//		tmp.setLatitude(trento.latitude);
-//		tmp.setLongitude(trento.longitude);
-//		mParkingMgr.setCurrentLocation(tmp);
-//		triggerParkingListUpdate();
 		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 13.0f));
 	}
 
@@ -197,7 +231,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		} else if(newState == SlidingUpPanelLayout.PanelState.EXPANDED){
 			mSelectedParkingView.setClickable(false);
 		} else if(newState == SlidingUpPanelLayout.PanelState.DRAGGING){
-			parkingListView.setSelection(0);
+			if(previousState == SlidingUpPanelLayout.PanelState.EXPANDED)
+				parkingListView.setSelection(0);
+			else if(mParkingMgr.getSelectedParkingIndex() >= 0)
+				parkingListView.setSelection(mParkingMgr.getSelectedParkingIndex());
 		}
 	}
 
@@ -236,19 +273,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	@Override
 	public void uiRefreshHandler()
 	{
-		// TODO: temporary implementation, not even working correctly...
 		int selectedItem = mParkingMgr.getSelectedParkingIndex();
-		if(selectedItem < 0){
-			mSlidingLayout.setPanelHeight(0);
-			mProgressBar.setVisibility(View.VISIBLE);
-		} else{
+		if(selectedItem < 0)
+		{
+			if(mParkingMgr.getParkingList() != null && mParkingMgr.getParkingList().size() > 0){
+				mSelectedParkingView = mParkingListAdapter.getView(0, mSelectedParkingView, null);
+				mSlidingLayout.setPanelHeight((int)AppUtils.convertDpToPixel(PANEL_HEIGHT, this));
+			}
+			else mSlidingLayout.setPanelHeight(0);
+
+			if(mParkingMgr.getParkingList() != null && mParkingMgr.getParkingList().size() == 0)
+				Toast.makeText(this, "Nessun parcheggio nelle vicinanze",Toast.LENGTH_LONG).show();
+		} else
+		{
 			mSlidingLayout.setPanelHeight((int)AppUtils.convertDpToPixel(PANEL_HEIGHT, this));
-			mProgressBar.setVisibility(View.INVISIBLE);
 			mSelectedParkingView = mParkingListAdapter.getView(selectedItem, mSelectedParkingView, null);
 		}
 		
 		ListView list = (ListView) findViewById(R.id.parkingListView);
 		((ParkingListAdapter) list.getAdapter()).notifyDataSetChanged();
+
+		mProgressBar.setVisibility(View.INVISIBLE);
 	}
 
 	// Open side options menu
@@ -257,9 +302,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		menuManager.openMenu();
 	}
 
+	// Set new user destination
+	public void  onNewDestinationDialogClick(View v)
+	{
+		FrameLayout frameLayout = (FrameLayout) findViewById(R.id.mapsFrameLayout);
+		frameLayout.removeView(mNewDestinationDialog);
+		View back = findViewById(R.id.newDestBackView);
+		back.setClickable(false);
+
+		mParkingMgr.setUserDestination(mDestMarker.getPosition());
+		triggerParkingListUpdate();
+	}
+
 	// Set current location
     public void triggerParkingListUpdate()
-    {
+	{
+		mProgressBar.setVisibility(View.VISIBLE);
+
         mParkingMgr.updateParkingListAsync();
     }
 	

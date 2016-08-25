@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -62,14 +63,11 @@ public class FilterActivity extends AppCompatActivity
 		SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
 		float cost_weight = seekBar.getProgress()/10.0f;
 
-
 		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_VEHICLE,vehicle);
 		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_TIME,time);
 		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_COST_WEIGHT,cost_weight);
 		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT,(1-cost_weight));
 		SharedPreferencesManager.getInstance(FilterActivity.this).setPreference(SharedPreferencesManager.PREF_RADIUS,10);
-
-
 
 		startActivity(go);
 		finish();
@@ -88,15 +86,19 @@ public class FilterActivity extends AppCompatActivity
 		@Override
 		public View setViewForPosition(int position)
 		{
-			View customView = null;
+			View customView;
             SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance(FilterActivity.this);
 
-			switch(position){
+			switch(position)
+			{
 				case 0:
 					customView = getLayoutInflater().inflate(R.layout.carousel_layout_vehicle, null);
 					break;
 				case 1:
 					customView = getLayoutInflater().inflate(R.layout.carousel_layout_time, null);
+					TimePicker timePicker = (TimePicker)customView.findViewById(R.id.timePicker);
+					boolean is24hView = DateFormat.is24HourFormat(FilterActivity.this);
+					timePicker.setIs24HourView(is24hView);
 					break;
 				default:
 					customView = getLayoutInflater().inflate(R.layout.carousel_layout_cost, null);

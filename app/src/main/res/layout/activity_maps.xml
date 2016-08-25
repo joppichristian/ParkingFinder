@@ -15,7 +15,8 @@
         sothree:umanoPanelHeight="103dp"
         sothree:umanoShadowHeight="4dp"
         sothree:umanoFadeColor="@android:color/transparent">
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/mapsFrameLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -33,8 +34,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </fragment>
+            <View
+                android:id="@+id/newDestBackView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false"/>
 
-        </LinearLayout>
+        </FrameLayout>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
