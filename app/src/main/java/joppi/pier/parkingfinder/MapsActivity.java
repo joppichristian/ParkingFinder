@@ -183,7 +183,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			@Override
 			public void onClick(View v)
 			{
-				openParkingDetailActivity(0);
+                int selectedItem = mParkingMgr.getSelectedParkingIndex();
+                if(selectedItem < 0)
+                {
+                    selectedItem = 0;
+                }
+				openParkingDetailActivity(selectedItem);
 			}
 		});
 		layout.addView(mSelectedParkingView);

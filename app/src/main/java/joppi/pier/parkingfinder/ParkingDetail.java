@@ -80,7 +80,7 @@ public class ParkingDetail extends Activity {
 
 
         // SET IMAGE AND TYPE PARAMETERS
-        if((type & Parking.SPEC_SURVEILED) == Parking.SPEC_SURVEILED )
+        if((type & Parking.SPEC_SURVEILED) != Parking.SPEC_SURVEILED )
         {
             TextView tx_surveiled = (TextView)findViewById(R.id.park_surveiled);
             tx_surveiled.setText("Non sorvegliato");
@@ -115,10 +115,10 @@ public class ParkingDetail extends Activity {
 
 
         ImageView icon_disco = (ImageView)findViewById(R.id.icon_time_limit);
-        if(icon_disco != null) {
-            icon_disco.getDrawable().setColorFilter(0x00ff9900, PorterDuff.Mode.SRC_ATOP);
-            icon_disco.postInvalidate();
-        }
+        icon_disco.clearColorFilter();
+        icon_disco.getDrawable().setColorFilter(0x00ff9900, PorterDuff.Mode.CLEAR);
+        
+
 
 
         // SET HEADER VIEW COLOR
@@ -126,6 +126,8 @@ public class ParkingDetail extends Activity {
         right_view.setBackgroundColor(color);
         View bottom_view = findViewById(R.id.bottomColorDetail);
         bottom_view.setBackgroundColor(color);
+
+
 
         // SET BUTTON COLOR
         TextView goMap = (TextView)findViewById(R.id.goMap);
