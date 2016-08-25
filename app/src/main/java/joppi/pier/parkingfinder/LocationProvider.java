@@ -2,7 +2,6 @@ package joppi.pier.parkingfinder;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -29,7 +28,6 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 										 GoogleApiClient.OnConnectionFailedListener,
 										 LocationListener
 {
-	private final Context context;
 	protected Activity currActivity;
 
 	Location mLocation;
@@ -60,10 +58,9 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 		void onCoarseLocationChanged(Location loc);
 	}
 
-	public LocationProvider(Activity activity, Context context)
+	public LocationProvider(Activity activity)
 	{
 		currActivity = activity;
-		this.context = context;
 
 		mLastCoarseLoc = null;
 		mFineLocMillis = 2000; // 2 sec
@@ -87,7 +84,7 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 		mLocationRequest.setInterval(mFineLocMillis); // Update location every x milliseconds
 		mLocationRequest.setSmallestDisplacement(mFineLocDispl); // Update every x meters
 
-		if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+		if(ActivityCompat.checkSelfPermission(currActivity.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
 			ActivityCompat.requestPermissions(currActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 		}
 
@@ -144,7 +141,7 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 
 	void buildGoogleApiClient()
 	{
-		mGoogleApiClient = new GoogleApiClient.Builder(context)
+		mGoogleApiClient = new GoogleApiClient.Builder(currActivity.getApplicationContext())
 				.addConnectionCallbacks(this)
 				.addOnConnectionFailedListener(this)
 				.addApi(LocationServices.API)

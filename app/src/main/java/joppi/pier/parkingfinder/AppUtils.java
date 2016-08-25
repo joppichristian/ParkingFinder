@@ -1,10 +1,13 @@
 package joppi.pier.parkingfinder;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -97,10 +100,7 @@ public class AppUtils
 
 	public static BitmapDescriptor getCustomParkingMarker(double rank,Parking parking)
 	{
-
-
 		Drawable marker;
-
 
 		switch (parking.getType() & Parking.TYPE_MASK){
 			case 1:
@@ -118,7 +118,6 @@ public class AppUtils
             default:
                 marker = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_parking_surface);
 		}
-
 
 		Drawable markerBg = ParkingFinderApplication.getAppContext().getResources().getDrawable(R.drawable.marker_background);
 		if(marker != null && markerBg != null)
@@ -139,5 +138,68 @@ public class AppUtils
 		return null;
 	}
 
+	public static int getPerfTypeMask(SharedPreferencesManager mPrefManager)
+	{
+		boolean surface = mPrefManager.getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURFACE);
+		boolean structure = mPrefManager.getBooleanPreference(SharedPreferencesManager.PREF_TYPE_STRUCTURE);
+		boolean road = mPrefManager.getBooleanPreference(SharedPreferencesManager.PREF_TYPE_ROAD);
+		boolean subterranean = mPrefManager.getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SUBTERRANEAN);
 
+		int typeFilter = 0x0;
+
+		if(surface)
+			typeFilter = typeFilter | Parking.TYPE_SURFACE;
+		if(structure)
+			typeFilter = typeFilter | Parking.TYPE_STRUCTURE;
+		if(road)
+			typeFilter = typeFilter | Parking.TYPE_ROAD;
+		if(subterranean)
+			typeFilter = typeFilter | Parking.TYPE_SUBTERRANEAN;
+
+		return typeFilter;
+	}
+
+	public static int getPrefSpecMask(SharedPreferencesManager mPrefManager)
+	{
+		boolean disco = mPrefManager.getBooleanPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED);
+		boolean surveiled = mPrefManager.getBooleanPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED);
+
+		int typeFilter = 0x0;
+		if(disco)
+			typeFilter = typeFilter | Parking.SPEC_TIME_LIMIT;
+		if(surveiled)
+			typeFilter = typeFilter | Parking.SPEC_SURVEILED;
+
+		return typeFilter;
+	}
+
+
+
+	/**
+	 * This method converts dp unit to equivalent pixels, depending on device density.
+	 *
+	 * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+	 * @param context Context to get resources and device specific display metrics
+	 * @return A float value to represent px equivalent to dp depending on device density
+	 */
+	public static float convertDpToPixel(float dp, Context context){
+		Resources resources = context.getResources();
+		DisplayMetrics metrics = resources.getDisplayMetrics();
+		float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+		return px;
+	}
+
+	/**
+	 * This method converts device specific pixels to density independent pixels.
+	 *
+	 * @param px A value in px (pixels) unit. Which we need to convert into db
+	 * @param context Context to get resources and device specific display metrics
+	 * @return A float value to represent dp equivalent to px value
+	 */
+	public static float convertPixelsToDp(float px, Context context){
+		Resources resources = context.getResources();
+		DisplayMetrics metrics = resources.getDisplayMetrics();
+		float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+		return dp;
+	}
 }

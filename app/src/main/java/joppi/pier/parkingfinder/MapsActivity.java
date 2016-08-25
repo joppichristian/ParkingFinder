@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -27,7 +28,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Calendar;
-import java.util.Comparator;
 
 import joppi.pier.parkingfinder.db.Parking;
 import joppi.pier.parkingfinder.db.ParkingMgr;
@@ -38,6 +38,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 															  SlidingUpPanelLayout.PanelSlideListener,
 															  PlaceSelectionListener
 {
+	private static float PANEL_HEIGHT = 103.0f; // dp
+
 	private GoogleMap mMap;
 	private ParkingMgr mParkingMgr;
 	private LocationProvider locationProvider;
@@ -45,10 +47,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 	ListView parkingListView;
 	View mSelectedParkingView;
+	ProgressBar mProgressBar;
+	SlidingUpPanelLayout mSlidingLayout;
 	ParkingListAdapter mParkingListAdapter;
-
-	// TODO: remove & implement on current location
-	LatLng trento = new LatLng(46.062228, 11.112906);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -61,16 +62,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		mapFragment.getMapAsync(this);
 
 		// Add Sliding Up panel layout
-		SlidingUpPanelLayout slidingLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-		slidingLayout.addPanelSlideListener(this);
+		mSlidingLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+		mSlidingLayout.addPanelSlideListener(this);
+		mSlidingLayout.setPanelHeight((int)AppUtils.convertDpToPixel(PANEL_HEIGHT, this));
+
+		mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+		mProgressBar.setVisibility(View.VISIBLE);
+
+		// Create location provider (Slow for some reason)
+		locationProvider = new LocationProvider(this);
+		locationProvider.addLocationChangedListener(this);
 
 		// Set-up parking listView
 		parkingListView = (ListView) findViewById(R.id.parkingListView);
 		parkingListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-
-		// Create location provider
-		locationProvider = new LocationProvider(this, getApplicationContext());
-		locationProvider.addLocationChangedListener(this);
 
 		// Crate options menu manager
 		menuManager = new MenuManager((DrawerLayout) findViewById(R.id.drawer_layout), (NavigationView) findViewById(R.id.menu), MapsActivity.this);
@@ -95,36 +100,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 		// Load parking DB
 		mParkingMgr = new ParkingMgr(this, mMap);
-
 		mParkingMgr.addUiRefreshHandler(this);
-		mParkingMgr.registerListSortComparator(new Comparator<Parking>()
-		{
-			@Override
-			public int compare(Parking lhs, Parking rhs)
-			{
 
-				SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
-				String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
-				String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
-				double cost_weight = sharedPreferencesManager.getFloatPreference(SharedPreferencesManager.PREF_COST_WEIGHT);
-				double distance_weight = sharedPreferencesManager.getFloatPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT);;
-
-
-				int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-				return lhs.getCurrDistance() * distance_weight + lhs.getCost(start,stop,today_number) * cost_weight >= rhs.getCurrDistance() * distance_weight + rhs.getCost(start,stop,today_number) * cost_weight ? 1 : -1;
-			}
-		});
-
-		// TODO: implement on current location
-		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 13.0f));
-
-		// Click handler to let user add parking zones
+		// Click handler to let user select destination
 		mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
 		{
 			@Override
 			public void onMapClick(LatLng latLng)
 			{
-				mParkingMgr.drawPolyClickHandler(latLng);
+//				mMap.addMarker(new MarkerOptions()
+//						.position(latLng)
+//						.title("Mia Destinazione")
+//						.icon(BitmapDescriptorFactory.fromResource(R.drawable.dest_marker)));
+//				mParkingMgr.setUserDestination(latLng);
 			}
 		});
 
@@ -165,10 +153,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		layout.addView(mSelectedParkingView);
 
 		// TODO: delete, for DEBUG purpose only
-		Location tmp = new Location("tmp");
-		tmp.setLatitude(trento.latitude);
-		tmp.setLongitude(trento.longitude);
-		onCoarseLocationChanged(tmp);
+		LatLng trento = new LatLng(46.062228, 11.112906);
+//		Location tmp = new Location("tmp");
+//		tmp.setLatitude(trento.latitude);
+//		tmp.setLongitude(trento.longitude);
+//		mParkingMgr.setCurrentLocation(tmp);
+//		triggerParkingListUpdate();
+		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 13.0f));
 	}
 
 	private void openParkingDetailActivity(int itemPos)
@@ -227,26 +218,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	@Override
 	public void onFineLocationChanged(Location newLoc)
 	{
+		if(!mParkingMgr.isUserDestDefined())
+			mParkingMgr.setCurrentLocation(newLoc);
+
 		mParkingMgr.updateDistancesAsync();
 	}
 
 	@Override
 	public void onCoarseLocationChanged(Location newLoc)
 	{
+		if(!mParkingMgr.isUserDestDefined())
+			mParkingMgr.setCurrentLocation(newLoc);
+
         triggerParkingListUpdate();
 	}
 
 	@Override
 	public void uiRefreshHandler()
 	{
+		// TODO: temporary implementation, not even working correctly...
 		int selectedItem = mParkingMgr.getSelectedParkingIndex();
 		if(selectedItem < 0){
-			mSelectedParkingView.setVisibility(View.INVISIBLE);
+			mSlidingLayout.setPanelHeight(0);
+			mProgressBar.setVisibility(View.VISIBLE);
 		} else{
-			mSelectedParkingView.setVisibility(View.VISIBLE);
+			mSlidingLayout.setPanelHeight((int)AppUtils.convertDpToPixel(PANEL_HEIGHT, this));
+			mProgressBar.setVisibility(View.INVISIBLE);
 			mSelectedParkingView = mParkingListAdapter.getView(selectedItem, mSelectedParkingView, null);
 		}
-
+		
 		ListView list = (ListView) findViewById(R.id.parkingListView);
 		((ParkingListAdapter) list.getAdapter()).notifyDataSetChanged();
 	}
@@ -260,10 +260,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	// Set current location
     public void triggerParkingListUpdate()
     {
-        mParkingMgr.updateParkingListAsync(locationProvider.getCurrentLocation());
+        mParkingMgr.updateParkingListAsync();
     }
 	
-	public void setCurrLocationClick(View v)
+	public void setCurrLocationBtnClick(View v)
 	{
 		Location loc = mMap.getMyLocation();
 		if(loc != null)
