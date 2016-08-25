@@ -68,7 +68,6 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
                     SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_VEHICLE,vehicle);
                     dialog.dismiss();
                     mapsActivity.triggerParkingListUpdate();
-                    drawerLayout.closeDrawer(Gravity.LEFT);
                 }
             });
             return true;
@@ -89,7 +88,6 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
                     SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TIME,time);
                     dialog.dismiss();
                     mapsActivity.triggerParkingListUpdate();
-                    drawerLayout.closeDrawer(Gravity.LEFT);
                 }
             });
             return true;
@@ -111,7 +109,6 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
                     SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT,(1-cost_weight));
                     dialog.dismiss();
                     mapsActivity.triggerParkingListUpdate();
-                    drawerLayout.closeDrawer(Gravity.LEFT);
                 }
             });
 
@@ -147,7 +144,6 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
                     SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_SUBTERRANEAN,chkSubterranean);
                     dialog.dismiss();
                     mapsActivity.triggerParkingListUpdate();
-                    drawerLayout.closeDrawer(Gravity.LEFT);
                 }
             });
             return true;
@@ -173,7 +169,6 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
                         SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_TIME_LIMITATED,false);
                     dialog.dismiss();
                     mapsActivity.triggerParkingListUpdate();
-                    drawerLayout.closeDrawer(Gravity.LEFT);
                 }
             });
             return true;
@@ -199,7 +194,6 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
                         SharedPreferencesManager.getInstance(mapsActivity).setPreference(SharedPreferencesManager.PREF_TYPE_SURVEILED,false);
                     dialog.dismiss();
                     mapsActivity.triggerParkingListUpdate();
-                    drawerLayout.closeDrawer(Gravity.LEFT);
                 }
             });
             return true;
@@ -224,7 +218,6 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
                     dialog.dismiss();
                     Log.w("RADIUS",radius+"");
                     mapsActivity.triggerParkingListUpdate();
-                    drawerLayout.closeDrawer(Gravity.LEFT);
                 }
             });
 
