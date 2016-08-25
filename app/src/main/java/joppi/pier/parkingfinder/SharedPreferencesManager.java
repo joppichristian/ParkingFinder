@@ -84,7 +84,7 @@ public class SharedPreferencesManager {
     }
     public Boolean getBooleanPreference(String key) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Boolean var = sharedPreferences.getBoolean(key, true);
+        Boolean var = sharedPreferences.getBoolean(key, false);
         return var;
     }
 }
