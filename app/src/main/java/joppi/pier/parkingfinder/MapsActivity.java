@@ -208,9 +208,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
 		intent.putExtra("cost", clicked.getCost(start, stop, today_number));
-		intent.putExtra("dist", clicked.getCurrDistance());
-		//				intent.putExtra("lat",searchClosestPoint(clicked).latitude);
-		//				intent.putExtra("long",searchClosestPoint(clicked).longitude);
+		intent.putExtra("dist", (double)clicked.getCurrDistance());
+		intent.putExtra("lat", clicked.getLatitudeRaw());
+		intent.putExtra("long",clicked.getLongitudeRaw());
+        intent.putExtra("color",AppUtils.generateColorFromRank(0x30e0c0, 0xffc280, 0xff7080,clicked.getCurrRank()));
+        intent.putExtra("type",clicked.getType());
+        intent.putExtra("time_limit",clicked.getTimeLimit());
+        intent.putExtra("time_frame",clicked.getTimeFrame());
+        intent.putExtra("notes",clicked.getNotes());
+        switch (sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE)){
+            case "Automobile":intent.putExtra("places",clicked.getCar());break;
+            case "Moto":intent.putExtra("places",clicked.getMoto());break;
+            case "Caravan":intent.putExtra("places",clicked.getCaravan());break;
+        }
 		startActivity(intent);
 	}
 
