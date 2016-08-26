@@ -27,7 +27,6 @@
             android:layout_gravity="center"
             android:text="Con che veicolo si trova?"
             android:layout_marginLeft="20dp"
-            android:typeface="serif"
             android:textSize="20dp"
             android:textIsSelectable="true"
             android:textStyle="bold"

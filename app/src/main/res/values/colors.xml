@@ -7,4 +7,6 @@
     <color name="progressBarColor">#0d47a1</color>
     <color name="buttonColor">#0d47a1</color>
     <color name="buttonBackground">#AFFF</color>
+    <color name="blueButton">#3e89e4</color>
+    <color name="greenButton">#7ce26d</color>
 </resources>

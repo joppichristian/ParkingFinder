@@ -5,20 +5,27 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.Shape;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.model.Circle;
 
 import joppi.pier.parkingfinder.db.Parking;
 
@@ -64,11 +71,11 @@ public class ParkingDetail extends Activity {
 
         // SET COST
         TextView tx_cost = (TextView)findViewById(R.id.park_price);
-        tx_cost.setText("Prezzo : " + cost +" €");
+        tx_cost.setText(cost +" €");
 
         // SET DISTANCE
         TextView tx_distance = (TextView)findViewById(R.id.park_distance);
-        tx_distance.setText("Distanza : "+dist.intValue() + " metri");
+        tx_distance.setText(dist.intValue() + " metri");
 
         // SET TIME FRAME
         TextView tx_time_frame = (TextView)findViewById(R.id.park_time_frame);
@@ -80,7 +87,7 @@ public class ParkingDetail extends Activity {
 
 
         // SET IMAGE AND TYPE PARAMETERS
-        if((type & Parking.SPEC_SURVEILED) == Parking.SPEC_SURVEILED )
+        if((type & Parking.SPEC_SURVEILED) != Parking.SPEC_SURVEILED )
         {
             TextView tx_surveiled = (TextView)findViewById(R.id.park_surveiled);
             tx_surveiled.setText("Non sorvegliato");
@@ -114,32 +121,88 @@ public class ParkingDetail extends Activity {
 
 
 
-        ImageView icon_disco = (ImageView)findViewById(R.id.icon_time_limit);
-        if(icon_disco != null) {
-            icon_disco.getDrawable().setColorFilter(0x00ff9900, PorterDuff.Mode.SRC_ATOP);
-            icon_disco.postInvalidate();
-        }
+        ImageView imageView_disco = (ImageView)findViewById(R.id.icon_time_limit);
+        Drawable icon_disco = getResources().getDrawable(R.drawable.ic_timelapse_details);
+        icon_disco.clearColorFilter();
+        icon_disco.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        imageView_disco.setImageDrawable(icon_disco);
 
+        ImageView imageView_time_frame = (ImageView)findViewById(R.id.icon_time_frame);
+        Drawable icon_time_frame = getResources().getDrawable(R.drawable.ic_action_clock_details);
+        icon_time_frame.clearColorFilter();
+        icon_time_frame.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        imageView_time_frame.setImageDrawable(icon_time_frame);
 
-        // SET HEADER VIEW COLOR
+        ImageView imageView_surveiled = (ImageView)findViewById(R.id.icon_surveiled);
+        Drawable icon_surveiled = getResources().getDrawable(R.drawable.parking_surveiled_details);
+        icon_surveiled.clearColorFilter();
+        icon_surveiled.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        imageView_surveiled.setImageDrawable(icon_surveiled);
+
+        ImageView imageView_distance_by_car = (ImageView)findViewById(R.id.icon_distance_by_car);
+        Drawable icon_distance_by_car = getResources().getDrawable(R.drawable.distance_by_car_details);
+        icon_distance_by_car.clearColorFilter();
+        icon_distance_by_car.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        imageView_distance_by_car.setImageDrawable(icon_distance_by_car);
+
+        ImageView imageView_distance_by_foot = (ImageView)findViewById(R.id.icon_distance_by_foot);
+        Drawable icon_distance_by_foot = getResources().getDrawable(R.drawable.distance_by_foot_details);
+        icon_distance_by_foot.clearColorFilter();
+        icon_distance_by_foot.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        imageView_distance_by_foot.setImageDrawable(icon_distance_by_foot);
+
+        ImageView imageView_price = (ImageView)findViewById(R.id.icon_price);
+        Drawable icon_price = getResources().getDrawable(R.drawable.price_icon);
+        icon_price.clearColorFilter();
+        icon_price.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        imageView_price.setImageDrawable(icon_price);
+
+        ImageView imageView_feedback_up = (ImageView)findViewById(R.id.icon_feedback_up);
+        Drawable icon_feedback_up = getResources().getDrawable(R.drawable.ic_thumb_up);
+        icon_feedback_up.clearColorFilter();
+        icon_feedback_up.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        imageView_feedback_up.setImageDrawable(icon_feedback_up);
+
+        ImageView imageView_feedback_down = (ImageView)findViewById(R.id.icon_feedback_down);
+        Drawable icon_feedback_down = getResources().getDrawable(R.drawable.ic_thumb_down);
+        icon_feedback_down.clearColorFilter();
+        icon_feedback_down.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        imageView_feedback_down.setImageDrawable(icon_feedback_down);
+
+        // SET VIEW COLOR
         View right_view = findViewById(R.id.rightColorDetail);
         right_view.setBackgroundColor(color);
         View bottom_view = findViewById(R.id.bottomColorDetail);
         bottom_view.setBackgroundColor(color);
+        View divisor = findViewById(R.id.firstDivisor);
+        divisor.setBackgroundColor(color);
+        divisor = findViewById(R.id.secondDivisor);
+        divisor.setBackgroundColor(color);
+        divisor = findViewById(R.id.thirdDivisor);
+        divisor.setBackgroundColor(color);
+        divisor = findViewById(R.id.fourthDivisor);
+        divisor.setBackgroundColor(color);
+        divisor = findViewById(R.id.fiftDivisor);
+        divisor.setBackgroundColor(color);
+        divisor = findViewById(R.id.sixthDivisor);
+        divisor.setBackgroundColor(color);
 
-        // SET BUTTON COLOR
-        TextView goMap = (TextView)findViewById(R.id.goMap);
 
-        GradientDrawable shape = new GradientDrawable();
-        shape.setShape(GradientDrawable.RECTANGLE);
-        shape.setCornerRadii(new float[] { 8, 8, 8, 8, 8, 8, 8, 8 });
-        shape.setColor(color);
-        shape.setStroke(30, color);
-
-        goMap.setBackground(shape);
+        GradientDrawable shape_blue = (GradientDrawable)getResources().getDrawable(R.drawable.button_circle_background);
+        shape_blue.setColor(getResources().getColor(R.color.blueButton));
+        ImageButton goMap = (ImageButton)findViewById(R.id.goMap);
+        goMap.setBackground(shape_blue);
 
 
+        GradientDrawable shape_green = (GradientDrawable)getResources().getDrawable(R.drawable.button_circle_background);
+        shape_green.setColor(getResources().getColor(R.color.greenButton));
+        ImageButton feedback_up = (ImageButton)findViewById(R.id.postFeedbackUp);
+        feedback_up.setBackground(shape_green);
 
+        GradientDrawable shape_red = (GradientDrawable)getResources().getDrawable(R.drawable.button_circle_background);
+        shape_red.setColor(Color.RED);
+        ImageButton feedback_down = (ImageButton)findViewById(R.id.postFeedbackDown);
+        feedback_down.setBackground(shape_red);
 
 
     }
@@ -149,5 +212,16 @@ public class ParkingDetail extends Activity {
         Intent mapIntent = new Intent(Intent.ACTION_VIEW,gmmIntentUri );
         mapIntent.setPackage("com.google.android.apps.maps");
         startActivity(mapIntent);
+    }
+
+
+    public void postFeedback(View v){
+        int id = v.getId();
+        Toast toast;
+        if(id == R.id.postFeedbackUp)
+            toast=Toast.makeText(this,"La ringraziamo per il feedback inviato!",Toast.LENGTH_LONG);
+        else
+            toast=Toast.makeText(this,"La ringraziamo per il feedback inviato! La preghiamo inoltre di contattarci per eventuali informazioni errate!",Toast.LENGTH_LONG);
+        toast.show();
     }
 }

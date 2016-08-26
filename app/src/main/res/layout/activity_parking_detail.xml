@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,7 +8,8 @@
     tools:context="joppi.pier.parkingfinder.ParkingDetail">
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/headerDetails"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
         android:orientation="vertical">
@@ -49,12 +50,12 @@
                         android:id="@+id/park_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="5dp"
                         android:text="Park_name"
                         android:textColor="#fff"
                         android:textSize="28dp"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginTop="5dp" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/park_type"
@@ -96,143 +97,369 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="30dp"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/park_distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Distanza : 540 metri"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/park_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Prezzo : 25 €"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp">
-
-            <ImageView
-                android:id="@+id/icon_time_frame"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:background="#ff9900"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_action_clock" />
-
-            <TextView
-                android:id="@+id/park_time_frame"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="8:00 - 20:00"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="5dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/layout_surveiled"
-            android:layout_marginTop="15dp">
-
-            <ImageView
-                android:id="@+id/icon_surveiled"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:background="#ff9900"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_videocam" />
-
-            <TextView
-                android:id="@+id/park_surveiled"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Sorvegliato"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="20dp" />
-        </LinearLayout>
+        android:layout_height="wrap_content"
+        android:fillViewport="false"
+        android:layout_below="@id/headerDetails">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal"
-            android:id="@+id/layout_time_limit">
-
-            <ImageView
-                android:id="@+id/icon_time_limit"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:background="#ff9900"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_timelapse" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/park_time_limit"
-                android:layout_width="wrap_content"
+                android:id="@+id/firstDivisor"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="2 ore"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="20dp" />
-        </LinearLayout>
+                android:background="#FF9900"
+                android:paddingLeft="35dp"
+                android:text="Distanze"
+                android:textColor="#fff"
+                android:textSize="18dp" />
 
-        <TextView
-            android:id="@+id/park_notes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="20dp"
-            android:text="Lorem ipsum dolor sit amet, sapien etiam, nunc amet dolor ac odio mauris justo.
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/icon_distance_by_car"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/distance_by_car" />
+
+                    <TextView
+                        android:id="@+id/park_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="540 metri"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/icon_distance_by_foot"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/distance_by_foot" />
+
+                    <TextView
+                        android:id="@+id/park_distance_walking"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="540 metri"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/secondDivisor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF9900"
+                android:paddingLeft="35dp"
+                android:text="Prezzi E Limitazioni"
+                android:textColor="#fff"
+                android:textSize="18dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/icon_price"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/price_icon" />
+
+                    <TextView
+                        android:id="@+id/park_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="Prezzo : 25 €"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/icon_time_limit"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_timelapse" />
+
+                    <TextView
+                        android:id="@+id/park_time_limit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="2 ore"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/thirdDivisor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF9900"
+                android:paddingLeft="35dp"
+                android:text="Orario"
+                android:textColor="#fff"
+                android:textSize="18dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp">
+
+                    <ImageView
+                        android:id="@+id/icon_time_frame"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_action_clock" />
+
+                    <TextView
+                        android:id="@+id/park_time_frame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
+                        android:text="8:00 - 20:00"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/fourthDivisor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF9900"
+                android:paddingLeft="35dp"
+                android:text="Specifiche varie"
+                android:textColor="#fff"
+                android:textSize="18dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp">
+
+                    <ImageView
+                        android:id="@+id/icon_surveiled"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_videocam" />
+
+                    <TextView
+                        android:id="@+id/park_surveiled"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="Sorvegliato"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/fiftDivisor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF9900"
+                android:paddingLeft="35dp"
+                android:text="Feedback"
+                android:textColor="#fff"
+                android:textSize="18dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/icon_feedback_up"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_thumb_up" />
+
+                    <TextView
+                        android:id="@+id/park_feedback_up"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="78%"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/icon_feedback_down"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_thumb_down" />
+
+                    <TextView
+                        android:id="@+id/park_feedback_down"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="22%"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/sixthDivisor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF9900"
+                android:paddingLeft="35dp"
+                android:text="Note"
+                android:textColor="#fff"
+                android:textSize="18dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="30dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/park_notes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="Lorem ipsum dolor sit amet, sapien etiam, nunc amet dolor ac odio mauris justo.
                 Luctus arcu, urna praesent at id quisque ac. Arcu es massa
                 vestibulum malesuada, integer vivamus elit eu mauris eus, cum eros quis aliquam wisi."
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18dp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/goMap"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:onClick="goNavigator"
-            android:paddingBottom="10dp"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:paddingTop="10dp"
-            android:text="Apri nel navigatore"
-            android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textSize="18dp" />
-
-    </LinearLayout>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
 
-</LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <ImageButton android:id="@+id/goMap"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_navigate"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/postFeedbackUp"
+        android:background="@drawable/button_circle_background"
+        android:layout_margin="7dp"
+        android:onClick="goNavigator"
+        android:elevation="5dp"
+        />
+    <ImageButton android:id="@+id/postFeedbackUp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_thumb_up_button"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_margin="7dp"
+        android:onClick="postFeedback"
+        android:layout_above="@+id/postFeedbackDown"
+        android:elevation="5dp"
+        android:layout_alignParentBottom="false" />
+    <ImageButton android:id="@+id/postFeedbackDown"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_thumb_down_button"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="7dp"
+        android:onClick="postFeedback"
+        android:elevation="5dp"
+        />
+</RelativeLayout>
