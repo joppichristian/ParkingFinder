@@ -23,8 +23,7 @@
             android:textIsSelectable="true"
             android:textSize="20dp"
             android:layout_margin="20dp"
-            android:textStyle="bold"
-            android:typeface="serif" />
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
