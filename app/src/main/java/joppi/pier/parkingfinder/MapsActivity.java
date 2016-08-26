@@ -51,6 +51,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	private MenuManager menuManager;
 
 	Marker mDestMarker;
+	Marker mDestMarkerTmp;
+
 	ListView parkingListView;
 	View mSelectedParkingView;
 	ProgressBar mProgressBar;
@@ -107,6 +109,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	{
 		mMap = googleMap;
 		mDestMarker = null;
+		mDestMarkerTmp = null;
 
 		// Load parking DB
 		mParkingMgr = new ParkingMgr(this, mMap);
@@ -118,37 +121,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			@Override
 			public void onMapClick(LatLng latLng)
 			{
+				// Reset selection
 				mParkingMgr.setSelection(null);
 
-				if(mDestMarker != null)
-					mDestMarker.remove();
-				mDestMarker = mMap.addMarker(new MarkerOptions()
-						.position(latLng)
-						.title("Destinazione")
-						.icon(BitmapDescriptorFactory.fromResource(R.drawable.dest_marker)));
-
-
-				Projection projection = mMap.getProjection();
-				Point pt = projection.toScreenLocation(mDestMarker.getPosition());
-
-				final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.mapsFrameLayout);
-				mNewDestinationDialog = getLayoutInflater().inflate(R.layout.new_destination_dialog, null);
-				frameLayout.addView(mNewDestinationDialog);
-
-				View back = findViewById(R.id.newDestBackView);
-				back.setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						frameLayout.removeView(mNewDestinationDialog);
-						v.setClickable(false);
-						mDestMarker.remove();
-					}
-				});
-
-				int width = (int)AppUtils.convertDpToPixel(210, MapsActivity.this);
-				mNewDestinationDialog.setPadding(pt.x - width/2, pt.y - 350, 0, 0);
+				showNewDestinationDialog(latLng);
 
 				uiRefreshHandler();
 			}
@@ -208,7 +184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
 		intent.putExtra("cost", clicked.getCost(start, stop, today_number));
-		intent.putExtra("dist", (double)clicked.getCurrDistance());
+		intent.putExtra("dist", (double)clicked.getCurrDistByCar());
 		intent.putExtra("lat", clicked.getLatitudeRaw());
 		intent.putExtra("long",clicked.getLongitudeRaw());
         intent.putExtra("color",AppUtils.generateColorFromRank(0x30e0c0, 0xffc280, 0xff7080,clicked.getCurrRank()));
@@ -238,12 +214,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	{
 		if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED){
 			mSelectedParkingView.setClickable(true);
+			parkingListView.setSelection(0);
 		} else if(newState == SlidingUpPanelLayout.PanelState.EXPANDED){
 			mSelectedParkingView.setClickable(false);
 		} else if(newState == SlidingUpPanelLayout.PanelState.DRAGGING){
-			if(previousState == SlidingUpPanelLayout.PanelState.EXPANDED)
-				parkingListView.setSelection(0);
-			else if(mParkingMgr.getSelectedParkingIndex() >= 0)
+			if(mParkingMgr.getSelectedParkingIndex() >= 0)
 				parkingListView.setSelection(mParkingMgr.getSelectedParkingIndex());
 		}
 	}
@@ -265,18 +240,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	@Override
 	public void onFineLocationChanged(Location newLoc)
 	{
-		if(!mParkingMgr.isUserDestDefined())
-			mParkingMgr.setCurrentLocation(newLoc);
-
+		mParkingMgr.setCurrentLocation(newLoc);
 		mParkingMgr.updateDistancesAsync();
 	}
 
 	@Override
 	public void onCoarseLocationChanged(Location newLoc)
 	{
-		if(!mParkingMgr.isUserDestDefined())
-			mParkingMgr.setCurrentLocation(newLoc);
-
+		mParkingMgr.setCurrentLocation(newLoc);
         triggerParkingListUpdate();
 	}
 
@@ -312,9 +283,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		menuManager.openMenu();
 	}
 
+	public void showNewDestinationDialog(LatLng latLng)
+	{
+		mDestMarkerTmp = mMap.addMarker(new MarkerOptions()
+				.position(latLng)
+				.title("Mia Destinazione")
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.dest_marker)));
+
+		Projection projection = mMap.getProjection();
+		Point pt = projection.toScreenLocation(latLng);
+
+		final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.mapsFrameLayout);
+		mNewDestinationDialog = getLayoutInflater().inflate(R.layout.new_destination_dialog, null);
+		frameLayout.addView(mNewDestinationDialog);
+
+		View back = findViewById(R.id.newDestBackView);
+		back.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				// Cancel new destination dialog
+				frameLayout.removeView(mNewDestinationDialog);
+				v.setClickable(false);
+				mDestMarkerTmp.remove();
+			}
+		});
+
+		int width = (int)AppUtils.convertDpToPixel(210, MapsActivity.this);
+		mNewDestinationDialog.setPadding(pt.x - width/2, pt.y - 350, 0, 0);
+	}
 	// Set new user destination
 	public void  onNewDestinationDialogClick(View v)
 	{
+		if(mDestMarker != null)
+			mDestMarker.remove();
+
+		mDestMarker = mMap.addMarker(new MarkerOptions()
+				.position(mDestMarkerTmp.getPosition())
+				.title("Mia Destinazione")
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.dest_marker)));
+		mDestMarkerTmp.remove();
+		mDestMarker.showInfoWindow();
+
 		FrameLayout frameLayout = (FrameLayout) findViewById(R.id.mapsFrameLayout);
 		frameLayout.removeView(mNewDestinationDialog);
 		View back = findViewById(R.id.newDestBackView);
@@ -346,9 +357,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	@Override
 	public void onPlaceSelected(Place place)
 	{
-		LatLng loc = place.getLatLng();
+		final LatLng loc = place.getLatLng();
 		if(loc != null)
-			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 13.0f));
+		{
+			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 14.0f), new GoogleMap.CancelableCallback() {
+				@Override
+				public void onFinish() {
+					showNewDestinationDialog(loc);
+				}
+
+				@Override
+				public void onCancel() {
+
+				}
+			});
+		}
 	}
 
 	/**

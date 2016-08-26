@@ -4,12 +4,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.util.ArrayList;
+
 public class DistanceMatrixResult
 {
 	private String mStatus = "";
-	private String mInnerStatus = "";
-	private JSONObject mDistance = null;
-	private JSONObject mDuration = null;
+	private ArrayList<ResultElement> mResultElements;
 
 	public DistanceMatrixResult(String jsonReply)
 	{
@@ -27,15 +27,27 @@ public class DistanceMatrixResult
 
 			// Get elem 0
 			JSONArray elements = row0.getJSONArray("elements");
-			JSONObject elem0 = elements.getJSONObject(0);
 
-			mDistance = elem0.getJSONObject("distance");
-			mDuration = elem0.getJSONObject("duration");
+			mResultElements = new ArrayList<>();
 
-			mInnerStatus = elem0.getString("status");
+			for(int i=0; i<elements.length(); i++)
+				mResultElements.add(new ResultElement(elements.getJSONObject(i)));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public ArrayList<ResultElement> getElementsList()
+	{
+		return mResultElements;
+	}
+
+	public ResultElement getElement(int index)
+	{
+		if(mResultElements != null)
+			return mResultElements.get(index);
+		return null;
 	}
 
 	public boolean getStatusOk()
@@ -48,39 +60,56 @@ public class DistanceMatrixResult
 		return mStatus;
 	}
 
-	public String getDistanceText()
+	public class ResultElement
 	{
-		try{
-			return mDistance.getString("text");
-		}catch(Exception e)
-		{}
-		return null;
-	}
+		private JSONObject mDistance = null;
+		private JSONObject mDuration = null;
+		private String mInnerStatus = "";
 
-	public int getDistance()
-	{
-		try{
-			return mDistance.getInt("value");
-		}catch(Exception e)
-		{}
-		return -1;
-	}
+		public ResultElement(JSONObject element)
+		{
+			try{
+				mDistance = element.getJSONObject("distance");
+				mDuration = element.getJSONObject("duration");
+				mInnerStatus = element.getString("status");
+			}catch(Exception e)
+			{e.printStackTrace();}
+		}
 
-	public String getDurationText()
-	{
-		try{
-			return mDuration.getString("text");
-		}catch(Exception e)
-		{}
-		return null;
-	}
+		public String getDistanceText()
+		{
+			try{
+				return mDistance.getString("text");
+			}catch(Exception e)
+			{}
+			return null;
+		}
 
-	public int getDuration()
-	{
-		try{
-			return mDuration.getInt("value");
-		}catch(Exception e)
-		{}
-		return -1;
+		public int getDistance()
+		{
+			try{
+				return mDistance.getInt("value");
+			}catch(Exception e)
+			{}
+			return -1;
+		}
+
+		public String getDurationText()
+		{
+			try{
+				return mDuration.getString("text");
+			}catch(Exception e)
+			{}
+			return null;
+		}
+
+		public int getDuration()
+		{
+			try{
+				return mDuration.getInt("value");
+			}catch(Exception e)
+			{}
+			return -1;
+		}
 	}
 }

@@ -2,6 +2,7 @@ package joppi.pier.parkingfinder.db;
 
 import android.app.Activity;
 import android.location.Location;
+import android.os.Looper;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +24,7 @@ import java.util.concurrent.Semaphore;
 import joppi.pier.parkingfinder.AppUtils;
 import joppi.pier.parkingfinder.DistanceMatrixAPI;
 import joppi.pier.parkingfinder.DistanceMatrixResult;
+import joppi.pier.parkingfinder.R;
 import joppi.pier.parkingfinder.SharedPreferencesManager;
 
 public class ParkingMgr implements GoogleMap.OnMarkerClickListener
@@ -33,9 +35,10 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 	Map<Marker, Parking> parkingMarkersHashMap;
 
 	Location mCurrLocation;
-	boolean mUserDefLocation;
+	Location mUserDefLocation;
 	Parking mSelectedParking;
 	Thread mUpdateDistancesThread;
+	DistanceMatrixResult mQueryResult;
 	SharedPreferencesManager mPrefManager;
 	private final Semaphore listAccessSema = new Semaphore(1, true);
 
@@ -59,23 +62,24 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		mSelectedParking = null;
 		parkingMarkersHashMap = new HashMap<>();
 		mCurrLocation = null;
-		mUserDefLocation = false;
+		mUserDefLocation = null;
+		mQueryResult = null;
 
 		mPrefManager = SharedPreferencesManager.getInstance(mapsActivity);
 
+		// TODO: include distance by foot
 		mParkingListComparator = new Comparator<Parking>()
 		{
 			@Override
 			public int compare(Parking lhs, Parking rhs)
 			{
-				// TODO: move prefs elsewhere
 				String stop = mPrefManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
 				String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
 				double cost_weight = mPrefManager.getFloatPreference(SharedPreferencesManager.PREF_COST_WEIGHT);
 				double distance_weight = mPrefManager.getFloatPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT);
 
 				int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-				return lhs.getCurrDistance() * distance_weight + lhs.getCost(start,stop,today_number) * cost_weight >= rhs.getCurrDistance() * distance_weight + rhs.getCost(start,stop,today_number) * cost_weight ? 1 : -1;
+				return lhs.getCurrDistByCar() * distance_weight + lhs.getCost(start,stop,today_number) * cost_weight >= rhs.getCurrDistByCar() * distance_weight + rhs.getCost(start,stop,today_number) * cost_weight ? 1 : -1;
 			}
 		};
 	}
@@ -141,18 +145,12 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 	public void setUserDestination(Location loc)
 	{
-		if(loc == null)
-			mUserDefLocation = false;
-		else
-		{
-			mUserDefLocation = true;
-			mCurrLocation = loc;
-		}
+		mUserDefLocation = loc;
 	}
 
 	public boolean isUserDestDefined()
 	{
-		return mUserDefLocation;
+		return (mUserDefLocation == null);
 	}
 
 	public void updateParkingListAsync()
@@ -216,7 +214,8 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		if(mParkingListComparator != null)
 		{
 			// We might incur in concurrent modifications on the list
-			try{
+			try
+			{
 				listAccessSema.acquire();
 
 				Collections.sort(mParkingList, mParkingListComparator);
@@ -282,7 +281,11 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 				String vehicle = mPrefManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE);
 				int radius = mPrefManager.getIntPreference(SharedPreferencesManager.PREF_RADIUS);
 
-				mParkingList = parkingDAO.getParkingList(mCurrLocation, radius, vehicle);
+				// Search location radius based on user destination if provided
+				Location searchLoc = mCurrLocation;
+				if(mUserDefLocation != null)
+					searchLoc = mUserDefLocation;
+				mParkingList = parkingDAO.getParkingList(searchLoc, radius, vehicle);
 
 				int type_mask = AppUtils.getPerfTypeMask(mPrefManager);
 				int spec_mask = AppUtils.getPrefSpecMask(mPrefManager);
@@ -327,28 +330,75 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 				return;
 			}
 
-			for(Parking parking : mParkingList)
-			{
-				try
-				{
-					LatLng tmp = new LatLng(mCurrLocation.getLatitude(), mCurrLocation.getLongitude());
+			// Build destinations list
+			LatLng[] destinations = new LatLng[mParkingList.size()];
 
-					DistanceMatrixResult queryResult = new DistanceMatrixAPI("").exec(tmp, parking.getLocation());
-					if(queryResult.getStatusOk())
-						parking.setCurrDistance(queryResult.getDistance());
-					else
-						Toast.makeText(mapsActivity, "DistanceMatrix error: " + queryResult.getStatusText(), Toast.LENGTH_LONG).show();
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
+			for(int i=0; i<mParkingList.size(); i++)
+				destinations[i] = mParkingList.get(i).getLocation();
 
 			listAccessSema.release();
 
-			// Sort parking list
-			sortList();
+			mQueryResult = null;
+			DistanceMatrixResult queryResultFoot = null;
 
-			updateRanks();
+			try
+			{
+				LatLng currLoc = new LatLng(mCurrLocation.getLatitude(), mCurrLocation.getLongitude());
+				mQueryResult = new DistanceMatrixAPI(mapsActivity.getResources().getString(R.string.google_server_key)).setOrigins(currLoc).setDestinations(destinations).exec();
+
+				if(mUserDefLocation != null)
+				{
+					LatLng destLoc = new LatLng(mUserDefLocation.getLatitude(), mUserDefLocation.getLongitude());
+					queryResultFoot = new DistanceMatrixAPI(mapsActivity.getResources().getString(R.string.google_server_key)).setOrigins(destLoc).setDestinations(destinations).setTravelMode(DistanceMatrixAPI.MODE_WALKING).exec();
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+
+			if(mQueryResult != null)
+			{
+				if(mQueryResult.getStatusOk())
+				{
+					try{
+						listAccessSema.acquire();
+					}catch(InterruptedException e)
+					{e.printStackTrace();}
+
+					// Set updated information
+					for(int i=0; i<mParkingList.size(); i++)
+					{
+						Parking parking = mParkingList.get(i);
+						DistanceMatrixResult.ResultElement elem = mQueryResult.getElement(i);
+
+						parking.setCurrDistByCar(elem.getDistance());
+						parking.setCurrDurationCar(elem.getDuration());
+
+						if(queryResultFoot != null)
+						{
+							DistanceMatrixResult.ResultElement elemFoot = queryResultFoot.getElement(i);
+							parking.setCurrDistByFoot(elemFoot.getDistance());
+						}
+						else parking.setCurrDistByFoot(-1); // Not available
+					}
+
+					listAccessSema.release();
+				} else{
+					Looper.prepare();
+					mapsActivity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							Toast.makeText(mapsActivity, "DistanceMatrix error: " + mQueryResult.getStatusText(), Toast.LENGTH_LONG).show();
+						}
+					});
+				}
+
+				// Sort parking list
+				sortList();
+
+				updateRanks();
+			}
 
 			mapsActivity.runOnUiThread(mDispatchUiRefreshHandlers);
 		}

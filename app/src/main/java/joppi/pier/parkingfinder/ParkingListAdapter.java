@@ -50,6 +50,18 @@ public class ParkingListAdapter extends BaseAdapter
 		return position;
 	}
 
+	public String getFormattedDistance(double distance)
+	{
+		long distM = Math.round(distance);
+		String formattedDist = "NA"; // TODO: replace with loading image or something
+		if(distM > 1100)
+			formattedDist = "" + String.format("%.1f", (distM / 1000.0)) + " km";
+		else if(distM >= 0)
+			formattedDist = "" + distM + " m";
+
+		return formattedDist;
+	}
+
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent)
 	{
@@ -64,17 +76,15 @@ public class ParkingListAdapter extends BaseAdapter
 
 			TextView text_name = (TextView) vi.findViewById(R.id.park_name);
 			text_name.setText(currParking.toString());
-			TextView text_details = (TextView) vi.findViewById(R.id.park_distance);
 
-			double distance = currParking.getCurrDistance();
-			long distM = Math.round(distance);
-			CharSequence text = "NA"; // TODO: replace with loading image or something
-			if(distM > 1100)
-				text = "" + String.format("%.1f", (distM / 1000.0)) + " km";
-			else if(distM >= 0)
-				text = "" + distM + " m";
+			TextView parkDistByCar = (TextView) vi.findViewById(R.id.park_distance);
+			String formattedDist = getFormattedDistance(currParking.getCurrDistByCar());
+			parkDistByCar.setText(formattedDist);
 
-			text_details.setText(text);
+			TextView parkDistByFoot = (TextView) vi.findViewById(R.id.park_dist_by_foot);
+			formattedDist = getFormattedDistance(currParking.getCurrDistByFoot());
+			parkDistByFoot.setText(formattedDist);
+
 			TextView text_price = (TextView) vi.findViewById(R.id.park_price);
 
 			SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(mMainActivity);

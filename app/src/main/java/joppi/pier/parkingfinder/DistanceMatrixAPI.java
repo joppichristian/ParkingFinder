@@ -20,42 +20,95 @@ public class DistanceMatrixAPI
 	public static String AVOID_FERRIES = "avoid=ferries";
 	public static String AVOID_INDOOR = "avoid=indoor";
 
+	private String mAppKey = "";
+	private String mTravelMode = "";
+	private String mAvoid = "";
 
-	private String appKey = "";
-	private String travelMode = "";
-	private String avoid = "";
+	private LatLng[] mOrigins;
+	private LatLng[] mDestinations;
 
 	public DistanceMatrixAPI(String key)
 	{
-		appKey = key;
+		mAppKey = key;
+		mOrigins = null;
+		mDestinations = null;
 	}
 
-	public DistanceMatrixAPI setTravelMode(String travelMode )
+	public DistanceMatrixAPI setTravelMode(String mTravelMode)
 	{
-		this.travelMode = travelMode;
+		this.mTravelMode = mTravelMode;
 		return this;
 	}
 
 	public DistanceMatrixAPI setRestriction(String restriction)
 	{
-		avoid = restriction;
+		mAvoid = restriction;
 		return this;
 	}
 
-	public DistanceMatrixResult exec(LatLng origin, LatLng destination)
+	public DistanceMatrixAPI setOrigins(LatLng origin)
 	{
+		return setOrigins(new LatLng[]{origin});
+	}
+
+	public DistanceMatrixAPI setOrigins(LatLng[] origins)
+	{
+		mOrigins = origins;
+		return this;
+	}
+
+	public DistanceMatrixAPI setDestinations(LatLng destinations)
+	{
+		return setDestinations(new LatLng[]{destinations});
+	}
+
+	public DistanceMatrixAPI setDestinations(LatLng[] destinations)
+	{
+		mDestinations = destinations;
+		return this;
+	}
+
+	public DistanceMatrixResult exec()
+	{
+		if(mOrigins == null || mDestinations == null || mOrigins.length == 0 || mDestinations.length == 0)
+			return null;
+
 		StringBuilder urlString = new StringBuilder();
 		urlString.append("https://maps.googleapis.com/maps/api/distancematrix/json?");
+
 		urlString.append("origins=");
-		urlString.append( Double.toString(origin.latitude));
-		urlString.append(",");
-		urlString.append( Double.toString(origin.longitude));
+		for(int i=0; i<mOrigins.length; i++)
+		{
+			urlString.append( Double.toString(mOrigins[i].latitude));
+			urlString.append(",");
+			urlString.append( Double.toString(mOrigins[i].longitude));
+
+			// If there is another element
+			if((i + 1) < mOrigins.length)
+				urlString.append("|");
+		}
+
 		urlString.append("&destinations=");
-		urlString.append( Double.toString(destination.latitude));
-		urlString.append(",");
-		urlString.append( Double.toString(destination.longitude));
-//		urlString.append("&key=" + appKey);
-		urlString.append("&mode=driving");
+		for(int i=0; i<mDestinations.length; i++)
+		{
+			urlString.append( Double.toString(mDestinations[i].latitude));
+			urlString.append(",");
+			urlString.append( Double.toString(mDestinations[i].longitude));
+
+			// If there is another element
+			if((i + 1) < mDestinations.length)
+				urlString.append("|");
+		}
+
+		if(mTravelMode != "")
+			urlString.append("&" + mTravelMode);
+		else urlString.append("&mode=driving");
+
+		if(mAvoid != "")
+			urlString.append("&" + mAvoid);
+
+		if(mAppKey != "")
+		urlString.append("&key=" + mAppKey);
 
 		// Get the JSON And parse it to get the directions data.
 		HttpURLConnection urlConnection= null;

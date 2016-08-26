@@ -53,7 +53,9 @@ public class Parking
 	private int moto;
 	private int caravan;
 
-	private int currDistance;
+	private int currDistByCar;
+	private int currDurationCar;
+	private int currDistByFoot;
 	private double currRank;
 
 	public Parking(int id, String name, String cost, String timeLimit, int type, String notes, String latitude, String longitude, String area, String timeFrame, int car, int moto, int caravan)
@@ -71,7 +73,9 @@ public class Parking
 		this.car = car;
 		this.moto = moto;
 		this.caravan = caravan;
-		this.currDistance = -1;
+		this.currDistByCar = -1;
+		this.currDurationCar = -1;
+		this.currDistByFoot = -1;
 		this.currRank = -1.0;
 	}
 
@@ -197,19 +201,33 @@ public class Parking
 		return caravan;
 	}
 
-	public int getCurrDistance()
+	public int getCurrDistByCar()
 	{
-		return currDistance;
+		return currDistByCar;
 	}
+
+	public int getCurrDistByFoot() { return currDistByFoot; }
+
+	public int getCurrDurationCar() { return currDurationCar; }
 
 	public double getCurrRank()
 	{
 		return currRank;
 	}
 
-	public void setCurrDistance(int currDistance)
+	public void setCurrDistByCar(int currDistByCar)
 	{
-		this.currDistance = currDistance;
+		this.currDistByCar = currDistByCar;
+	}
+
+	public void setCurrDistByFoot(int duration)
+	{
+		this.currDistByFoot = duration;
+	}
+
+	public void setCurrDurationCar(int duration)
+	{
+		this.currDurationCar = duration;
 	}
 
 	public void setCurrRank(double rank)
