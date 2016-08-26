@@ -74,7 +74,10 @@ public class ParkingDetail extends Activity {
 
         // SET COST
         TextView tx_cost = (TextView)findViewById(R.id.park_price);
-        tx_cost.setText(cost +" €");
+        if(cost == 0.0)
+            tx_cost.setText("GRATUITO");
+        else
+            tx_cost.setText(cost +" €");
 
         // SET DISTANCE
         TextView tx_distance = (TextView)findViewById(R.id.park_distance);

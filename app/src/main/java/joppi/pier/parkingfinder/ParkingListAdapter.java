@@ -111,7 +111,12 @@ public class ParkingListAdapter extends BaseAdapter
 			String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
 			String start = Calendar.getInstance().get(Calendar.HOUR) + ":" + Calendar.getInstance().get(Calendar.MINUTE);
 			int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-			text_price.setText("" + currParking.getCost(start, stop, today_number) + " €");
+			double cost = currParking.getCost(start, stop, today_number-1);
+			if(cost == 0.0)
+				text_price.setText("GRATUITO");
+			else
+				text_price.setText(cost +" €");
+
 
 			// From GREEN (0x30e0c0) to YELLOW@0.5 (0xffc280) to RED (0xff7080)
 			int color = AppUtils.generateColorFromRank(0x30e0c0, 0xffc280, 0xff7080, currParking.getCurrRank());
