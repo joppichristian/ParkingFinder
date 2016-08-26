@@ -9,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -77,25 +79,43 @@ public class ParkingListAdapter extends BaseAdapter
 			TextView text_name = (TextView) vi.findViewById(R.id.park_name);
 			text_name.setText(currParking.toString());
 
+			// SET DISTANCE BY CAR
 			TextView parkDistByCar = (TextView) vi.findViewById(R.id.park_distance);
 			String formattedDist = getFormattedDistance(currParking.getCurrDistByCar());
 			parkDistByCar.setText(formattedDist);
 
+            // SET DURATA VIAGGIO
+            int duration = currParking.getCurrDurationCar();
+            String udm = "sec";
+            if(duration > 60)
+            {
+                duration /= 60;
+                udm = "min";
+            }
+            if(duration > 60)
+            {
+                duration /=60;
+                udm= "h";
+            }
+
+            parkDistByCar.setText(parkDistByCar.getText() + " , " + duration + " " + udm);
+
+			// SET DISTANCE BY FOOT
 			TextView parkDistByFoot = (TextView) vi.findViewById(R.id.park_dist_by_foot);
 			formattedDist = getFormattedDistance(currParking.getCurrDistByFoot());
 			parkDistByFoot.setText(formattedDist);
 
+			// SET PRICE
 			TextView text_price = (TextView) vi.findViewById(R.id.park_price);
-
 			SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(mMainActivity);
 			String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
 			String start = Calendar.getInstance().get(Calendar.HOUR) + ":" + Calendar.getInstance().get(Calendar.MINUTE);
 			int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-
 			text_price.setText("" + currParking.getCost(start, stop, today_number) + " €");
 
 			// From GREEN (0x30e0c0) to YELLOW@0.5 (0xffc280) to RED (0xff7080)
 			int color = AppUtils.generateColorFromRank(0x30e0c0, 0xffc280, 0xff7080, currParking.getCurrRank());
+
 
 			View tmp = vi.findViewById(R.id.rightColor);
 			tmp.setBackgroundColor(color);
@@ -169,6 +189,24 @@ public class ParkingListAdapter extends BaseAdapter
 				leftColor.setVisibility(View.INVISIBLE);
 				topColor.setVisibility(View.INVISIBLE);
 			}
+
+
+			// SET POSTI DISPONIBILI
+			int posti = 0;
+			switch (sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE)){
+				case "Automobile": posti = currParking.getCar();break;
+				case "Moto":posti = currParking.getMoto();break;
+				case "Caravan":posti = currParking.getCaravan();break;
+			}
+			TextView tx_posti = (TextView)vi.findViewById(R.id.park_capacity);
+
+			if(posti==1)
+				tx_posti.setText("# posti non disponibile");
+			else
+				tx_posti.setText(posti + " posti");
+
+
+
 
 		}
 

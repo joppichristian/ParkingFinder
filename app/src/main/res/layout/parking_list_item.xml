@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
     android:orientation="vertical">
 
@@ -26,24 +26,27 @@
 
         <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:background="#313131"
+            android:layout_weight="0">
 
             <ImageView
                 android:id="@+id/parkingTypeImage"
                 android:layout_width="80dp"
                 android:layout_height="100dp"
-                android:background="#313131"
-                android:paddingBottom="20dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingTop="10dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/parking_covered" />
+                android:src="@drawable/parking_covered"
+                android:paddingBottom="20dp"
+                android:layout_gravity="center_vertical" />
 
             <TextView
                 android:id="@+id/park_type_text_view"
                 android:layout_width="fill_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginBottom="5dp"
                 android:text="Sotterraneo"
@@ -55,7 +58,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -155,6 +158,7 @@
                             android:layout_gravity="center"
                             android:scaleType="fitCenter"
                             android:src="@drawable/distance_by_car" />
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -180,6 +184,23 @@
                             android:layout_gravity="center"
                             android:scaleType="fitCenter"
                             android:src="@drawable/distance_by_foot" />
+                        <ImageView
+                            android:id="@+id/iconafreccia"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_person_to_place" />
+
+                        <ImageView
+                            android:id="@+id/icona1"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_place" />
+
+
 
                         <TextView
                             android:id="@+id/park_dist_by_foot"
@@ -205,7 +226,8 @@
                         android:text="1.5 €/h"
                         android:textColor="#3fe3c0"
                         android:textSize="18dp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:layout_marginTop="10dp" />
                 </LinearLayout>
 
             </LinearLayout>

@@ -30,8 +30,12 @@ public class DistanceMatrixResult
 
 			mResultElements = new ArrayList<>();
 
+			JSONArray addresses = object.getJSONArray("destination_addresses");
+
+
 			for(int i=0; i<elements.length(); i++)
-				mResultElements.add(new ResultElement(elements.getJSONObject(i)));
+				mResultElements.add(new ResultElement(elements.getJSONObject(i), addresses.get(i).toString()));
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -64,13 +68,15 @@ public class DistanceMatrixResult
 	{
 		private JSONObject mDistance = null;
 		private JSONObject mDuration = null;
+		private String mAddress = "";
 		private String mInnerStatus = "";
 
-		public ResultElement(JSONObject element)
+		public ResultElement(JSONObject element,String mAddress)
 		{
 			try{
 				mDistance = element.getJSONObject("distance");
 				mDuration = element.getJSONObject("duration");
+				this.mAddress = mAddress;
 				mInnerStatus = element.getString("status");
 			}catch(Exception e)
 			{e.printStackTrace();}
@@ -110,6 +116,11 @@ public class DistanceMatrixResult
 			}catch(Exception e)
 			{}
 			return -1;
+		}
+
+		public String getAddress()
+		{
+			return  mAddress;
 		}
 	}
 }

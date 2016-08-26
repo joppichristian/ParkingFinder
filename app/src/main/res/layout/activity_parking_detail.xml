@@ -8,8 +8,8 @@
     tools:context="joppi.pier.parkingfinder.ParkingDetail">
 
     <LinearLayout
-        android:layout_width="match_parent"
         android:id="@+id/headerDetails"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
         android:orientation="vertical">
@@ -28,18 +28,34 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
 
                 <ImageView
                     android:id="@+id/parkingDetailsTypeImage"
-                    android:layout_width="80dp"
-                    android:layout_height="100dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:paddingBottom="20dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/parking_covered" />
+
+                    <TextView
+                        android:id="@+id/park_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="In Superficie"
+                        android:textColor="#fff"
+                        android:textSize="14dp"
+                        android:textStyle="bold"
+                        android:layout_marginRight="18dp"
+                        android:layout_marginTop="-10dp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -57,15 +73,7 @@
                         android:textSize="28dp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/park_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="2dp"
-                        android:text="In Superficie"
-                        android:textColor="#fff"
-                        android:textSize="14dp"
-                        android:textStyle="bold" />
+
 
                     <TextView
                         android:id="@+id/park_places"
@@ -76,6 +84,27 @@
                         android:textColor="#fff"
                         android:textSize="14dp"
                         android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_action_location_details" />
+                    <TextView
+                        android:id="@+id/park_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="15dp"
+                        android:text="8:00 - 20:00"
+                        android:textColor="#fff"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
+                    </LinearLayout>
 
                 </LinearLayout>
             </LinearLayout>
@@ -100,8 +129,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="false"
-        android:layout_below="@id/headerDetails">
+        android:layout_below="@id/headerDetails"
+        android:fillViewport="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -114,21 +143,22 @@
                 android:layout_height="wrap_content"
                 android:background="#FF9900"
                 android:paddingLeft="35dp"
-                android:text="Distanze"
+                android:text="Distanze e Tempistiche"
                 android:textColor="#fff"
                 android:textSize="18dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="30dp"
+                android:layout_margin="15dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_margin="5dp">
 
                     <ImageView
                         android:id="@+id/icon_distance_by_car"
@@ -142,8 +172,8 @@
                         android:id="@+id/park_distance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
                         android:text="540 metri"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18dp"
@@ -153,7 +183,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_margin="5dp">
 
                     <ImageView
                         android:id="@+id/icon_distance_by_foot"
@@ -164,11 +195,11 @@
                         android:src="@drawable/distance_by_foot" />
 
                     <TextView
-                        android:id="@+id/park_distance_walking"
+                        android:id="@+id/park_distance_foot"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
                         android:text="540 metri"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18dp"
@@ -189,14 +220,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="30dp"
+                android:layout_margin="15dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_margin="5dp">
 
                     <ImageView
                         android:id="@+id/icon_price"
@@ -210,8 +242,8 @@
                         android:id="@+id/park_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
                         android:text="Prezzo : 25 €"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18dp"
@@ -221,7 +253,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="5dp">
 
                     <ImageView
                         android:id="@+id/icon_time_limit"
@@ -235,8 +268,8 @@
                         android:id="@+id/park_time_limit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
                         android:text="2 ore"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18dp"
@@ -251,26 +284,27 @@
                 android:layout_height="wrap_content"
                 android:background="#FF9900"
                 android:paddingLeft="35dp"
-                android:text="Orario"
+                android:text="Orario Apertura"
                 android:textColor="#fff"
                 android:textSize="18dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="30dp"
+                android:layout_margin="15dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
+
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp">
+                    android:layout_marginTop="5dp">
 
                     <ImageView
                         android:id="@+id/icon_time_frame"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:layout_gravity="center"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_action_clock" />
@@ -301,19 +335,19 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="30dp"
+                android:layout_margin="15dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp">
+                    android:layout_marginTop="5dp">
 
                     <ImageView
                         android:id="@+id/icon_surveiled"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:layout_gravity="center"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_videocam" />
@@ -322,8 +356,8 @@
                         android:id="@+id/park_surveiled"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
                         android:text="Sorvegliato"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18dp"
@@ -341,17 +375,19 @@
                 android:text="Feedback"
                 android:textColor="#fff"
                 android:textSize="18dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="30dp"
+                android:layout_margin="15dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_margin="5dp">
 
                     <ImageView
                         android:id="@+id/icon_feedback_up"
@@ -365,17 +401,12 @@
                         android:id="@+id/park_feedback_up"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
                         android:text="78%"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18dp"
                         android:textStyle="bold" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/icon_feedback_down"
@@ -383,20 +414,24 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/ic_thumb_down" />
+                        android:src="@drawable/ic_thumb_down"
+                        android:layout_marginLeft="20dp" />
 
                     <TextView
                         android:id="@+id/park_feedback_down"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
                         android:text="22%"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18dp"
                         android:textStyle="bold" />
+
                 </LinearLayout>
+
             </LinearLayout>
+
             <TextView
                 android:id="@+id/sixthDivisor"
                 android:layout_width="match_parent"
@@ -406,10 +441,11 @@
                 android:text="Note"
                 android:textColor="#fff"
                 android:textSize="18dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="30dp"
+                android:layout_margin="15dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
@@ -417,9 +453,9 @@
                     android:id="@+id/park_notes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="0dp"
                     android:layout_marginRight="20dp"
+                    android:layout_marginTop="5dp"
                     android:text="Lorem ipsum dolor sit amet, sapien etiam, nunc amet dolor ac odio mauris justo.
                 Luctus arcu, urna praesent at id quisque ac. Arcu es massa
                 vestibulum malesuada, integer vivamus elit eu mauris eus, cum eros quis aliquam wisi."
@@ -431,35 +467,39 @@
 
         </LinearLayout>
     </ScrollView>
-    <ImageButton android:id="@+id/goMap"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_navigate"
+
+    <ImageButton
+        android:id="@+id/goMap"
         android:layout_width="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/postFeedbackUp"
-        android:background="@drawable/button_circle_background"
-        android:layout_margin="7dp"
-        android:onClick="goNavigator"
-        android:elevation="5dp"
-        />
-    <ImageButton android:id="@+id/postFeedbackUp"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_thumb_up_button"
-        android:layout_width="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_margin="7dp"
-        android:onClick="postFeedback"
-        android:layout_above="@+id/postFeedbackDown"
+        android:background="@drawable/button_circle_background"
         android:elevation="5dp"
-        android:layout_alignParentBottom="false" />
-    <ImageButton android:id="@+id/postFeedbackDown"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_thumb_down_button"
+        android:onClick="goNavigator"
+        android:src="@drawable/ic_action_navigate" />
+
+    <ImageButton
+        android:id="@+id/postFeedbackUp"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/postFeedbackDown"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentRight="true"
+        android:layout_margin="7dp"
+        android:elevation="5dp"
+        android:onClick="postFeedback"
+        android:src="@drawable/ic_thumb_up_button" />
+
+    <ImageButton
+        android:id="@+id/postFeedbackDown"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="7dp"
-        android:onClick="postFeedback"
         android:elevation="5dp"
-        />
+        android:onClick="postFeedback"
+        android:src="@drawable/ic_thumb_down_button" />
 </RelativeLayout>
