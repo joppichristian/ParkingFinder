@@ -1,6 +1,8 @@
 package joppi.pier.parkingfinder;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +18,7 @@ import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ViewListener;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import joppi.pier.parkingfinder.db.MySQLiteHelper;
 
@@ -83,7 +86,8 @@ public class FilterActivity extends AppCompatActivity
 
 	ViewListener viewListener = new ViewListener()
 	{
-		@Override
+		@TargetApi(Build.VERSION_CODES.M)
+        @Override
 		public View setViewForPosition(int position)
 		{
 			View customView;
@@ -99,6 +103,8 @@ public class FilterActivity extends AppCompatActivity
 					TimePicker timePicker = (TimePicker)customView.findViewById(R.id.timePicker);
 					boolean is24hView = DateFormat.is24HourFormat(FilterActivity.this);
 					timePicker.setIs24HourView(is24hView);
+					timePicker.setHour(Calendar.getInstance().get(Calendar.HOUR)+1);
+                    timePicker.setMinute(Calendar.getInstance().get(Calendar.MINUTE));
 					break;
 				default:
 					customView = getLayoutInflater().inflate(R.layout.carousel_layout_cost, null);
