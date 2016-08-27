@@ -96,7 +96,6 @@ public class Parking
 		return cost;
 	}
 
-	// TODO: temporary implementation
 	public double getCost(String start, String stop, int today_number)
 	{
 		ArrayList<String> costsList = new ArrayList<>();

@@ -24,7 +24,6 @@ import joppi.pier.parkingfinder.db.MySQLiteHelper;
 
 public class FilterActivity extends AppCompatActivity
 {
-	// TODO: lock to portrait orientation
 
 	CarouselView customCarouselView;
 	int NUMBER_OF_PAGES = 3;

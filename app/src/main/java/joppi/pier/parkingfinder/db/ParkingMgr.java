@@ -177,7 +177,6 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 
 
-	// TODO: Area is displayed to user only after click on parking and just for reference
 	@Override
 	public boolean onMarkerClick(Marker marker)
 	{
