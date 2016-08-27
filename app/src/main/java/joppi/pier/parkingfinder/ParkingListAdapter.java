@@ -9,8 +9,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -55,7 +53,7 @@ public class ParkingListAdapter extends BaseAdapter
 	public String getFormattedDistance(double distance)
 	{
 		long distM = Math.round(distance);
-		String formattedDist = "NA"; // TODO: replace with loading image or something
+		String formattedDist = "NA";
 		if(distM > 1100)
 			formattedDist = "" + String.format("%.1f", (distM / 1000.0)) + " km";
 		else if(distM >= 0)
@@ -110,8 +108,7 @@ public class ParkingListAdapter extends BaseAdapter
 			SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(mMainActivity);
 			String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
 			String start = Calendar.getInstance().get(Calendar.HOUR) + ":" + Calendar.getInstance().get(Calendar.MINUTE);
-			int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-			double cost = currParking.getCost(start, stop, today_number-1);
+			double cost = currParking.getCost(start, stop);
 			if(cost == 0.0)
 				text_price.setText("GRATUITO");
 			else
@@ -136,19 +133,19 @@ public class ParkingListAdapter extends BaseAdapter
 			ImageView type = (ImageView)vi.findViewById(R.id.parkingTypeImage);
             TextView text_type = (TextView)vi.findViewById(R.id.park_type_text_view);
 			switch (currParking.getType() & Parking.TYPE_MASK){
-				case 1:
+				case Parking.TYPE_SURFACE:
                     type.setImageDrawable(mMainActivity.getResources().getDrawable(R.drawable.parking_surface));
                     text_type.setText("Superficie");
                     break;
-				case 2:
+				case Parking.TYPE_STRUCTURE:
                     type.setImageDrawable(mMainActivity.getResources().getDrawable(R.drawable.parking_structure));
                     text_type.setText("Struttura");
                     break;
-				case 4:
+				case Parking.TYPE_ROAD:
                     type.setImageDrawable(mMainActivity.getResources().getDrawable(R.drawable.parking_road));
                     text_type.setText("Lato Strada");
                     break;
-				case 8:
+				case Parking.TYPE_SUBTERRANEAN:
                     type.setImageDrawable(mMainActivity.getResources().getDrawable(R.drawable.parking_covered));
                     text_type.setText("Sotterraneo");
                     break;
@@ -157,16 +154,17 @@ public class ParkingListAdapter extends BaseAdapter
             // Imposto icone disco orario e/o sorveglianza
             ImageView icon_surviled = (ImageView)vi.findViewById(R.id.icon_surveiled);
             ImageView icon_time_limitated = (ImageView)vi.findViewById(R.id.icon_time_limitated);
-            switch (currParking.getType() & Parking.SPEC_MASK){
-                case 0x10000:
+            switch (currParking.getType() & Parking.SPEC_MASK)
+			{
+                case Parking.SPEC_SURVEILED:
                     icon_surviled.setVisibility(View.VISIBLE);
                     icon_time_limitated.setVisibility(View.INVISIBLE);
                     break;
-                case 0x20000:
+                case Parking.SPEC_TIME_LIMIT:
                     icon_surviled.setVisibility(View.INVISIBLE);
                     icon_time_limitated.setVisibility(View.VISIBLE);
                     break;
-                case 0x30000:
+                case Parking.SPEC_SURVEILED | Parking.SPEC_TIME_LIMIT:
                     icon_surviled.setVisibility(View.VISIBLE);
                     icon_time_limitated.setVisibility(View.VISIBLE);
                     break;
@@ -174,8 +172,6 @@ public class ParkingListAdapter extends BaseAdapter
                     icon_surviled.setVisibility(View.INVISIBLE);
                     icon_time_limitated.setVisibility(View.INVISIBLE);
                     break;
-
-
             }
 
 			View leftColor = vi.findViewById(R.id.leftColor);
@@ -209,10 +205,6 @@ public class ParkingListAdapter extends BaseAdapter
 				tx_posti.setText("# posti non disponibile");
 			else
 				tx_posti.setText(posti + " posti");
-
-
-
-
 		}
 
 		return vi;

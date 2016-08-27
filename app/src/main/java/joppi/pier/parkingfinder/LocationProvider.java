@@ -64,9 +64,9 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 		currActivity = activity;
 
 		mLastCoarseLoc = null;
-		mFineLocMillis = 2000; // 2 sec
+		mFineLocMillis = 3000; // 3 sec
 		mFineLocDispl = 5; // 5 meters
-		mCoarseLocDispl = 250; // 250 meters
+		mCoarseLocDispl = 500; // 500 meters
 		buildGoogleApiClient();
 	}
 

@@ -61,12 +61,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	SlidingUpPanelLayout mSlidingLayout;
 	ParkingListAdapter mParkingListAdapter;
 
+	boolean mStartupCameraSet;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
 
+		mStartupCameraSet = true;
 		mNewDestinationDialog = null;
 
 		// Obtain the SupportMapFragment and get notified when the map is ready to be used (onMapReady).
@@ -213,9 +216,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance(MapsActivity.this);
 		String stop = sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
 		String start = Calendar.getInstance().get(Calendar.HOUR) + ":" + Calendar.getInstance().get(Calendar.MINUTE);
-		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
-		intent.putExtra("cost", clicked.getCost(start, stop, today_number-1));
+		intent.putExtra("cost", clicked.getCost(start, stop));
 		intent.putExtra("dist", (double)clicked.getCurrDistByCar());
 		intent.putExtra("lat", clicked.getLatitudeRaw());
 		intent.putExtra("long",clicked.getLongitudeRaw());
@@ -271,6 +273,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	{
 		mParkingMgr.setCurrentLocation(newLoc);
 		mParkingMgr.updateDistancesAsync();
+
+		if(mStartupCameraSet)
+		{
+			setCurrLocationBtnClick(null);
+			mStartupCameraSet = false;
+		}
 	}
 
 	@Override
