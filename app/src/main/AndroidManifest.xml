@@ -40,10 +40,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FilterActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
-        <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
             android:screenOrientation="portrait"
