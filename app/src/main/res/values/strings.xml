@@ -13,4 +13,20 @@
     <string name="search_loc_hint">Sono diretto…</string>
     <string name="newDestText">Sei diretto qui?</string>
     <string name="newParkingText">Nuovo pacheggio?</string>
+
+
+    <string-array name="type_array">
+        <item>In Superficie</item>
+        <item>Interrato</item>
+        <item>Coperto</item>
+        <item>Lato Strada</item>
+    </string-array>
+
+    <string-array name="spec_array">
+        <item>No</item>
+        <item>Si</item>
+    </string-array>
+
+    <string name="sorveglianza_prompt">Sorveglianza</string>
+    <string name="type_prompt">Tipologia</string>
 </resources>

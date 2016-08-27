@@ -431,6 +431,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		back.setClickable(false);
 
 		// Open new parking view
+        Intent newIntent = new Intent(MapsActivity.this,AddParking.class);
+        startActivity(newIntent);
 	}
 
 	// Set current location
