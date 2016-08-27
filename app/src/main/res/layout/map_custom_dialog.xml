@@ -12,11 +12,12 @@
         android:layout_margin="10dp">
 
         <TextView
+            android:id="@+id/mapCustomDialogText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
             android:textSize="24sp"
-            android:text="Sei diretto qui?"
+            android:text="@string/newDestText"
             android:layout_margin="15dp"/>
     </RelativeLayout>
 
@@ -31,13 +32,12 @@
     <ImageView
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:id="@+id/imageView6"
+        android:id="@+id/mapCustomDialogOk"
         android:src="@drawable/ic_action_tick"
         android:elevation="10dp"
         android:scaleType="centerCrop"
         android:layout_alignRight="@+id/relativeLayout3"
         android:layout_marginTop="60dp"
-        android:layout_marginRight="5dp"
-        android:onClick="onNewDestinationDialogClick"/>
+        android:layout_marginRight="5dp"/>
 
 </RelativeLayout>

@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -123,16 +124,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 			{
 				// Reset selection
 				mParkingMgr.setSelection(null);
-
 				showNewDestinationDialog(latLng);
+				uiRefreshHandler();
+			}
+		});
 
+		mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener()
+		{
+			@Override
+			public void onMapLongClick(LatLng latLng)
+			{
+				// Reset selection
+				mParkingMgr.setSelection(null);
+				showNewParkingDialog(latLng);
 				uiRefreshHandler();
 			}
 		});
 
 		mMap.setOnMarkerClickListener(mParkingMgr);
 
-		// TODO: implement permissions callback (this may crash if permission is not granted)
 		ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
 
 		mMap.getUiSettings().setCompassEnabled(false);
@@ -168,10 +178,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 		// TODO: remove, for emulator only
 		mMap.getUiSettings().setZoomControlsEnabled(true);
-
-		// TODO: delete, for DEBUG purpose only
-		LatLng trento = new LatLng(46.062228, 11.112906);
-		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 13.0f));
 	}
 
 	@Override
@@ -306,7 +312,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		menuManager.openMenu();
 	}
 
-	public void showNewDestinationDialog(LatLng latLng)
+	private void showNewDestinationDialog(LatLng latLng)
 	{
 		mDestMarkerTmp = mMap.addMarker(new MarkerOptions()
 				.position(latLng)
@@ -317,7 +323,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		Point pt = projection.toScreenLocation(latLng);
 
 		final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.mapsFrameLayout);
-		mNewDestinationDialog = getLayoutInflater().inflate(R.layout.new_destination_dialog, null);
+		mNewDestinationDialog = getLayoutInflater().inflate(R.layout.map_custom_dialog, null);
+
+		TextView txtView = (TextView) mNewDestinationDialog.findViewById(R.id.mapCustomDialogText);
+		txtView.setText(getResources().getString(R.string.newDestText));
+		View btnOk = mNewDestinationDialog.findViewById(R.id.mapCustomDialogOk);
+		btnOk.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				onNewDestinationDialogClick();
+			}
+		});
+
 		frameLayout.addView(mNewDestinationDialog);
 
 		View back = findViewById(R.id.newDestBackView);
@@ -336,8 +355,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		int width = (int)AppUtils.convertDpToPixel(210, MapsActivity.this);
 		mNewDestinationDialog.setPadding(pt.x - width/2, pt.y - 350, 0, 0);
 	}
+
 	// Set new user destination
-	public void  onNewDestinationDialogClick(View v)
+	private void  onNewDestinationDialogClick()
 	{
 		if(mDestMarker != null)
 			mDestMarker.remove();
@@ -356,6 +376,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 		mParkingMgr.setUserDestination(mDestMarker.getPosition());
 		triggerParkingListUpdate();
+	}
+
+	private void showNewParkingDialog(LatLng latLng)
+	{
+		final Marker newParkMarker = mMap.addMarker(new MarkerOptions()
+				.position(latLng)
+				.title("")
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.dest_marker)));
+
+		Projection projection = mMap.getProjection();
+		Point pt = projection.toScreenLocation(latLng);
+
+		final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.mapsFrameLayout);
+		mNewDestinationDialog = getLayoutInflater().inflate(R.layout.map_custom_dialog, null);
+
+		TextView txtView = (TextView) mNewDestinationDialog.findViewById(R.id.mapCustomDialogText);
+		txtView.setText(getResources().getString(R.string.newParkingText));
+		View btnOk = mNewDestinationDialog.findViewById(R.id.mapCustomDialogOk);
+		btnOk.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				newParkMarker.remove();
+				onNewParkingDialogClick();
+			}
+		});
+
+		frameLayout.addView(mNewDestinationDialog);
+
+		View back = findViewById(R.id.newDestBackView);
+		back.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				// Cancel new destination dialog
+				frameLayout.removeView(mNewDestinationDialog);
+				v.setClickable(false);
+				newParkMarker.remove();
+			}
+		});
+
+		int width = (int)AppUtils.convertDpToPixel(210, MapsActivity.this);
+		mNewDestinationDialog.setPadding(pt.x - width/2, pt.y - 350, 0, 0);
+	}
+
+	private void onNewParkingDialogClick()
+	{
+		FrameLayout frameLayout = (FrameLayout) findViewById(R.id.mapsFrameLayout);
+		frameLayout.removeView(mNewDestinationDialog);
+		View back = findViewById(R.id.newDestBackView);
+		back.setClickable(false);
+
+		// Open new parking view
 	}
 
 	// Set current location
