@@ -11,7 +11,7 @@ import joppi.pier.parkingfinder.db.MySQLiteHelper;
 
 public class SplashActivity extends AppCompatActivity
 {
-	private static int SPLASH_TIME_OUT = 0; //1500;
+	private static int SPLASH_TIME_OUT = 1500; //1500;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -19,6 +19,11 @@ public class SplashActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 
+		try {
+			MySQLiteHelper.copyDataBase(ParkingFinderApplication.getAppContext());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		new Handler().postDelayed(new Runnable()
 		{
 
@@ -33,10 +38,6 @@ public class SplashActivity extends AppCompatActivity
 			}
 		}, SPLASH_TIME_OUT);
 
-		try {
-			MySQLiteHelper.copyDataBase(ParkingFinderApplication.getAppContext());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
 	}
 }

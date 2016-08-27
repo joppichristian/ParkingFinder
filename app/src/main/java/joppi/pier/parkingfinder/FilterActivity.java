@@ -48,11 +48,6 @@ public class FilterActivity extends AppCompatActivity
 		// set ViewListener for custom view
 		customCarouselView.setViewListener(viewListener);
 
-		try {
-			MySQLiteHelper.copyDataBase(ParkingFinderApplication.getAppContext());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void onStartResearchClick (View v)
