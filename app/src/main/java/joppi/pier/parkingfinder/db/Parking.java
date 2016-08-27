@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
+import joppi.pier.parkingfinder.AppUtils;
+
 //    Parking
 //    {
 //        -id
@@ -99,8 +101,8 @@ public class Parking
 
 	public double getCost(String start, String stop)
 	{
-		// TODO: Fix day num (-1 needed?)
-		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+		int today_number = AppUtils.getIndexOfWeekDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
 
 		ArrayList<String> costsList = new ArrayList<>();
 		costsList.addAll(Arrays.asList(cost.split(";")));

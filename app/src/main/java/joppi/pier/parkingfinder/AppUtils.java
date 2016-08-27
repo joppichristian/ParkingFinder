@@ -12,6 +12,8 @@ import android.util.DisplayMetrics;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
+import java.util.Calendar;
+
 import joppi.pier.parkingfinder.db.Parking;
 
 public class AppUtils
@@ -201,5 +203,20 @@ public class AppUtils
 		DisplayMetrics metrics = resources.getDisplayMetrics();
 		float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
 		return dp;
+	}
+
+
+	public static int getIndexOfWeekDay(int day){
+		switch (day)
+		{
+			case Calendar.MONDAY: return 1;
+			case Calendar.TUESDAY: return 2;
+			case Calendar.WEDNESDAY:return 3;
+			case Calendar.THURSDAY: return 4;
+			case Calendar.FRIDAY: return 5;
+			case Calendar.SATURDAY: return 6;
+			case Calendar.SUNDAY: return 7;
+		}
+		return 0;
 	}
 }
