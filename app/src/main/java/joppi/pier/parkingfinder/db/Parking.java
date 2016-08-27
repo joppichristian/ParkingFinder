@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 
 //    Parking
@@ -27,15 +28,15 @@ import java.util.Date;
 //
 public class Parking
 {
-    public static int TYPE_MASK = 0xFFFF;
-	public static int TYPE_SURFACE = 0x0001;
-	public static int TYPE_STRUCTURE = 0x0002;
-	public static int TYPE_ROAD = 0x0004;
-	public static int TYPE_SUBTERRANEAN = 0x0008;
+    public static final int TYPE_MASK = 0xFFFF;
+	public static final int TYPE_SURFACE = 0x0001;
+	public static final int TYPE_STRUCTURE = 0x0002;
+	public static final int TYPE_ROAD = 0x0004;
+	public static final int TYPE_SUBTERRANEAN = 0x0008;
 
-    public static int SPEC_MASK = 0xFFFF0000;
-	public static int SPEC_SURVEILED = 0x10000;
-    public static int SPEC_TIME_LIMIT = 0x20000;
+    public static final int SPEC_MASK = 0xFFFF0000;
+	public static final int SPEC_SURVEILED = 0x10000;
+    public static final int SPEC_TIME_LIMIT = 0x20000;
 
 	private int id;
 	private String name;
@@ -96,8 +97,11 @@ public class Parking
 		return cost;
 	}
 
-	public double getCost(String start, String stop, int today_number)
+	public double getCost(String start, String stop)
 	{
+		// TODO: Fix day num (-1 needed?)
+		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
 		ArrayList<String> costsList = new ArrayList<>();
 		costsList.addAll(Arrays.asList(cost.split(";")));
 		double res = 0.0;

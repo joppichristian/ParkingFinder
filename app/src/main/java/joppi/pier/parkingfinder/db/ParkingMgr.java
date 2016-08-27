@@ -39,6 +39,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 	Location mUserDefLocation;
 	Parking mSelectedParking;
 	Thread mUpdateDistancesThread;
+	Polygon mParkingAreaDraw = null;
 	DistanceMatrixResult mQueryResult;
 	SharedPreferencesManager mPrefManager;
 	private final Semaphore listAccessSema = new Semaphore(1, true);
@@ -68,19 +69,21 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 		mPrefManager = SharedPreferencesManager.getInstance(mapsActivity);
 
-		// TODO: include distance by foot
 		mParkingListComparator = new Comparator<Parking>()
 		{
 			@Override
-			public int compare(Parking lhs, Parking rhs)
+			public int compare(Parking p1, Parking p2)
 			{
 				String stop = mPrefManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
 				String start = Calendar.getInstance().get(Calendar.HOUR)+":"+Calendar.getInstance().get(Calendar.MINUTE);
 				double cost_weight = mPrefManager.getFloatPreference(SharedPreferencesManager.PREF_COST_WEIGHT);
 				double distance_weight = mPrefManager.getFloatPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT);
 
-				int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-				return lhs.getCurrDistByCar() * distance_weight + lhs.getCost(start,stop,today_number-1) * cost_weight >= rhs.getCurrDistByCar() * distance_weight + rhs.getCost(start,stop,today_number-1) * cost_weight ? 1 : -1;
+				// 5km car = 1€ = 0.75km foot
+				double p1Value = ((p1.getCurrDistByFoot()/1000.0)*1.5 + (p1.getCurrDistByCar()/1000.0)/5.0) * distance_weight + p1.getCost(start,stop) * cost_weight;
+				double p2Value = ((p2.getCurrDistByFoot()/1000.0)*1.5 + (p2.getCurrDistByCar()/1000.0)/5.0) * distance_weight + p2.getCost(start,stop) * cost_weight;
+
+				return p1Value >= p2Value ? 1 : -1;
 			}
 		};
 	}
@@ -171,12 +174,6 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		mUpdateDistancesThread.start();
 	}
 
-	// TODO: temporary implementation
-	static Polygon drawPoly = null;
-	static ArrayList<LatLng> drawPolyPts = new ArrayList<>();
-
-
-
 	@Override
 	public boolean onMarkerClick(Marker marker)
 	{
@@ -186,9 +183,9 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
         if(areaRaw.compareTo("false") !=0)
             drawPolyClickMarkerHandler(Parking.parseCoordinates(areaRaw));
         else {
-            if(drawPoly != null)
-                drawPoly.remove();
-            drawPoly = null;
+            if(mParkingAreaDraw != null)
+                mParkingAreaDraw.remove();
+            mParkingAreaDraw = null;
         }
 		// Force UI refresh
 		mapsActivity.runOnUiThread(mDispatchUiRefreshHandlers);
@@ -418,17 +415,16 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 	public void drawPolyClickMarkerHandler(ArrayList<LatLng> drawPolyPts)
 	{
-
 		if(drawPolyPts.size() > 1){
-			if(drawPoly == null){
-				drawPoly = mMap.addPolygon(new PolygonOptions()
+			if(mParkingAreaDraw == null){
+				mParkingAreaDraw = mMap.addPolygon(new PolygonOptions()
 						.addAll(drawPolyPts)
                         .strokeWidth(1)
 						.strokeColor(0x660000ff)
 						.fillColor(0x220000ff)
 						.clickable(true));
 			} else{
-				drawPoly.setPoints(drawPolyPts);
+				mParkingAreaDraw.setPoints(drawPolyPts);
 			}
 		}
 	}
