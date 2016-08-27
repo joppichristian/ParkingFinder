@@ -11,4 +11,6 @@
     <string name="preferenceVehicle">Vehicle</string>
     <string name="preferenceTime">Time</string>
     <string name="search_loc_hint">Sono diretto…</string>
+    <string name="newDestText">Sei diretto qui?</string>
+    <string name="newParkingText">Nuovo pacheggio?</string>
 </resources>
