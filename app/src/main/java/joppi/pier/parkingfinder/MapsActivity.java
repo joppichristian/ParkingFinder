@@ -209,7 +209,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		String start = Calendar.getInstance().get(Calendar.HOUR) + ":" + Calendar.getInstance().get(Calendar.MINUTE);
 		int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
-		intent.putExtra("cost", clicked.getCost(start, stop, today_number));
+		intent.putExtra("cost", clicked.getCost(start, stop, today_number-1));
 		intent.putExtra("dist", (double)clicked.getCurrDistByCar());
 		intent.putExtra("lat", clicked.getLatitudeRaw());
 		intent.putExtra("long",clicked.getLongitudeRaw());
@@ -218,11 +218,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra("time_limit",clicked.getTimeLimit());
         intent.putExtra("time_frame",clicked.getTimeFrame());
         intent.putExtra("notes",clicked.getNotes());
+		intent.putExtra("dist_foot",(double)clicked.getCurrDistByFoot());
         switch (sharedPreferencesManager.getStringPreference(SharedPreferencesManager.PREF_VEHICLE)){
             case "Automobile":intent.putExtra("places",clicked.getCar());break;
             case "Moto":intent.putExtra("places",clicked.getMoto());break;
             case "Caravan":intent.putExtra("places",clicked.getCaravan());break;
         }
+
+		intent.putExtra("duration",clicked.getCurrDurationCar());
+		intent.putExtra("address",clicked.getAddress());
 		startActivity(intent);
 	}
 

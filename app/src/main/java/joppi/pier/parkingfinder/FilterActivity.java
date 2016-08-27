@@ -60,7 +60,9 @@ public class FilterActivity extends AppCompatActivity
 	{
 		Intent go = new Intent(FilterActivity.this, MapsActivity.class);
 		int id_checked = ((RadioGroup)findViewById(R.id.filterVehicleGroup)).getCheckedRadioButtonId();
-		String vehicle = ((RadioButton)findViewById(id_checked)).getText().toString();
+		String vehicle = "Automobile";
+		if(id_checked != -1)
+			vehicle = ((RadioButton)findViewById(id_checked)).getText().toString();
 
 		TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
 		String time = timePicker.getCurrentHour() + ":" + timePicker.getCurrentMinute();

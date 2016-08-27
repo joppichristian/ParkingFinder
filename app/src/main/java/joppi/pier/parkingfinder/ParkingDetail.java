@@ -57,6 +57,9 @@ public class ParkingDetail extends Activity {
         posti = getIntent().getExtras().getInt("places");
         notes = getIntent().getExtras().getString("notes");
         time_frame = getIntent().getExtras().getString("time_frame");
+        Double dist_foot = getIntent().getExtras().getDouble("dist_foot");
+        int duration  = getIntent().getExtras().getInt("duration");
+        String address  = getIntent().getExtras().getString("address");
 
         // SET NAME
         TextView tx_name = (TextView)findViewById(R.id.park_name);
@@ -65,21 +68,55 @@ public class ParkingDetail extends Activity {
         // SET PLACES
         TextView tx_places = (TextView)findViewById(R.id.park_places);
         if(posti == 1)
-            tx_places.setText("Posti non definiti");
+            tx_places.setText("# posti non disponibile");
         else
             tx_places.setText(posti + " posti");
 
         // SET COST
         TextView tx_cost = (TextView)findViewById(R.id.park_price);
-        tx_cost.setText(cost +" €");
+        if(cost == 0.0)
+            tx_cost.setText("GRATUITO");
+        else
+            tx_cost.setText(cost +" €");
 
         // SET DISTANCE
         TextView tx_distance = (TextView)findViewById(R.id.park_distance);
-        tx_distance.setText(dist.intValue() + " metri");
+        if(dist>1000)
+            tx_distance.setText(String.format("%.1f", (dist / 1000.0)) + " km");
+        else
+            tx_distance.setText(dist.intValue() + " metri");
 
+        // SET DURATA VIAGGIO
+        String udm = "sec";
+        if(duration > 60)
+        {
+            duration /= 60;
+            udm = "min";
+        }
+        if(duration > 60)
+        {
+            duration /=60;
+            udm= "h";
+        }
+        tx_distance.setText(tx_distance.getText() + " , "+ duration + " " + udm);
+
+        // SET DISTANCE BY FOOT
+        TextView tx_distance_foot = (TextView)findViewById(R.id.park_distance_foot);
+        if(dist_foot < 0)
+            tx_distance_foot.setText("Destinazione non definita");
+        else {
+            if(dist_foot>1000)
+                tx_distance_foot.setText(String.format("%.1f", (dist_foot/ 1000.0)) + " km alla destinazione segnata");
+            else
+                tx_distance_foot.setText(dist_foot.intValue() + " metri alla destinazione segnata");
+        }
         // SET TIME FRAME
         TextView tx_time_frame = (TextView)findViewById(R.id.park_time_frame);
         tx_time_frame.setText(time_frame);
+
+        // SET ADDRESS
+        TextView tx_address = (TextView)findViewById(R.id.park_address);
+        tx_address.setText(address);
 
         // SET NOTES
         TextView tx_notes = (TextView)findViewById(R.id.park_notes);
@@ -119,56 +156,62 @@ public class ParkingDetail extends Activity {
                 break;
         }
 
-
+        int standard_color = getResources().getColor(R.color.colorPrimaryDark);
 
         ImageView imageView_disco = (ImageView)findViewById(R.id.icon_time_limit);
         Drawable icon_disco = getResources().getDrawable(R.drawable.ic_timelapse_details);
         icon_disco.clearColorFilter();
-        icon_disco.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        icon_disco.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
         imageView_disco.setImageDrawable(icon_disco);
 
         ImageView imageView_time_frame = (ImageView)findViewById(R.id.icon_time_frame);
         Drawable icon_time_frame = getResources().getDrawable(R.drawable.ic_action_clock_details);
         icon_time_frame.clearColorFilter();
-        icon_time_frame.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        icon_time_frame.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
         imageView_time_frame.setImageDrawable(icon_time_frame);
 
         ImageView imageView_surveiled = (ImageView)findViewById(R.id.icon_surveiled);
         Drawable icon_surveiled = getResources().getDrawable(R.drawable.parking_surveiled_details);
         icon_surveiled.clearColorFilter();
-        icon_surveiled.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        icon_surveiled.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
         imageView_surveiled.setImageDrawable(icon_surveiled);
 
         ImageView imageView_distance_by_car = (ImageView)findViewById(R.id.icon_distance_by_car);
         Drawable icon_distance_by_car = getResources().getDrawable(R.drawable.distance_by_car_details);
         icon_distance_by_car.clearColorFilter();
-        icon_distance_by_car.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        icon_distance_by_car.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
         imageView_distance_by_car.setImageDrawable(icon_distance_by_car);
 
         ImageView imageView_distance_by_foot = (ImageView)findViewById(R.id.icon_distance_by_foot);
         Drawable icon_distance_by_foot = getResources().getDrawable(R.drawable.distance_by_foot_details);
         icon_distance_by_foot.clearColorFilter();
-        icon_distance_by_foot.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        icon_distance_by_foot.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
         imageView_distance_by_foot.setImageDrawable(icon_distance_by_foot);
 
         ImageView imageView_price = (ImageView)findViewById(R.id.icon_price);
         Drawable icon_price = getResources().getDrawable(R.drawable.price_icon);
         icon_price.clearColorFilter();
-        icon_price.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        icon_price.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
         imageView_price.setImageDrawable(icon_price);
 
         ImageView imageView_feedback_up = (ImageView)findViewById(R.id.icon_feedback_up);
         Drawable icon_feedback_up = getResources().getDrawable(R.drawable.ic_thumb_up);
         icon_feedback_up.clearColorFilter();
-        icon_feedback_up.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        icon_feedback_up.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
         imageView_feedback_up.setImageDrawable(icon_feedback_up);
 
         ImageView imageView_feedback_down = (ImageView)findViewById(R.id.icon_feedback_down);
         Drawable icon_feedback_down = getResources().getDrawable(R.drawable.ic_thumb_down);
         icon_feedback_down.clearColorFilter();
-        icon_feedback_down.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        icon_feedback_down.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
         imageView_feedback_down.setImageDrawable(icon_feedback_down);
 
+        /*ImageView imageView_address = (ImageView)findViewById(R.id.icon_address);
+        Drawable icon_address = getResources().getDrawable(R.drawable.ic_action_location_details);
+        icon_address.clearColorFilter();
+        icon_address.setColorFilter(standard_color, PorterDuff.Mode.SRC_ATOP);
+        imageView_address.setImageDrawable(icon_address);
+*/
         // SET VIEW COLOR
         View right_view = findViewById(R.id.rightColorDetail);
         right_view.setBackgroundColor(color);

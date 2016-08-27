@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -79,7 +80,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 				double distance_weight = mPrefManager.getFloatPreference(SharedPreferencesManager.PREF_DISTANCE_WEIGHT);
 
 				int today_number = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-				return lhs.getCurrDistByCar() * distance_weight + lhs.getCost(start,stop,today_number) * cost_weight >= rhs.getCurrDistByCar() * distance_weight + rhs.getCost(start,stop,today_number) * cost_weight ? 1 : -1;
+				return lhs.getCurrDistByCar() * distance_weight + lhs.getCost(start,stop,today_number-1) * cost_weight >= rhs.getCurrDistByCar() * distance_weight + rhs.getCost(start,stop,today_number-1) * cost_weight ? 1 : -1;
 			}
 		};
 	}
@@ -174,23 +175,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 	static Polygon drawPoly = null;
 	static ArrayList<LatLng> drawPolyPts = new ArrayList<>();
 
-	public void drawPolyClickHandler(LatLng latLng)
-	{
-		//		drawPolyPts.add(latLng);
-		//		if(drawPolyPts.size() > 1){
-		//			if(drawPoly == null){
-		//				drawPoly = mMap.addPolygon(new PolygonOptions()
-		//						.addAll(drawPolyPts)
-		//						.strokeColor(0x66ff0000)
-		//						.fillColor(0x22ff0000)
-		//						.clickable(true));
-		//			} else{
-		//				drawPoly.setPoints(drawPolyPts);
-		//				if(isPolyComplex(drawPolyPts))
-		//					Toast.makeText(mapsActivity, "Invalid selection", Toast.LENGTH_LONG).show();
-		//			}
-		//		}
-	}
+
 
 	// TODO: Area is displayed to user only after click on parking and just for reference
 	@Override
@@ -198,7 +183,14 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 	{
 		// Set current selection
 		mSelectedParking = parkingMarkersHashMap.get(marker);
-
+        String areaRaw  = mSelectedParking.getAreaRaw();
+        if(areaRaw.compareTo("false") !=0)
+            drawPolyClickMarkerHandler(Parking.parseCoordinates(areaRaw));
+        else {
+            if(drawPoly != null)
+                drawPoly.remove();
+            drawPoly = null;
+        }
 		// Force UI refresh
 		mapsActivity.runOnUiThread(mDispatchUiRefreshHandlers);
 		return false;
@@ -379,7 +371,7 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 
 						parking.setCurrDistByCar(elem.getDistance());
 						parking.setCurrDurationCar(elem.getDuration());
-
+                        parking.setAddress(elem.getAddress());
 						if(queryResultFoot != null)
 						{
 							DistanceMatrixResult.ResultElement elemFoot = queryResultFoot.getElement(i);
@@ -423,4 +415,22 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			updateParkingMarkers();
 		}
 	};
+
+
+	public void drawPolyClickMarkerHandler(ArrayList<LatLng> drawPolyPts)
+	{
+
+		if(drawPolyPts.size() > 1){
+			if(drawPoly == null){
+				drawPoly = mMap.addPolygon(new PolygonOptions()
+						.addAll(drawPolyPts)
+                        .strokeWidth(1)
+						.strokeColor(0x660000ff)
+						.fillColor(0x220000ff)
+						.clickable(true));
+			} else{
+				drawPoly.setPoints(drawPolyPts);
+			}
+		}
+	}
 }

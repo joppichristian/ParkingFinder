@@ -57,6 +57,7 @@ public class Parking
 	private int currDurationCar;
 	private int currDistByFoot;
 	private double currRank;
+	private String address;
 
 	public Parking(int id, String name, String cost, String timeLimit, int type, String notes, String latitude, String longitude, String area, String timeFrame, int car, int moto, int caravan)
 	{
@@ -77,6 +78,7 @@ public class Parking
 		this.currDurationCar = -1;
 		this.currDistByFoot = -1;
 		this.currRank = -1.0;
+		this.address = "";
 	}
 
 	public int getId()
@@ -233,6 +235,14 @@ public class Parking
 	public void setCurrRank(double rank)
 	{
 		currRank = rank;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	@Override
