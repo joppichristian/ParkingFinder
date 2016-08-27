@@ -249,6 +249,11 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 			m.remove();
 		parkingMarkersHashMap.clear();
 
+		try{
+			listAccessSema.acquire();
+		}catch(InterruptedException e)
+		{e.printStackTrace();}
+
 		// Add parking markers
 		for(Parking parking : mParkingList)
 		{
@@ -260,6 +265,8 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 					.icon(bd));
 			parkingMarkersHashMap.put(newMarker, parking);
 		}
+
+		listAccessSema.release();
 	}
 
 	private Runnable mUpdateParkingListTask = new Runnable()

@@ -47,7 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 	private GoogleMap mMap;
 	private ParkingMgr mParkingMgr;
-	private LocationProvider locationProvider;
+	private LocationProvider mLocProvider;
 	private MenuManager menuManager;
 
 	Marker mDestMarker;
@@ -80,10 +80,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 		//mProgressBar.setVisibility(View.VISIBLE);
 
-		// Create location provider (Slow for some reason)
-		locationProvider = new LocationProvider(this);
-		locationProvider.addLocationChangedListener(this);
-
 		// Set-up parking listView
 		parkingListView = (ListView) findViewById(R.id.parkingListView);
 		parkingListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -111,6 +107,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		mDestMarker = null;
 		mDestMarkerTmp = null;
 
+		// Create location provider (Slow for some reason)
+		mLocProvider = new LocationProvider(this);
+		mLocProvider.addLocationChangedListener(this);
+
 		// Load parking DB
 		mParkingMgr = new ParkingMgr(this, mMap);
 		mParkingMgr.addUiRefreshHandler(this);
@@ -133,11 +133,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		mMap.setOnMarkerClickListener(mParkingMgr);
 
 		// TODO: implement permissions callback (this may crash if permission is not granted)
-		if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-		}
+		ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
 
-		mMap.setMyLocationEnabled(true);
 		mMap.getUiSettings().setCompassEnabled(false);
 		mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
@@ -175,6 +172,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		// TODO: delete, for DEBUG purpose only
 		LatLng trento = new LatLng(46.062228, 11.112906);
 		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((trento), 13.0f));
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+	{
+		switch (requestCode)
+		{
+			case 123:
+				if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+				{
+					// Permission Granted
+					if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+						mMap.setMyLocationEnabled(true);
+					mLocProvider.onStart();
+				} else {
+					// Permission Denied
+					Toast.makeText(MapsActivity.this, "L'applicazione necessita dei permessi per accedere all tua locazione per funzionare correttamente", Toast.LENGTH_SHORT)
+							.show();
+					ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+				}
+				break;
+			default:
+				super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		}
 	}
 
 	private void openParkingDetailActivity(int itemPos)
@@ -229,17 +250,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	}
 
 	@Override
-	protected void onStart()
-	{
-		super.onStart();
-		locationProvider.onStart();
-	}
-
-	@Override
 	protected void onDestroy()
 	{
 		super.onDestroy();
-		locationProvider.onDestroy();
+		mLocProvider.onDestroy();
 	}
 
 	@Override
@@ -350,10 +364,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	
 	public void setCurrLocationBtnClick(View v)
 	{
-		Location loc = mMap.getMyLocation();
-		if(loc != null)
-			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(),
-					loc.getLongitude()), 13.0f));
+		if(mLocProvider.getCurrentLatLng() != null)
+			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocProvider.getCurrentLatLng(), 13.0f));
 	}
 
 	/**

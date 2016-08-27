@@ -26,10 +26,12 @@
         <activity
             android:name=".SplashActivity"
             android:label="@string/title_activity_splash"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
             android:name=".FilterActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,10 +42,12 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
             android:name=".ParkingDetail"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat" />
     </application>
 

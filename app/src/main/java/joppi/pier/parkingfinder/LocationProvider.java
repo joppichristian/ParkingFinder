@@ -20,6 +20,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -187,6 +188,11 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	public Location getCurrentLocation()
 	{
 		return mLocation;
+	}
+
+	public LatLng getCurrentLatLng()
+	{
+		return new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 	}
 
 	public void setCurrentLocation(Location location)
