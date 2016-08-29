@@ -48,6 +48,10 @@
             android:name=".ParkingDetail"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".AddParking"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat" />
     </application>
 
 </manifest>

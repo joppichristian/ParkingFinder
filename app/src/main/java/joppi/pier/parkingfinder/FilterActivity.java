@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -17,10 +16,7 @@ import android.widget.TimePicker;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ViewListener;
 
-import java.io.IOException;
 import java.util.Calendar;
-
-import joppi.pier.parkingfinder.db.MySQLiteHelper;
 
 public class FilterActivity extends AppCompatActivity
 {
@@ -99,8 +95,8 @@ public class FilterActivity extends AppCompatActivity
 				case 1:
 					customView = getLayoutInflater().inflate(R.layout.carousel_layout_time, null);
 					TimePicker timePicker = (TimePicker)customView.findViewById(R.id.timePicker);
-					boolean is24hView = DateFormat.is24HourFormat(FilterActivity.this);
-					timePicker.setIs24HourView(is24hView);
+					//boolean is24hView = DateFormat.is24HourFormat(FilterActivity.this);
+					//timePicker.setIs24HourView(is24hView);
 					timePicker.setHour(Calendar.getInstance().get(Calendar.HOUR)+1);
                     timePicker.setMinute(Calendar.getInstance().get(Calendar.MINUTE));
 					break;

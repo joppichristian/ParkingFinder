@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -85,7 +84,7 @@ public class MenuManager extends Activity implements NavigationView.OnNavigation
 			{
 				dialog.setContentView(R.layout.dialog_layout_time);
 				TimePicker timePicker = (TimePicker) dialog.findViewById(R.id.timePickerOption);
-				timePicker.setIs24HourView(DateFormat.is24HourFormat(mapsActivity));
+				//timePicker.setIs24HourView(DateFormat.is24HourFormat(mapsActivity));
 				String time = prefManager.getStringPreference(SharedPreferencesManager.PREF_TIME);
 				timePicker.setCurrentHour(Integer.parseInt(time.split(":")[0]));
 				timePicker.setCurrentMinute(Integer.parseInt(time.split(":")[1]));
