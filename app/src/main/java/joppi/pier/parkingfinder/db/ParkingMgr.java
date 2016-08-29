@@ -180,13 +180,16 @@ public class ParkingMgr implements GoogleMap.OnMarkerClickListener
 		// Set current selection
 		mSelectedParking = parkingMarkersHashMap.get(marker);
         String areaRaw  = mSelectedParking.getAreaRaw();
-        if(areaRaw.compareTo("false") !=0)
-            drawPolyClickMarkerHandler(Parking.parseCoordinates(areaRaw));
-        else {
-            if(mParkingAreaDraw != null)
-                mParkingAreaDraw.remove();
-            mParkingAreaDraw = null;
-        }
+		if(areaRaw != null)
+		{
+			if(areaRaw.compareTo("false") != 0)
+				drawPolyClickMarkerHandler(Parking.parseCoordinates(areaRaw));
+			else{
+				if(mParkingAreaDraw != null)
+					mParkingAreaDraw.remove();
+				mParkingAreaDraw = null;
+			}
+		}
 		// Force UI refresh
 		mapsActivity.runOnUiThread(mDispatchUiRefreshHandlers);
 		return false;

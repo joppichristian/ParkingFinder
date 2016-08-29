@@ -31,6 +31,7 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 {
 	protected Activity currActivity;
 
+	boolean mOnPause;
 	Location mLocation;
 	Location mLastCoarseLoc;
 
@@ -63,6 +64,7 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	{
 		currActivity = activity;
 
+		mOnPause = false;
 		mLastCoarseLoc = null;
 		mFineLocMillis = 3000; // 3 sec
 		mFineLocDispl = 5; // 5 meters
@@ -154,6 +156,16 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 		mGoogleApiClient.connect();
 	}
 
+	public void onPause()
+	{
+		mOnPause = true;
+	}
+
+	public void onResume()
+	{
+		mOnPause = false;
+	}
+
 	public void onDestroy()
 	{
 		mGoogleApiClient.disconnect();
@@ -162,26 +174,27 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks,
 	@Override
 	public void onLocationChanged(Location arg0)
 	{
-		// Dispatch coarse location changes
-		if(mLastCoarseLoc == null)
+		if(!mOnPause)
 		{
-			mLastCoarseLoc = arg0;
-			for(OnLocationChangedListener l : mLocationChangedListeners){
-				l.onCoarseLocationChanged(mLastCoarseLoc);
+			// Dispatch coarse location changes
+			if(mLastCoarseLoc == null){
+				mLastCoarseLoc = arg0;
+				for(OnLocationChangedListener l : mLocationChangedListeners){
+					l.onCoarseLocationChanged(mLastCoarseLoc);
+				}
+			} else if(mLastCoarseLoc.distanceTo(arg0) > mCoarseLocDispl) // Update every x meters
+			{
+				mLastCoarseLoc = arg0;
+				for(OnLocationChangedListener l : mLocationChangedListeners){
+					l.onCoarseLocationChanged(mLastCoarseLoc);
+				}
 			}
-		}
-		else if(mLastCoarseLoc.distanceTo(arg0) > mCoarseLocDispl) // Update every x meters
-		{
-			mLastCoarseLoc = arg0;
-			for(OnLocationChangedListener l : mLocationChangedListeners){
-				l.onCoarseLocationChanged(mLastCoarseLoc);
-			}
-		}
 
-		// Dispatch fine location changes
-		mLocation = arg0;
-		for(OnLocationChangedListener l : mLocationChangedListeners){
-			l.onFineLocationChanged(arg0);
+			// Dispatch fine location changes
+			mLocation = arg0;
+			for(OnLocationChangedListener l : mLocationChangedListeners){
+				l.onFineLocationChanged(arg0);
+			}
 		}
 	}
 

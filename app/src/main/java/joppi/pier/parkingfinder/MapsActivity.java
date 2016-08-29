@@ -262,6 +262,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 	}
 
 	@Override
+	protected void onPause()
+	{
+		if(mLocProvider != null)
+			mLocProvider.onPause();
+		super.onPause();
+	}
+
+	@Override
+	public void onResume()
+	{
+		if(mLocProvider != null)
+			mLocProvider.onResume();
+		super.onResume();
+	}
+
+	@Override
 	protected void onDestroy()
 	{
 		super.onDestroy();
